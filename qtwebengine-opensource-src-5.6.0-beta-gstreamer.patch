@@ -13057,7 +13057,7 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/ui/gl/gl_i
  
 diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/ui/gl/gl_image_egl.h qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/ui/gl/gl_image_egl.h
 --- qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/ui/gl/gl_image_egl.h	2015-12-10 18:17:21.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/ui/gl/gl_image_egl.h	2016-02-01 01:51:16.233514334 +0100
++++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/ui/gl/gl_image_egl.h	2016-02-01 03:16:39.517478821 +0100
 @@ -9,6 +9,11 @@
  #include "ui/gl/gl_bindings.h"
  #include "ui/gl/gl_image.h"
@@ -13070,20 +13070,7 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/ui/gl/gl_i
  namespace gfx {
  
  class GL_EXPORT GLImageEGL : public GLImage {
-@@ -36,6 +41,12 @@
-                             const Rect& bounds_rect,
-                             const RectF& crop_rect) override;
- 
-+#if defined(USE_GSTREAMER)
-+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-+                    uint64_t process_tracing_id,
-+                    const std::string& dump_name) override {}
-+#endif
-+
-  protected:
-   ~GLImageEGL() override;
- 
-@@ -43,6 +54,10 @@
+@@ -43,6 +48,10 @@
    const gfx::Size size_;
    base::ThreadChecker thread_checker_;
  
@@ -13141,7 +13128,7 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/core/config/linux.pri qtwebe
  contains(QT_CONFIG, system-jpeg): GYP_CONFIG += use_system_libjpeg=1
 diff -Nur qtwebengine-opensource-src-5.6.0-beta/tools/qmake/mkspecs/features/configure.prf qtwebengine-opensource-src-5.6.0-beta-gstreamer/tools/qmake/mkspecs/features/configure.prf
 --- qtwebengine-opensource-src-5.6.0-beta/tools/qmake/mkspecs/features/configure.prf	2015-12-14 16:27:24.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/tools/qmake/mkspecs/features/configure.prf	2016-02-01 02:09:37.137580151 +0100
++++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/tools/qmake/mkspecs/features/configure.prf	2016-02-01 02:32:28.301029384 +0100
 @@ -31,6 +31,7 @@
          contains(QT_CONFIG, system-png): REQUIRED_PACKAGES += libpng
          contains(QT_CONFIG, system-harfbuzz): REQUIRED_PACKAGES += harfbuzz
