@@ -10,6 +10,10 @@
 %global docs 1
 %endif
 
+%if 0%{?fedora} > 23
+# need GStreamer >= 1.8
+%global use_gstreamer 1
+%endif
 %if 0%{?fedora} > 22
 # need libvpx >= 1.4.0
 %global use_system_libvpx 1
@@ -30,7 +34,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.6.0
-Release: 0.15.beta%{?dist}
+Release: 0.15.beta.1.gstreamer%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -76,6 +80,10 @@ Patch7:  qtwebengine-opensource-src-5.6.0-beta-chimera-nss-init.patch
 # with some custom fixes and improvements
 # also build V8 shared and twice on i686 (once for x87, once for SSE2)
 Patch8:  qtwebengine-opensource-src-5.6.0-beta-no-sse2.patch
+# use GStreamer for multimedia if QTWEBENGINE_CONFIG += use_gstreamer
+# backport of https://github.com/Samsung/ChromiumGStreamerBackend up to Jan 11
+# to QtWebEngine 5.6 (Chromium 45), added QMake logic
+Patch9:  qtwebengine-opensource-src-5.6.0-beta-gstreamer.patch
 
 # the architectures theoretically supported by the version of V8 used (#1298011)
 # You may need some minor patching to build on one of the secondary
@@ -148,6 +156,15 @@ BuildRequires: perl
 BuildRequires: python
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.4.0
+%endif
+%if 0%{?use_gstreamer}
+BuildRequires: pkgconfig(gstreamer-1.0)
+BuildRequires: pkgconfig(gstreamer-base-1.0)
+BuildRequires: pkgconfig(gstreamer-audio-1.0)
+BuildRequires: pkgconfig(gstreamer-video-1.0)
+BuildRequires: pkgconfig(gstreamer-app-1.0)
+BuildRequires: pkgconfig(gstreamer-gl-1.0)
+BuildRequires: pkgconfig(gstreamer-player-1.0)
 %endif
 
 # extra (non-upstream) functions needed, see
@@ -297,6 +314,7 @@ BuildArch: noarch
 %patch6 -p1 -b .system-icu-utf
 %patch7 -p1 -b .chimera-nss-init
 %patch8 -p1 -b .no-sse2
+%patch9 -p1 -b .gstreamer
 
 %build
 export STRIP=strip
@@ -306,9 +324,8 @@ export NINJA_PATH=%{_bindir}/ninja-build
 mkdir %{_target_platform}
 pushd %{_target_platform}
 
-%{qmake_qt5} WEBENGINE_CONFIG+="use_system_icu" ..
+%{qmake_qt5} WEBENGINE_CONFIG+="use_system_icu%{?use_gstreamer: use_gstreamer}" ..
 
-# workaround, disable parallel compilation as it fails to compile in brew
 make %{?_smp_mflags}
 
 %if 0%{?docs}
@@ -370,6 +387,9 @@ popd
 
 
 %changelog
+* Mon Feb 01 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta.1.gstreamer
+- Backport the Chromium GStreamer backend by Samsung, enable it on F24+
+
 * Tue Jan 19 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta
 - Build V8 as a shared library on i686 to allow for swappable backends
 - Build both the x87 version and the SSE2 version of V8 on i686
