@@ -5,7 +5,9 @@
 
 # FIXME: Work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69241
 #        in Rawhide (GCC 6). REMOVE THIS WHEN GCC IS FIXED!
+%if 0%{?fedora} > 23
 %global workaround_gcc_bug_69241 1
+%endif
 
 # define to build docs, need to undef this for bootstrapping
 # where qt5-qttools builds are not yet available
