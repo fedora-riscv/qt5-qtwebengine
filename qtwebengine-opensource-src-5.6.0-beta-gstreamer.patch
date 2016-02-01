@@ -12389,7 +12389,16 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/media/blin
      DCHECK(!data_source_);
 diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/media/cdm/aes_decryptor.cc qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/media/cdm/aes_decryptor.cc
 --- qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/media/cdm/aes_decryptor.cc	2015-12-10 18:17:21.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/media/cdm/aes_decryptor.cc	2016-02-01 01:51:16.158513921 +0100
++++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/media/cdm/aes_decryptor.cc	2016-02-01 04:27:27.962646814 +0100
+@@ -21,7 +21,7 @@
+ #include "media/base/video_frame.h"
+ #include "media/cdm/json_web_key.h"
+ 
+-#if defined(USE_PROPRIETARY_CODECS)
++#if defined(USE_PROPRIETARY_CODECS) || defined(USE_GSTREAMER)
+ #include "media/cdm/cenc_utils.h"
+ #endif
+ 
 @@ -274,7 +274,7 @@
          keys.push_back(init_data);
          break;
