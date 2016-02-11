@@ -331,7 +331,7 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 
 %if 0%{?workaround_gcc_bug_69241}
-export CXXFLAGS="%{optflags} -fno-ipa-icf"
+export CXXFLAGS="%{optflags} -fno-ipa-icf-functions"
 %endif
 %{qmake_qt5} WEBENGINE_CONFIG+="use_system_icu%{?use_gstreamer: use_gstreamer}" ..
 
@@ -398,7 +398,7 @@ popd
 %changelog
 * Mon Feb 01 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta.1.gstreamer
 - Backport the Chromium GStreamer backend by Samsung, enable it on F24+
-- Work around gcc#69241 (F24+): add -fno-ipa-icf to CXXFLAGS
+- Work around gcc#69241 (F24+): add -fno-ipa-icf-functions to CXXFLAGS
 
 * Tue Jan 19 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta
 - Build V8 as a shared library on i686 to allow for swappable backends
