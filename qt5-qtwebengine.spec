@@ -3,10 +3,6 @@
 
 %global _hardened_build 1
 
-# FIXME: Work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69241
-#        in Rawhide (GCC 6). REMOVE THIS WHEN GCC IS FIXED!
-%global workaround_gcc_bug_69241 1
-
 # define to build docs, need to undef this for bootstrapping
 # where qt5-qttools builds are not yet available
 # only primary archs (for now), allow secondary to bootstrap
@@ -15,7 +11,7 @@
 %endif
 
 %if 0%{?fedora} > 23
-# need GStreamer >= 1.8 (the dev version 1.7.1 in Rawhide should be enough)
+# need GStreamer >= 1.8
 %global use_gstreamer 1
 %endif
 %if 0%{?fedora} > 22
@@ -328,9 +324,6 @@ export NINJA_PATH=%{_bindir}/ninja-build
 mkdir %{_target_platform}
 pushd %{_target_platform}
 
-%if 0%{?workaround_gcc_bug_69241}
-export CXXFLAGS="%{optflags} -fno-ipa-icf-functions"
-%endif
 %{qmake_qt5} WEBENGINE_CONFIG+="use_system_icu%{?use_gstreamer: use_gstreamer}" ..
 
 make %{?_smp_mflags}
@@ -396,7 +389,6 @@ popd
 %changelog
 * Mon Feb 01 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta.1.gstreamer
 - Backport the Chromium GStreamer backend by Samsung, enable it on F24+
-- Work around gcc#69241 (F24+): add -fno-ipa-icf-functions to CXXFLAGS
 
 * Tue Jan 19 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta
 - Build V8 as a shared library on i686 to allow for swappable backends
