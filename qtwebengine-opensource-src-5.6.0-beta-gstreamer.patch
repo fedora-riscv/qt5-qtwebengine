@@ -9665,7 +9665,7 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/re
  }  // namespace content
 diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/renderer/media/gstreamer/webmediaplayer_gstreamer.cc qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/content/renderer/media/gstreamer/webmediaplayer_gstreamer.cc
 --- qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/renderer/media/gstreamer/webmediaplayer_gstreamer.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/content/renderer/media/gstreamer/webmediaplayer_gstreamer.cc	2016-02-01 01:51:14.179503014 +0100
++++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/content/renderer/media/gstreamer/webmediaplayer_gstreamer.cc	2016-02-13 06:03:48.192479699 +0100
 @@ -0,0 +1,1245 @@
 +// Copyright 2015 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -9785,7 +9785,7 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/re
 +// of a non-ASCII string.
 +static std::string ToASCIIOrEmpty(const WebString& string) {
 +  return base::IsStringASCII(string)
-+             ? base::UTF16ToASCII(base::StringPiece16(string))
++             ? base::UTF16ToASCII(string)
 +             : std::string();
 +}
 +
