@@ -4486,7 +4486,7 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/co
          'DEBUG_DEVTOOLS=1',
 diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/content_common.gypi qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/content/content_common.gypi
 --- qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/content_common.gypi	2015-12-10 18:17:21.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/content/content_common.gypi	2016-02-01 01:51:14.113502650 +0100
++++ qtwebengine-opensource-src-5.6.0-beta-gstreamer/src/3rdparty/chromium/content/content_common.gypi	2016-02-13 02:59:16.828906222 +0100
 @@ -193,6 +193,7 @@
        'common/cache_storage/cache_storage_types.h',
        'common/cc_messages.cc',
@@ -4522,11 +4522,15 @@ diff -Nur qtwebengine-opensource-src-5.6.0-beta/src/3rdparty/chromium/content/co
        'common/sandbox_linux/bpf_ppapi_policy_linux.cc',
        'common/sandbox_linux/bpf_ppapi_policy_linux.h',
        'common/sandbox_linux/bpf_renderer_policy_linux.cc',
-@@ -797,6 +811,25 @@
+@@ -797,6 +811,29 @@
          '../third_party/libjingle/libjingle.gyp:libjingle',
        ],
      }],
-+    ['use_gstreamer==0', {
++    ['use_gstreamer==1', {
++      'dependencies': [
++        '../build/linux/system.gyp:gstreamer',
++      ],
++    }, {
 +      'sources!': [
 +        'common/channel_host_thread.h',
 +        'common/gpu/media/android_video_decode_accelerator.h',

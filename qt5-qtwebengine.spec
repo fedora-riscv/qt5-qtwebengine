@@ -11,7 +11,7 @@
 %endif
 
 %if 0%{?fedora} > 23
-# need GStreamer >= 1.8
+# need GStreamer >= 1.8 (the dev version 1.7.1 in Rawhide should be enough)
 %global use_gstreamer 1
 %endif
 %if 0%{?fedora} > 22
@@ -387,7 +387,7 @@ popd
 
 
 %changelog
-* Mon Feb 01 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta.1.gstreamer
+* Sat Feb 13 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta.1.gstreamer
 - Backport the Chromium GStreamer backend by Samsung, enable it on F24+
 
 * Tue Jan 19 2016 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.6.0-0.15.beta
