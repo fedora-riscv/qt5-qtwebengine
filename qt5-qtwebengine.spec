@@ -30,7 +30,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.6.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -95,6 +95,7 @@ BuildRequires: qt5-qtsensors-devel >= %{version}
 BuildRequires: qt5-qtwebchannel-devel >= %{version}
 BuildRequires: qt5-qttools-static >= %{version}
 BuildRequires: ninja-build
+BuildRequires: cmake
 BuildRequires: bison
 BuildRequires: git-core
 BuildRequires: gperf
@@ -442,6 +443,9 @@ popd
 
 
 %changelog
+* Sun Jul 31 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.6.1-4
+- BR: cmake (for cmake autoprovides mostly)
+
 * Tue Jun 14 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.6.1-3
 - rebuild (glibc)
 
