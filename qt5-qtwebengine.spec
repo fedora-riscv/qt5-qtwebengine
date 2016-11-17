@@ -19,8 +19,6 @@
 %global use_system_libwebp 1
 %endif
 
-#global prerelease rc
-
 # exclude plugins (all architectures) and libv8.so (i686, it's static everywhere
 # else)
 %global __provides_exclude ^lib.*plugin\\.so.*|libv8\\.so$
@@ -29,8 +27,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.6.1
-Release: 4%{?dist}
+Version: 5.6.2
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -95,7 +93,6 @@ BuildRequires: qt5-qtsensors-devel >= %{version}
 BuildRequires: qt5-qtwebchannel-devel >= %{version}
 BuildRequires: qt5-qttools-static >= %{version}
 BuildRequires: ninja-build
-BuildRequires: cmake
 BuildRequires: bison
 BuildRequires: git-core
 BuildRequires: gperf
@@ -443,6 +440,9 @@ popd
 
 
 %changelog
+* Wed Nov 02 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.6.2-1
+- 5.6.2
+
 * Sun Jul 31 2016 Rex Dieter <rdieter@fedoraproject.org> - 5.6.1-4
 - BR: cmake (for cmake autoprovides mostly)
 
