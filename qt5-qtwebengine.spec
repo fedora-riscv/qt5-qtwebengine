@@ -5,10 +5,7 @@
 
 # define to build docs, need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
-# only primary archs (for now), allow secondary to bootstrap
-%ifarch %{arm} %{ix86} x86_64
 %global docs 1
-%endif
 
 %if 0%{?fedora} > 23
 # need libvpx >= 1.5.0
@@ -39,7 +36,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -543,6 +540,9 @@ done
 
 
 %changelog
+* Mon Apr 03 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-6
+- build docs on all archs
+
 * Fri Mar 31 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-5
 - Enable use_spellchecker explicitly so that it is also enabled on Qt 5.7
 - Use file triggers to automatically convert system hunspell dictionaries
