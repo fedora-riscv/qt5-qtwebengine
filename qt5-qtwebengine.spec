@@ -36,7 +36,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -448,7 +448,7 @@ while read filename ; do
   case "$filename" in
     *.dic)
       bdicname=%{_qtwebengine_dictionaries_dir}/`basename -s .dic "$filename"`.bdic
-      %{_qt5_bindir}/qwebengine_convert_dict "$filename" "$bdicname"
+      %{_qt5_bindir}/qwebengine_convert_dict "$filename" "$bdicname" &> /dev/null || :
       ;;
   esac
 done
@@ -540,6 +540,9 @@ done
 
 
 %changelog
+* Tue Apr 04 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-7
+- File trigger: silence qwebengine_convert_dict output and ignore its exit code
+
 * Mon Apr 03 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-6
 - build docs on all archs
 
