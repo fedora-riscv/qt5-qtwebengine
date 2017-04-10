@@ -36,7 +36,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 7%{?dist}
+Release: 8%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -440,6 +440,11 @@ popd
 
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
+# adjust cmake dep(s) to allow for using the same Qt5 that was used to build it (even if older)
+sed -i -e "s|%{version} \${_|%{_qt5_version} \${_|" \
+  %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine/Qt5WebEngineCoreConfig.cmake
+
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -540,6 +545,9 @@ done
 
 
 %changelog
+* Mon Apr 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-8
+- Qt5WebEngineCoreConfig.cmake: fix when using Qt < %%version (#1438877)
+
 * Tue Apr 04 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-7
 - File trigger: silence qwebengine_convert_dict output and ignore its exit code
 
