@@ -441,8 +441,8 @@ popd
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
 # adjust cmake dep(s) to allow for using the same Qt5 that was used to build it (even if older)
-sed -i -e "s|%{version} \${_|%{_qt5_version} \${_|" \
-  %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine/Qt5WebEngineCoreConfig.cmake
+sed -i -e "s|%{version} \${_Qt5WebEngine|%{_qt5_version} \${_Qt5WebEngine|" \
+  %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
 
 
 %post -p /sbin/ldconfig
