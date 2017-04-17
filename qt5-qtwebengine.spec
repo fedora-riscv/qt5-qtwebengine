@@ -25,6 +25,8 @@
 # spellchecking dictionary directory
 %global _qtwebengine_dictionaries_dir %{_qt5_datadir}/qtwebengine_dictionaries
 
+%global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
+
 # exclude plugins (all architectures) and libv8.so (i686, it's static everywhere
 # else)
 %global __provides_exclude ^lib.*plugin\\.so.*|libv8\\.so$
@@ -36,7 +38,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 8%{?dist}
+Release: 9%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -51,6 +53,8 @@ Source0: qtwebengine-opensource-src-%{version}-clean.tar.xz
 Source1: clean_qtwebengine.sh
 Source2: clean_ffmpeg.sh
 Source3: get_free_ffmpeg_source_files.py
+# macros
+Source10: macros.qt5-qtwebengine
 # some tweaks to linux.pri (system libs, link libpci, run unbundling script)
 Patch0:  qtwebengine-opensource-src-5.7.0-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
@@ -418,6 +422,16 @@ make install INSTALL_ROOT=%{buildroot} -C %{_target_platform}
 make install_docs INSTALL_ROOT=%{buildroot} -C %{_target_platform}
 %endif
 
+# rpm macros
+install -p -m644 -D %{SOURCE10} \
+  %{buildroot}%{rpm_macros_dir}/macros.qt5-qtwebengine
+sed -i \
+  -e "s|@@NAME@@|%{name}|g" \
+  -e "s|@@EPOCH@@|%{?epoch}%{!?epoch:0}|g" \
+  -e "s|@@VERSION@@|%{version}|g" \
+  -e "s|@@EVR@@|%{?epoch:%{epoch:}}%{version}-%{release}|g" \
+  %{buildroot}%{rpm_macros_dir}/macros.qt5-qtwebengine
+
 # hardlink files to {_bindir}
 mkdir -p %{buildroot}%{_bindir}
 pushd %{buildroot}%{_qt5_bindir}
@@ -528,6 +542,7 @@ done
 %lang(zh_TW) %{_qt5_translationdir}/qtwebengine_locales/zh-TW.pak
 
 %files devel
+%{rpm_macros_dir}/macros.qt5-qtwebengine
 %{_qt5_headerdir}/Qt*/
 %{_qt5_libdir}/libQt5*.so
 %{_qt5_libdir}/libQt5*.prl
@@ -545,6 +560,9 @@ done
 
 
 %changelog
+* Mon Apr 17 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-9
+- +macros.qt5-qtwebengine
+
 * Mon Apr 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-8
 - Qt5WebEngineCoreConfig.cmake: fix when using Qt < %%version (#1438877)
 
