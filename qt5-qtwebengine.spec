@@ -38,7 +38,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 10%{?dist}
+Release: 11%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -108,6 +108,8 @@ Patch15: qtwebengine-opensource-src-5.8.0-wtf-gcc7.patch
 Patch20: qtwebengine-opensource-src-5.8.0-qt57.patch
 # upstream fix for blank pages when a link opens in a new tab
 Patch100: qtwebengine-opensource-src-5.8.0-fix-open-in-new-tab.patch
+# upstream fix for non-functional dead keys in text fields
+Patch101: qtwebengine-opensource-src-5.8.0-fix-dead-keys.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -356,6 +358,7 @@ BuildArch: noarch
 %patch15 -p1 -b .wtf-gcc7
 %patch20 -p1 -b .qt57
 %patch100 -p1 -b .fix-open-in-new-tab
+%patch101 -p1 -b .fix-dead-keys
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -563,6 +566,9 @@ done
 
 
 %changelog
+* Fri Apr 28 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-11
+- Backport upstream fix for non-functional dead keys in text fields
+
 * Tue Apr 25 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-10
 - Backport upstream fix for blank pages when a link opens in a new tab
 
