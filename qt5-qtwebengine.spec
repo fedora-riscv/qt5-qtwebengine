@@ -38,7 +38,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 11%{?dist}
+Release: 12%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -566,6 +566,9 @@ done
 
 
 %changelog
+* Wed May 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-12
+- rebuild (Qt-5.9)
+
 * Fri Apr 28 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-11
 - Backport upstream fix for non-functional dead keys in text fields
 
