@@ -5,7 +5,10 @@
 
 # define to build docs, need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
+# disable on f27+ or where Qt-5.9 is present (for now)
+%if 0%{?fedora} < 27
 %global docs 1
+%endif
 
 %if 0%{?fedora} > 23
 # need libvpx >= 1.5.0
@@ -567,7 +570,7 @@ done
 
 %changelog
 * Wed May 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-12
-- rebuild (Qt-5.9)
+- rebuild (Qt-5.9), disable docs for f27+
 
 * Fri Apr 28 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.8.0-11
 - Backport upstream fix for non-functional dead keys in text fields
