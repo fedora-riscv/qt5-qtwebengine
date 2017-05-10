@@ -3,6 +3,10 @@
 
 %global _hardened_build 1
 
+# define to build docs, need to undef this for bootstrapping
+# where qt5-qttools (qt5-doctools) builds are not yet available
+%global docs 1
+
 %if 0%{?fedora} > 23
 # need libvpx >= 1.5.0
 %global use_system_libvpx 1
@@ -34,9 +38,10 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 13%{?dist}
+Release: 12%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
+# See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
 # The other licenses are from Chromium and the code it bundles
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
@@ -313,6 +318,24 @@ Summary: Example files for %{name}
 %description examples
 %{summary}.
 
+
+%if 0%{?docs}
+%package doc
+Summary: API documentation for %{name}
+BuildRequires: qt5-qdoc
+BuildRequires: qt5-qhelpgenerator
+BuildRequires: qt5-qtbase-doc
+Requires: qt5-qtbase-doc
+BuildRequires: qt5-qtxmlpatterns-doc
+Requires: qt5-qtxmlpatterns-doc
+BuildRequires: qt5-qtdeclarative-doc
+Requires: qt5-qtdeclarative-doc
+BuildArch: noarch
+%description doc
+%{summary}.
+%endif
+
+
 %prep
 %setup -q -n %{qt_module}-opensource-src-%{version}%{?prerelease:-%{prerelease}}
 %patch0 -p1 -b .linux-pri
@@ -393,8 +416,17 @@ export CXXFLAGS
 
 make %{?_smp_mflags}
 
+%if 0%{?docs}
+make %{?_smp_mflags} docs
+%endif
+popd
+
 %install
 make install INSTALL_ROOT=%{buildroot} -C %{_target_platform}
+
+%if 0%{?docs}
+make install_docs INSTALL_ROOT=%{buildroot} -C %{_target_platform}
+%endif
 
 # rpm macros
 install -p -m644 -D %{SOURCE10} \
@@ -527,11 +559,13 @@ done
 %files examples
 %{_qt5_examplesdir}/
 
+%if 0%{?docs}
+%files doc
+%{_qt5_docdir}/*
+%endif
+
 
 %changelog
-* Wed May 10 2017 Helio Chissini de Castro <helio@kde.org> - 5.8.0-13
-- Remove docs to transition to full qt5-doc package submodule
-
 * Wed May 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-12
 - rebuild (Qt-5.9)
 
