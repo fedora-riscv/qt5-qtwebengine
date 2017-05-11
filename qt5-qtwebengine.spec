@@ -41,7 +41,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 12%{?dist}
+Release: 13%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -463,9 +463,11 @@ popd
 
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
-# adjust cmake dep(s) to allow for using the same Qt5 that was used to build it (even if older)
+# adjust cmake dep(s) to allow for using the same Qt5 that was used to build it (if older)
+%if 0%{?fedora} < 27
 sed -i -e "s|%{version} \${_Qt5WebEngine|%{_qt5_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
+%endif
 
 
 %post -p /sbin/ldconfig
@@ -569,6 +571,9 @@ done
 
 
 %changelog
+* Thu May 11 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-13
+- apply Qt5WebEngineCoreConfig.cmake hack only on < f27
+
 * Wed May 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-12
 - rebuild (Qt-5.9), disable docs for f27+
 
