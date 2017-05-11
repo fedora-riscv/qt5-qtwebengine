@@ -463,7 +463,8 @@ popd
 
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
-# adjust cmake dep(s) to allow for using the same Qt5 that was used to build it (if older)
+# adjust cmake dep(s) to allow for using the same Qt5 that was used to build it
+# only if older... (I suppose what we really want is the lesser of %%version, %%_qt5_version)
 %if 0%{?fedora} < 27
 sed -i -e "s|%{version} \${_Qt5WebEngine|%{_qt5_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
