@@ -41,7 +41,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.8.0
-Release: 13%{?dist}
+Release: 14%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -572,6 +572,9 @@ done
 
 
 %changelog
+* Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
+- fix rpm macros
+
 * Thu May 11 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-13
 - apply Qt5WebEngineCoreConfig.cmake hack only on < f27
 
