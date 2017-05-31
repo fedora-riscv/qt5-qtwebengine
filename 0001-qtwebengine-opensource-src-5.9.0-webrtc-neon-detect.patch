@@ -1,0 +1,27 @@
+From bef192680ca3c78493c064d7b4a21b79afa92c3e Mon Sep 17 00:00:00 2001
+From: Helio Chissini de Castro <helio@kde.org>
+Date: Wed, 31 May 2017 10:41:10 +0200
+Subject: [PATCH] qtwebengine-opensource-src-5.9.0-webrtc-neon-detect
+
+---
+ src/3rdparty/chromium/third_party/webrtc/system_wrappers/BUILD.gn | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/3rdparty/chromium/third_party/webrtc/system_wrappers/BUILD.gn b/src/3rdparty/chromium/third_party/webrtc/system_wrappers/BUILD.gn
+index 8bed25e27..b0cc2a5e3 100644
+--- a/src/3rdparty/chromium/third_party/webrtc/system_wrappers/BUILD.gn
++++ b/src/3rdparty/chromium/third_party/webrtc/system_wrappers/BUILD.gn
+@@ -93,9 +93,7 @@ rtc_static_library("system_wrappers") {
+   if (is_linux) {
+     defines += [ "WEBRTC_THREAD_RR" ]
+ 
+-    if (!build_with_chromium) {
+-      deps += [ ":cpu_features_linux" ]
+-    }
++    deps += [ ":cpu_features_linux" ]
+ 
+     libs += [ "rt" ]
+   }
+-- 
+2.13.0
+

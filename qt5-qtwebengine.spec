@@ -40,8 +40,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.8.0
-Release: 14%{?dist}
+Version: 5.9.0
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -51,68 +51,40 @@ URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
 # wget http://download.qt.io/official_releases/qt/5.8/5.8.0/submodules/qtwebengine-opensource-src-5.8.0.tar.xz
 # ./clean_qtwebengine.sh 5.8.0
-Source0: qtwebengine-opensource-src-%{version}-clean.tar.xz
+Source0: https://download.qt.io/official_releases/qt/5.9/5.9.0/submodules/qtwebengine-opensource-src-5.9.0.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
 Source2: clean_ffmpeg.sh
 Source3: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
-# some tweaks to linux.pri (system libs, link libpci, run unbundling script)
-Patch0:  qtwebengine-opensource-src-5.7.0-linux-pri.patch
-# quick hack to avoid checking for the nonexistent icudtl.dat and silence the
-# resulting warnings - not upstreamable as is because it removes the fallback
-# mechanism for the ICU data directory (which is not used in our builds because
-# we use the system ICU, which embeds the data statically) completely
-Patch1:  qtwebengine-opensource-src-5.6.0-no-icudtl-dat.patch
-# fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
-# ARM flags with our %%qmake_qt5 macro, including for the next patch
-Patch2:  qtwebengine-opensource-src-5.6.0-beta-fix-extractcflag.patch
-# disable NEON vector instructions on ARM where the NEON code FTBFS due to
-# GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
-# otherwise, we use the arm-fpu-fix below instead (which this patch contains)
-Patch3:  qtwebengine-opensource-src-5.7.1-no-neon.patch
+# webrtc: enable the CPU feature detection for ARM Linux also for Chromium
+Patch0: 0001-qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 # use the system NSPR prtime (based on Debian patch)
 # We already depend on NSPR, so it is useless to copy these functions here.
 # Debian uses this just fine, and I don't see relevant modifications either.
-Patch4:  qtwebengine-opensource-src-5.8.0-system-nspr-prtime.patch
+Patch1: 0002-qtwebengine-opensource-src-5.9.0-system-nspr-prtime.patch
 # use the system ICU UTF functions
 # We already depend on ICU, so it is useless to copy these functions here.
 # I checked the history of that directory, and other than the renames I am
 # undoing, there were no modifications at all. Must be applied after Patch5.
-Patch5:  qtwebengine-opensource-src-5.8.0-system-icu-utf.patch
+Patch2: 0003-qtwebengine-opensource-src-5.9.0-system-icu-utf.patch
 # do not require SSE2 on i686
 # cumulative revert of upstream reviews 187423002, 308003004, 511773002 (parts
 # relevant to QtWebEngine only), 516543004, 1152053004 and 1161853008, along
 # with some custom fixes and improvements
 # also build V8 shared and twice on i686 (once for x87, once for SSE2)
 # TODO: For 5.9, we will need the GN files updated (where not done yet), too.
-Patch6:  qtwebengine-opensource-src-5.8.0-no-sse2.patch
-# fix ARM NEON handling in webrtc gyp files
-# Fix video_processing.gypi to only build NEON files when actually requested
-# (i.e., not if arm_neon=0 arm_neon_optional=0).
-Patch7:  qtwebengine-opensource-src-5.7.0-webrtc-neon.patch
-# fix missing ARM -mfpu setting (see the comment in the no-neon patch above)
-Patch9:  qtwebengine-opensource-src-5.7.1-arm-fpu-fix.patch
+Patch3: 0004-qtwebengine-opensource-src-5.9.0-no-sse2.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
-Patch10: qtwebengine-opensource-src-5.7.1-openmax-dl-neon.patch
-# chromium-skia: build SkUtilsArm.cpp also on non-Android ARM
-Patch11: qtwebengine-opensource-src-5.7.1-skia-neon.patch
-# webrtc: enable the CPU feature detection for ARM Linux also for Chromium
-Patch12: qtwebengine-opensource-src-5.8.0-webrtc-neon-detect.patch
-# fix FTBFS in V8 with GCC 7 (by Ben Noordhuis, backported from Chromium RPM)
-Patch13: qtwebengine-opensource-src-5.8.0-v8-gcc7.patch
-# fix FTBFS in PDFium with GCC 7: backport upstream cleanup removing that code
-# https://codereview.chromium.org/2154503002
-Patch14: qtwebengine-opensource-src-5.8.0-pdfium-gcc7.patch
-# fix FTBFS in the WTF part of Blink/WebKit with GCC 7
-Patch15: qtwebengine-opensource-src-5.8.0-wtf-gcc7.patch
-# FTBFS using qt < 5.8
-Patch20: qtwebengine-opensource-src-5.8.0-qt57.patch
-# upstream fix for blank pages when a link opens in a new tab
-Patch100: qtwebengine-opensource-src-5.8.0-fix-open-in-new-tab.patch
-# upstream fix for non-functional dead keys in text fields
-Patch101: qtwebengine-opensource-src-5.8.0-fix-dead-keys.patch
+Patch4: 0005-qtwebengine-opensource-src-5.9.-openmax-dl-neon.patch
+# some tweaks to linux.pri (system libs, link libpci, run unbundling script)
+Patch5: 0006-qtwebengine-opensource-src-5.9.0-linux-pri.patch
+# quick hack to avoid checking for the nonexistent icudtl.dat and silence the
+# resulting warnings - not upstreamable as is because it removes the fallback
+# mechanism for the ICU data directory (which is not used in our builds because
+# we use the system ICU, which embeds the data statically) completely
+Patch6: 0007-qtwebengine-opensource-src-5.9.0-no-icudtl-dat.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -340,28 +312,16 @@ BuildArch: noarch
 
 
 %prep
-%setup -q -n %{qt_module}-opensource-src-%{version}%{?prerelease:-%{prerelease}}
-%patch0 -p1 -b .linux-pri
-%patch1 -p1 -b .no-icudtl-dat
-%patch2 -p1 -b .fix-extractcflag
+%setup -q -n %{qt_module}-opensource-src-%{version}
 %if 0%{?arm_neon}
-%patch9 -p1 -b .arm-fpu-fix
-%else
-%patch3 -p1 -b .no-neon
+%patch0 -p1 -b .webrtc-neon-detect
 %endif
-%patch4 -p1 -b .system-nspr-prtime
-%patch5 -p1 -b .system-icu-utf
-%patch6 -p1 -b .no-sse2
-%patch7 -p1 -b .webrtc-neon
-%patch10 -p1 -b .openmax-dl-neon
-%patch11 -p1 -b .skia-neon
-%patch12 -p1 -b .webrtc-neon-detect
-%patch13 -p1 -b .v8-gcc7
-%patch14 -p1 -b .pdfium-gcc7
-%patch15 -p1 -b .wtf-gcc7
-%patch20 -p1 -b .qt57
-%patch100 -p1 -b .fix-open-in-new-tab
-%patch101 -p1 -b .fix-dead-keys
+%patch1 -p1 -b .system-nspr-prtime
+%patch2 -p1 -b .system-icu-utf
+%patch3 -p1 -b .no-sse2
+%patch4 -p1 -b .openmax-dl-neon
+%patch5 -p1 -b .linux-pri
+%patch6 -p1 -b .no-icudtl
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -572,6 +532,9 @@ done
 
 
 %changelog
+* Wed May 31 2017 Helio Chissini de Castro <helio@kde.org> - 5.9.0-1
+- Upstream official release
+
 * Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
 - fix rpm macros
 

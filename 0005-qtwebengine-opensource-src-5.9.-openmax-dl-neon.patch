@@ -1,6 +1,17 @@
-diff -ur qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp qtwebengine-opensource-src-5.7.1-openmax-dl-neon/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp
---- qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp	2016-11-07 15:46:18.000000000 +0100
-+++ qtwebengine-opensource-src-5.7.1-openmax-dl-neon/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp	2016-12-03 22:50:19.369158276 +0100
+From 8bad8aac82444a9e1feda3f1a8b214b81be8a8fc Mon Sep 17 00:00:00 2001
+From: Helio Chissini de Castro <helio@kde.org>
+Date: Wed, 31 May 2017 15:02:52 +0200
+Subject: [PATCH] qtwebengine-opensource-src-5.9.-openmax-dl-neon
+
+---
+ .../chromium/third_party/openmax_dl/dl/dl.gyp      |  9 ----
+ .../third_party/openmax_dl/dl/sp/src/arm/detect.c  | 56 ++++++++++++++++++----
+ 2 files changed, 48 insertions(+), 17 deletions(-)
+
+diff --git a/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp b/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp
+index 2b0826fe1..20b4b1f35 100644
+--- a/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp
++++ b/src/3rdparty/chromium/third_party/openmax_dl/dl/dl.gyp
 @@ -219,15 +219,6 @@
            'conditions': [
              ['arm_neon_optional==1', {
@@ -17,9 +28,10 @@ diff -ur qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/open
                'sources': [
                  # Detection routine
                  'sp/src/arm/detect.c',
-diff -ur qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c qtwebengine-opensource-src-5.7.1-openmax-dl-neon/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c
---- qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c	2016-11-07 15:46:18.000000000 +0100
-+++ qtwebengine-opensource-src-5.7.1-openmax-dl-neon/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c	2016-12-03 22:48:13.745095083 +0100
+diff --git a/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c b/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c
+index 57bfe4089..94a3f7ddc 100644
+--- a/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c
++++ b/src/3rdparty/chromium/third_party/openmax_dl/dl/sp/src/arm/detect.c
 @@ -9,13 +9,57 @@
   *
   */
@@ -82,7 +94,7 @@ diff -ur qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/open
  }
  
  static void SetFFTRoutines() {
-@@ -24,13 +68,9 @@
+@@ -24,13 +68,9 @@ static void SetFFTRoutines() {
     * forward and inverse FFTs
     */
    if (omxSP_HasArmNeon()) {
@@ -96,3 +108,6 @@ diff -ur qtwebengine-opensource-src-5.7.1/src/3rdparty/chromium/third_party/open
      omxSP_FFTFwd_RToCCS_F32 = omxSP_FFTFwd_RToCCS_F32_Sfs_vfp;
      omxSP_FFTInv_CCSToR_F32 = omxSP_FFTInv_CCSToR_F32_Sfs_vfp;
    }
+-- 
+2.13.0
+

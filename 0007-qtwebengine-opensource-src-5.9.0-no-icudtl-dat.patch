@@ -1,7 +1,17 @@
-diff -ur qtwebengine-opensource-src-5.6.0/src/core/web_engine_library_info.cpp qtwebengine-opensource-src-5.6.0-no-icudtl-dat/src/core/web_engine_library_info.cpp
---- qtwebengine-opensource-src-5.6.0/src/core/web_engine_library_info.cpp	2016-03-03 17:02:28.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.0-no-icudtl-dat/src/core/web_engine_library_info.cpp	2016-03-18 03:08:24.385444415 +0100
-@@ -207,24 +207,7 @@
+From 99294d646e58bcbedc5987a1816fed592290566f Mon Sep 17 00:00:00 2001
+From: Helio Chissini de Castro <helio@kde.org>
+Date: Wed, 31 May 2017 15:16:56 +0200
+Subject: [PATCH] qtwebengine-opensource-src-5.9.0-no-icudtl-dat
+
+---
+ src/core/web_engine_library_info.cpp | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/src/core/web_engine_library_info.cpp b/src/core/web_engine_library_info.cpp
+index f46f8f425..96cd48ac4 100644
+--- a/src/core/web_engine_library_info.cpp
++++ b/src/core/web_engine_library_info.cpp
+@@ -254,24 +254,7 @@ QString icuDataPath()
  #if defined(OS_MACOSX) && defined(QT_MAC_FRAMEWORK_BUILD)
      return getResourcesPath(frameworkBundle());
  #else
@@ -26,3 +36,6 @@ diff -ur qtwebengine-opensource-src-5.6.0/src/core/web_engine_library_info.cpp q
      return potentialResourcesPath;
  #endif
  }
+-- 
+2.13.0
+
