@@ -49,9 +49,9 @@ Release: 1%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.8/5.8.0/submodules/qtwebengine-opensource-src-5.8.0.tar.xz
+# wget https://download.qt.io/official_releases/qt/5.9/5.9.0/submodules/qtwebengine-opensource-src-5.9.0.tar.xz
 # ./clean_qtwebengine.sh 5.8.0
-Source0: https://download.qt.io/official_releases/qt/5.9/5.9.0/submodules/qtwebengine-opensource-src-5.9.0.tar.xz
+Source0: qtwebengine-opensource-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
 Source2: clean_ffmpeg.sh
