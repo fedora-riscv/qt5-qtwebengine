@@ -1,13 +1,14 @@
-From 60434d58353db516e795e12817e1953700f9e5e4 Mon Sep 17 00:00:00 2001
+From 1592ad223b8fe064a72e21e54d36de4bc9949756 Mon Sep 17 00:00:00 2001
 From: Helio Chissini de Castro <helio@kde.org>
 Date: Wed, 31 May 2017 10:46:36 +0200
 Subject: [PATCH] qtwebengine-opensource-src-5.9.0-system-nspr-prtime
 
 ---
- src/3rdparty/chromium/base/BUILD.gn                 | 2 --
- src/3rdparty/chromium/base/time/pr_time_unittest.cc | 2 +-
- src/3rdparty/chromium/base/time/time.cc             | 2 +-
- 3 files changed, 2 insertions(+), 4 deletions(-)
+ src/3rdparty/chromium/base/BUILD.gn                   | 2 --
+ src/3rdparty/chromium/base/time/pr_time_unittest.cc   | 2 +-
+ src/3rdparty/chromium/base/time/time.cc               | 2 +-
+ src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py | 4 ++++
+ 4 files changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/src/3rdparty/chromium/base/BUILD.gn b/src/3rdparty/chromium/base/BUILD.gn
 index f2672cba7..66f2be1ff 100644
@@ -49,6 +50,21 @@ index 4e942015f..29fde71dd 100644
  #include "build/build_config.h"
  
  namespace base {
+diff --git a/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py b/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
+index 43d252b43..fc7efd80a 100755
+--- a/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
++++ b/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
+@@ -576,6 +576,10 @@ def write_gn_ninja(path, root_gen_dir, options):
+ 
+   if is_linux:
+     libs.extend(['-lrt'])
++    libs.extend(['-lplds4'])
++    libs.extend(['-lplc4'])
++    libs.extend(['-lnspr4'])
++
+     ldflags.extend(['-pthread'])
+ 
+     static_libraries['xdg_user_dirs'] = {
 -- 
 2.13.0
 

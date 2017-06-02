@@ -1,26 +1,27 @@
-From 63abd7883643841941505c82d42589d8d6814478 Mon Sep 17 00:00:00 2001
+From dff1d03d1c4936183c46ff13f2bbd65901cf4ebb Mon Sep 17 00:00:00 2001
 From: Helio Chissini de Castro <helio@kde.org>
 Date: Wed, 31 May 2017 11:16:12 +0200
 Subject: [PATCH] qtwebengine-opensource-src-5.9.0-system-icu-utf
 
 ---
- src/3rdparty/chromium/base/BUILD.gn                |  2 --
+ src/3rdparty/chromium/base/BUILD.gn                |  4 +--
  src/3rdparty/chromium/base/files/file_path.cc      |  6 ++---
  src/3rdparty/chromium/base/json/json_parser.cc     | 28 ++++++++++----------
  src/3rdparty/chromium/base/json/string_escape.cc   |  2 +-
- src/3rdparty/chromium/base/strings/pattern.cc      |  9 +++----
+ src/3rdparty/chromium/base/strings/pattern.cc      | 21 ++++++++-------
  src/3rdparty/chromium/base/strings/string_split.cc |  2 +-
- src/3rdparty/chromium/base/strings/string_util.cc  | 10 ++++----
+ src/3rdparty/chromium/base/strings/string_util.cc  | 12 ++++-----
  .../base/strings/utf_string_conversion_utils.cc    | 28 ++++++++++----------
  .../chromium/base/third_party/icu/icu_utf.cc       | 30 +++++++++++-----------
  .../browser/devtools/devtools_io_context.cc        |  4 +--
  .../chromium/net/cert/internal/parse_name.cc       |  6 ++---
+ .../chromium/tools/gn/bootstrap/bootstrap.py       |  3 +++
  .../chromium/ui/base/ime/input_method_chromeos.cc  |  2 +-
  src/3rdparty/chromium/ui/gfx/utf16_indexing.cc     |  4 +--
- 13 files changed, 65 insertions(+), 68 deletions(-)
+ 14 files changed, 77 insertions(+), 75 deletions(-)
 
 diff --git a/src/3rdparty/chromium/base/BUILD.gn b/src/3rdparty/chromium/base/BUILD.gn
-index 66f2be1ff..51faf08ad 100644
+index 66f2be1ff..a7d384ca4 100644
 --- a/src/3rdparty/chromium/base/BUILD.gn
 +++ b/src/3rdparty/chromium/base/BUILD.gn
 @@ -831,8 +831,6 @@ component("base") {
@@ -32,6 +33,15 @@ index 66f2be1ff..51faf08ad 100644
      "third_party/superfasthash/superfasthash.c",
      "threading/non_thread_safe.h",
      "threading/non_thread_safe_impl.cc",
+@@ -1357,6 +1355,8 @@ component("base") {
+       linux_configs += [ "//build/config/linux:glib" ]
+     }
+ 
++    libs += [ "icu18n" ]
++
+     defines += [ "USE_SYMBOLIZE" ]
+ 
+     configs += linux_configs
 diff --git a/src/3rdparty/chromium/base/files/file_path.cc b/src/3rdparty/chromium/base/files/file_path.cc
 index cff862ae1..b17b46e5f 100644
 --- a/src/3rdparty/chromium/base/files/file_path.cc
@@ -165,10 +175,10 @@ index f67fa93bf..907b80a73 100644
  namespace base {
  
 diff --git a/src/3rdparty/chromium/base/strings/pattern.cc b/src/3rdparty/chromium/base/strings/pattern.cc
-index af30aab86..7df8f7255 100644
+index af30aab86..c4ce6fc86 100644
 --- a/src/3rdparty/chromium/base/strings/pattern.cc
 +++ b/src/3rdparty/chromium/base/strings/pattern.cc
-@@ -3,8 +3,7 @@
+@@ -3,14 +3,13 @@
  // found in the LICENSE file.
  
  #include "base/strings/pattern.h"
@@ -178,27 +188,46 @@ index af30aab86..7df8f7255 100644
  
  namespace base {
  
-@@ -39,7 +38,7 @@ static void EatSameChars(const CHAR** pattern, const CHAR* pattern_end,
+ namespace {
+ 
+-static bool IsWildcard(base_icu::UChar32 character) {
++static bool IsWildcard(UChar32 character) {
+   return character == '*' || character == '?';
+ }
+ 
+@@ -37,9 +36,9 @@ static void EatSameChars(const CHAR** pattern, const CHAR* pattern_end,
+     // Check if the chars match, if so, increment the ptrs.
+     const CHAR* pattern_next = *pattern;
      const CHAR* string_next = *string;
-     base_icu::UChar32 pattern_char = next(&pattern_next, pattern_end);
+-    base_icu::UChar32 pattern_char = next(&pattern_next, pattern_end);
++    UChar32 pattern_char = next(&pattern_next, pattern_end);
      if (pattern_char == next(&string_next, string_end) &&
 -        pattern_char != CBU_SENTINEL) {
 +        pattern_char != U_SENTINEL) {
        *pattern = pattern_next;
        *string = string_next;
      } else {
-@@ -136,7 +135,7 @@ struct NextCharUTF8 {
-   base_icu::UChar32 operator()(const char** p, const char* end) {
-     base_icu::UChar32 c;
+@@ -133,20 +132,20 @@ static bool MatchPatternT(const CHAR* eval, const CHAR* eval_end,
+ }
+ 
+ struct NextCharUTF8 {
+-  base_icu::UChar32 operator()(const char** p, const char* end) {
+-    base_icu::UChar32 c;
++  UChar32 operator()(const char** p, const char* end) {
++    UChar32 c;
      int offset = 0;
 -    CBU8_NEXT(*p, offset, end - *p, c);
 +    U8_NEXT(*p, offset, end - *p, c);
      *p += offset;
      return c;
    }
-@@ -146,7 +145,7 @@ struct NextCharUTF16 {
-   base_icu::UChar32 operator()(const char16** p, const char16* end) {
-     base_icu::UChar32 c;
+ };
+ 
+ struct NextCharUTF16 {
+-  base_icu::UChar32 operator()(const char16** p, const char16* end) {
+-    base_icu::UChar32 c;
++  UChar32 operator()(const char16** p, const char16* end) {
++    UChar32 c;
      int offset = 0;
 -    CBU16_NEXT(*p, offset, end - *p, c);
 +    U16_NEXT(*p, offset, end - *p, c);
@@ -219,7 +248,7 @@ index a8180b24d..ac771a0f0 100644
  namespace base {
  
 diff --git a/src/3rdparty/chromium/base/strings/string_util.cc b/src/3rdparty/chromium/base/strings/string_util.cc
-index cb668ed7f..542f12819 100644
+index cb668ed7f..c57ccf391 100644
 --- a/src/3rdparty/chromium/base/strings/string_util.cc
 +++ b/src/3rdparty/chromium/base/strings/string_util.cc
 @@ -25,7 +25,7 @@
@@ -248,8 +277,9 @@ index cb668ed7f..542f12819 100644
    // truncate the string to the end of that character.
    while (char_index >= 0) {
      int32_t prev = char_index;
-     base_icu::UChar32 code_point = 0;
+-    base_icu::UChar32 code_point = 0;
 -    CBU8_NEXT(data, char_index, truncation_length, code_point);
++    UChar32 code_point = 0;
 +    U8_NEXT(data, char_index, truncation_length, code_point);
      if (!IsValidCharacter(code_point) ||
          !IsValidCodepoint(code_point)) {
@@ -514,6 +544,20 @@ index bb9b64051..5eaeb52d0 100644
        return false;
  
      base::WriteUnicodeCharacter(codepoint, out);
+diff --git a/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py b/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
+index fc7efd80a..6dcec7f0e 100755
+--- a/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
++++ b/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
+@@ -579,6 +579,9 @@ def write_gn_ninja(path, root_gen_dir, options):
+     libs.extend(['-lplds4'])
+     libs.extend(['-lplc4'])
+     libs.extend(['-lnspr4'])
++    libs.extend(['-licui18n'])
++    libs.extend(['-licuuc'])
++    libs.extend(['-licudata'])
+ 
+     ldflags.extend(['-pthread'])
+ 
 diff --git a/src/3rdparty/chromium/ui/base/ime/input_method_chromeos.cc b/src/3rdparty/chromium/ui/base/ime/input_method_chromeos.cc
 index a8ac9028f..8fa5d2a64 100644
 --- a/src/3rdparty/chromium/ui/base/ime/input_method_chromeos.cc
