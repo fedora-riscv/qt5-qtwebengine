@@ -368,7 +368,7 @@ export CXXFLAGS=`echo "$CXXFLAGS" | sed -e 's/ -g / -g1 /g'`
 mkdir %{_target_platform}
 pushd %{_target_platform}
 
-%{qmake_qt5} CONFIG+="webcore_debug v8base_debug use_system_icu force_debug_info" \
+%{qmake_qt5} CONFIG+="webcore_debug v8base_debug force_debug_info" \
   WEBENGINE_CONFIG+="use_system_icu use_system_protobuf use_spellchecker" ..
 
 # if we keep these set here, gyp picks up duplicate flags

@@ -1,4 +1,4 @@
-From 6b733561c390650c11f8e570f59374dde04bed5e Mon Sep 17 00:00:00 2001
+From 844246bd10971ec348f044bc7a13acb17b9ce033 Mon Sep 17 00:00:00 2001
 From: Helio Chissini de Castro <helio@kde.org>
 Date: Wed, 31 May 2017 14:38:20 +0200
 Subject: [PATCH] qtwebengine-opensource-src-5.9.0-no-sse2
