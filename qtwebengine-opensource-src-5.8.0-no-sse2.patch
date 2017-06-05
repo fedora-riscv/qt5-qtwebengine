@@ -1,64 +1,6 @@
-From 844246bd10971ec348f044bc7a13acb17b9ce033 Mon Sep 17 00:00:00 2001
-From: Helio Chissini de Castro <helio@kde.org>
-Date: Wed, 31 May 2017 14:38:20 +0200
-Subject: [PATCH] qtwebengine-opensource-src-5.9.0-no-sse2
-
----
- .../chromium/breakpad/src/build/common.gypi        |    8 +-
- src/3rdparty/chromium/cc/BUILD.gn                  |   39 +-
- src/3rdparty/chromium/media/BUILD.gn               |   20 +
- src/3rdparty/chromium/media/base/BUILD.gn          |   48 +-
- src/3rdparty/chromium/media/base/media.cc          |    4 +
- .../chromium/media/base/simd/convert_yuv_to_rgb.h  |   34 +
- .../media/base/simd/convert_yuv_to_rgb_mmx.asm     |   24 +
- .../media/base/simd/convert_yuv_to_rgb_x86.cc      |   56 +
- src/3rdparty/chromium/media/base/simd/filter_yuv.h |    6 +
- .../chromium/media/base/simd/filter_yuv_mmx.cc     |   79 +
- .../chromium/media/base/simd/sinc_resampler_sse.cc |   50 +
- .../chromium/media/base/simd/vector_math_sse.cc    |  118 +
- src/3rdparty/chromium/media/base/sinc_resampler.cc |   81 +-
- src/3rdparty/chromium/media/base/sinc_resampler.h  |    4 +
- .../chromium/media/base/sinc_resampler_perftest.cc |    4 +
- .../chromium/media/base/sinc_resampler_unittest.cc |    5 +
- src/3rdparty/chromium/media/base/vector_math.cc    |  150 +-
- src/3rdparty/chromium/media/base/vector_math.h     |    5 +
- .../chromium/media/base/vector_math_perftest.cc    |   35 +-
- .../chromium/media/base/vector_math_testing.h      |    2 +-
- .../chromium/media/base/vector_math_unittest.cc    |    4 +
- src/3rdparty/chromium/media/base/yuv_convert.cc    |   50 +-
- .../chromium/media/base/yuv_convert_perftest.cc    |   79 +-
- .../chromium/media/base/yuv_convert_unittest.cc    |  159 +-
- src/3rdparty/chromium/skia/BUILD.gn                |   52 +-
- src/3rdparty/chromium/skia/ext/convolver.cc        |   11 +-
- src/3rdparty/chromium/skia/ext/convolver.h         |    1 +
- .../Source/modules/webaudio/AudioParamTimeline.cpp |    8 +-
- .../Source/platform/audio/DirectConvolver.cpp      |   40 +-
- .../WebKit/Source/platform/audio/DirectConvolver.h |    7 +
- .../WebKit/Source/platform/audio/SincResampler.cpp |   31 +-
- .../WebKit/Source/platform/audio/SincResampler.h   |    7 +
- .../WebKit/Source/platform/audio/VectorMath.cpp    |   97 +-
- .../WebKit/Source/platform/audio/VectorMath.h      |   23 +
- .../graphics/cpu/x86/WebGLImageConversionSSE.h     |    2 +-
- .../platform/graphics/gpu/WebGLImageConversion.cpp |   12 +-
- src/3rdparty/chromium/third_party/qcms/BUILD.gn    |   17 +-
- .../webrtc/common_audio/real_fourier.cc            |    9 +
- src/3rdparty/chromium/v8/BUILD.gn                  |   72 +-
- src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh   |   56 +
- src/3rdparty/chromium/v8/src/v8.gyp                |   12 +-
- src/3rdparty/chromium/v8/src/v8_sse2.gyp           | 2313 ++++++++++++++++++++
- src/core/core_module.pro                           |   30 +-
- 43 files changed, 3537 insertions(+), 327 deletions(-)
- create mode 100644 src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm
- create mode 100644 src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc
- create mode 100644 src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc
- create mode 100644 src/3rdparty/chromium/media/base/simd/vector_math_sse.cc
- create mode 100644 src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh
- create mode 100644 src/3rdparty/chromium/v8/src/v8_sse2.gyp
-
-diff --git a/src/3rdparty/chromium/breakpad/src/build/common.gypi b/src/3rdparty/chromium/breakpad/src/build/common.gypi
-index b9466a325..8ad78e24f 100644
---- a/src/3rdparty/chromium/breakpad/src/build/common.gypi
-+++ b/src/3rdparty/chromium/breakpad/src/build/common.gypi
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/breakpad/src/build/common.gypi qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/breakpad/src/build/common.gypi
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/breakpad/src/build/common.gypi	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/breakpad/src/build/common.gypi	2017-03-05 17:26:14.507159420 +0100
 @@ -80,8 +80,8 @@
        # The system root for cross-compiles. Default: none.
        'sysroot%': '',
@@ -66,7 +8,7 @@ index b9466a325..8ad78e24f 100644
 -      # On Linux, we build with sse2 for Chromium builds.
 -      'disable_sse2%': 0,
 +      # Do not assume SSE2 by default (Fedora patch).
-+      'disable_sse2%': 1,
++      'disable_sse2%': 1
      },
  
      'target_arch%': '<(target_arch)',
@@ -88,11 +30,29 @@ index b9466a325..8ad78e24f 100644
              ],
              'ldflags': [
                '-m32',
-diff --git a/src/3rdparty/chromium/cc/BUILD.gn b/src/3rdparty/chromium/cc/BUILD.gn
-index e461a898d..b50659b89 100644
---- a/src/3rdparty/chromium/cc/BUILD.gn
-+++ b/src/3rdparty/chromium/cc/BUILD.gn
-@@ -567,13 +567,6 @@ component("cc") {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/build/common.gypi qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/build/common.gypi
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/build/common.gypi	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/build/common.gypi	2017-03-05 17:26:14.612157862 +0100
+@@ -3861,15 +3861,7 @@
+                 # value used during computation does not change depending on
+                 # how the compiler optimized the code, since the value is
+                 # always kept in its specified precision.
+-                #
+-                # Refer to http://crbug.com/348761 for rationale behind SSE2
+-                # being a minimum requirement for 32-bit Linux builds and
+-                # http://crbug.com/313032 for an example where this has "bit"
+-                # us in the past.
+                 'cflags': [
+-                  '-msse2',
+-                  '-mfpmath=sse',
+-                  '-mmmx',  # Allows mmintrin.h for MMX intrinsics.
+                   '-m32',
+                 ],
+                 'ldflags': [
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/cc/BUILD.gn qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/cc/BUILD.gn
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/cc/BUILD.gn	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/cc/BUILD.gn	2017-03-05 17:38:41.416050535 +0100
+@@ -537,13 +537,6 @@
      "trees/tree_synchronizer.h",
    ]
  
@@ -106,7 +66,7 @@ index e461a898d..b50659b89 100644
    configs += [ "//build/config:precompiled_headers" ]
  
    public_deps = [
-@@ -583,6 +576,7 @@ component("cc") {
+@@ -553,6 +546,7 @@
    deps = [
      "//base",
      "//base/third_party/dynamic_annotations",
@@ -114,7 +74,7 @@ index e461a898d..b50659b89 100644
      "//cc/proto",
      "//cc/surfaces:surface_id",
      "//gpu",
-@@ -612,6 +606,37 @@ component("cc") {
+@@ -581,6 +575,36 @@
    }
  }
  
@@ -148,46 +108,81 @@ index e461a898d..b50659b89 100644
 +  }
 +}
 +
-+
- static_library("test_support") {
+ source_set("test_support") {
    testonly = true
    sources = [
-diff --git a/src/3rdparty/chromium/media/BUILD.gn b/src/3rdparty/chromium/media/BUILD.gn
-index 652aad4d9..063254830 100644
---- a/src/3rdparty/chromium/media/BUILD.gn
-+++ b/src/3rdparty/chromium/media/BUILD.gn
-@@ -832,6 +832,26 @@ component("shared_memory_support") {
-     "//base",
-     "//ui/gfx/geometry",
-   ]
-+  if (current_cpu == "x86" || current_cpu == "x64") {
-+    deps += [
-+      ":shared_memory_support_sse",
-+    ]
-+  }
-+}
-+
-+if (current_cpu == "x86" || current_cpu == "x64") {
-+  source_set("shared_memory_support_sse") {
-+    sources = [
-+      "base/simd/vector_math_sse.cc",
-+    ]
-+    configs += [
-+      "//media:media_config",
-+      "//media:media_implementation",
-+    ]
-+    if (!is_win) {
-+      cflags = [ "-msse" ]
-+    }
-+  }
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/cc/cc.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/cc/cc.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/cc/cc.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/cc/cc.gyp	2017-03-05 17:26:26.081987615 +0100
+@@ -602,14 +602,6 @@
+       'includes': [
+         '../build/android/increase_size_for_speed.gypi',
+       ],
+-      'conditions': [
+-        ['target_arch == "ia32" or target_arch == "x64"', {
+-          'sources': [
+-            'raster/texture_compressor_etc1_sse.cc',
+-            'raster/texture_compressor_etc1_sse.h',
+-          ],
+-        }],
+-      ],
+     },
+     {
+       # GN version: "//cc/proto"
+@@ -678,6 +670,7 @@
+         '<(DEPTH)/ui/events/events.gyp:events_base',
+         '<(DEPTH)/ui/gfx/gfx.gyp:gfx',
+         '<(DEPTH)/ui/gfx/gfx.gyp:gfx_geometry',
++        'cc_opts',
+       ],
+       'defines': [
+         'CC_SURFACES_IMPLEMENTATION=1',
+@@ -714,5 +707,41 @@
+         '../build/android/increase_size_for_speed.gypi',
+       ],
+     },
++    {
++      'target_name': 'cc_opts',
++      'type': 'static_library',
++      'conditions': [
++        ['target_arch == "ia32" or target_arch == "x64"', {
++          'defines': [
++            'CC_IMPLEMENTATION=1',
++          ],
++          'dependencies': [
++            'cc_opts_sse',
++          ]          
++        }],
++      ],  
++    },    
++    {
++      'target_name': 'cc_opts_sse',
++      'type': 'static_library',
++      'dependencies': [
++        '<(DEPTH)/base/base.gyp:base',
++      ],
++      'conditions': [
++        ['target_arch == "ia32" or target_arch == "x64"', {
++          'defines': [
++            'CC_IMPLEMENTATION=1',
++          ],
++          'sources': [
++            # Conditional compilation for SSE2 code on x86 and x64 machines
++            'raster/texture_compressor_etc1_sse.cc',
++            'raster/texture_compressor_etc1_sse.h',
++          ],
++          'cflags': [
++            '-msse2',
++          ],
++        }],
++      ],
++    },    
+   ],
  }
- 
- # TODO(watk): Refactor tests that could be made to run on Android. See
-diff --git a/src/3rdparty/chromium/media/base/BUILD.gn b/src/3rdparty/chromium/media/base/BUILD.gn
-index d288ec787..fac712c00 100644
---- a/src/3rdparty/chromium/media/base/BUILD.gn
-+++ b/src/3rdparty/chromium/media/base/BUILD.gn
-@@ -336,11 +336,12 @@ target(link_target_type, "base") {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/BUILD.gn qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/BUILD.gn	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn	2017-03-05 17:26:26.082987600 +0100
+@@ -312,13 +312,13 @@
    }
  
    if (current_cpu == "x86" || current_cpu == "x64") {
@@ -203,9 +198,11 @@ index d288ec787..fac712c00 100644
 +      ":media_sse",
 +      ":media_sse2",
      ]
-     deps += [ ":media_yasm" ]
+-    deps += [ ":media_yasm" ]
    }
-@@ -539,10 +540,47 @@ source_set("perftests") {
+ 
+   if (is_linux || is_win) {
+@@ -534,10 +534,47 @@
  }
  
  if (current_cpu == "x86" || current_cpu == "x64") {
@@ -253,10 +250,9 @@ index d288ec787..fac712c00 100644
        "simd/convert_yuv_to_rgb_sse.asm",
        "simd/convert_yuva_to_argb_mmx.asm",
        "simd/empty_register_state_mmx.asm",
-diff --git a/src/3rdparty/chromium/media/base/media.cc b/src/3rdparty/chromium/media/base/media.cc
-index 38daf05b8..bb43b405f 100644
---- a/src/3rdparty/chromium/media/base/media.cc
-+++ b/src/3rdparty/chromium/media/base/media.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/media.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/media.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/media.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/media.cc	2017-03-05 17:44:02.063267153 +0100
 @@ -10,6 +10,8 @@
  #include "base/metrics/field_trial.h"
  #include "base/trace_event/trace_event.h"
@@ -266,7 +262,7 @@ index 38daf05b8..bb43b405f 100644
  #include "media/base/yuv_convert.h"
  
  #if defined(OS_ANDROID)
-@@ -40,6 +42,8 @@ class MediaInitializer {
+@@ -40,6 +42,8 @@
      TRACE_EVENT_WARMUP_CATEGORY("media");
  
      // Perform initialization of libraries which require runtime CPU detection.
@@ -275,11 +271,10 @@ index 38daf05b8..bb43b405f 100644
      InitializeCPUSpecificYUVConversions();
  
  #if !defined(MEDIA_DISABLE_FFMPEG)
-diff --git a/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h b/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h
-index a421ff566..8373fde90 100644
---- a/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h
-+++ b/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h
-@@ -65,6 +65,17 @@ MEDIA_EXPORT void ConvertYUVToRGB32_SSE(const uint8_t* yplane,
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h	2017-03-05 17:26:26.083987585 +0100
+@@ -65,6 +65,17 @@
                                          int rgbstride,
                                          YUVType yuv_type);
  
@@ -297,9 +292,9 @@ index a421ff566..8373fde90 100644
  MEDIA_EXPORT void ConvertYUVAToARGB_MMX(const uint8_t* yplane,
                                          const uint8_t* uplane,
                                          const uint8_t* vplane,
-@@ -86,6 +97,13 @@ MEDIA_EXPORT void ScaleYUVToRGB32Row_C(const uint8_t* y_buf,
-                                        ptrdiff_t source_dx,
-                                        const int16_t* convert_table);
+@@ -124,6 +135,13 @@
+                                            ptrdiff_t width,
+                                            const int16_t* convert_table);
  
 +MEDIA_EXPORT void ConvertYUVToRGB32Row_MMX(const uint8_t* yplane,
 +                                           const uint8_t* uplane,
@@ -308,12 +303,12 @@ index a421ff566..8373fde90 100644
 +                                           ptrdiff_t width,
 +                                           const int16_t* convert_table);
 +
- MEDIA_EXPORT void LinearScaleYUVToRGB32Row_C(const uint8_t* y_buf,
-                                              const uint8_t* u_buf,
-                                              const uint8_t* v_buf,
-@@ -94,6 +112,14 @@ MEDIA_EXPORT void LinearScaleYUVToRGB32Row_C(const uint8_t* y_buf,
-                                              ptrdiff_t source_dx,
-                                              const int16_t* convert_table);
+ MEDIA_EXPORT void ConvertYUVToRGB32Row_SSE(const uint8_t* yplane,
+                                            const uint8_t* uplane,
+                                            const uint8_t* vplane,
+@@ -131,6 +149,14 @@
+                                            ptrdiff_t width,
+                                            const int16_t* convert_table);
  
 +MEDIA_EXPORT void ScaleYUVToRGB32Row_MMX(const uint8_t* y_buf,
 +                                         const uint8_t* u_buf,
@@ -323,12 +318,12 @@ index a421ff566..8373fde90 100644
 +                                         ptrdiff_t source_dx,
 +                                         const int16_t* convert_table);
 +
- MEDIA_EXPORT void LinearScaleYUVToRGB32RowWithRange_C(
-     const uint8_t* y_buf,
-     const uint8_t* u_buf,
-@@ -104,6 +130,14 @@ MEDIA_EXPORT void LinearScaleYUVToRGB32RowWithRange_C(
-     int source_dx,
-     const int16_t* convert_table);
+ MEDIA_EXPORT void ScaleYUVToRGB32Row_SSE(const uint8_t* y_buf,
+                                          const uint8_t* u_buf,
+                                          const uint8_t* v_buf,
+@@ -147,6 +173,14 @@
+                                               ptrdiff_t source_dx,
+                                               const int16_t* convert_table);
  
 +MEDIA_EXPORT void LinearScaleYUVToRGB32Row_MMX(const uint8_t* y_buf,
 +                                               const uint8_t* u_buf,
@@ -338,15 +333,13 @@ index a421ff566..8373fde90 100644
 +                                               ptrdiff_t source_dx,
 +                                               const int16_t* convert_table);
 +
- }  // namespace media
- 
- // Assembly functions are declared without namespace.
-diff --git a/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm b/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm
-new file mode 100644
-index 000000000..3650c9f73
---- /dev/null
-+++ b/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm
-@@ -0,0 +1,24 @@
+ MEDIA_EXPORT void LinearScaleYUVToRGB32Row_SSE(const uint8_t* y_buf,
+                                                const uint8_t* u_buf,
+                                                const uint8_t* v_buf,
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm	2017-03-05 17:26:26.167986340 +0100
+@@ -0,0 +1,23 @@
 +; Copyright (c) 2011 The Chromium Authors. All rights reserved.
 +; Use of this source code is governed by a BSD-style license that can be
 +; found in the LICENSE file.
@@ -370,12 +363,10 @@ index 000000000..3650c9f73
 +;                                          const int16* convert_table);
 +%define SYMBOL ConvertYUVToRGB32Row_MMX
 +%include "convert_yuv_to_rgb_mmx.inc"
-+
-diff --git a/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc b/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc
-index a06799bfd..819bb60a8 100644
---- a/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc
-+++ b/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc
-@@ -47,6 +47,62 @@ void ConvertYUVAToARGB_MMX(const uint8_t* yplane,
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc	2017-03-05 17:26:26.167986340 +0100
+@@ -47,6 +47,34 @@
    EmptyRegisterState();
  }
  
@@ -407,42 +398,13 @@ index a06799bfd..819bb60a8 100644
 +  EmptyRegisterState();
 +}
 +
-+void ConvertYUVToRGB32_MMX(const uint8_t* yplane,
-+                           const uint8_t* uplane,
-+                           const uint8_t* vplane,
-+                           uint8_t* rgbframe,
-+                           int width,
-+                           int height,
-+                           int ystride,
-+                           int uvstride,
-+                           int rgbstride,
-+                           YUVType yuv_type) {
-+  unsigned int y_shift = GetVerticalShift(yuv_type);
-+  for (int y = 0; y < height; ++y) {
-+    uint8_t* rgb_row = rgbframe + y * rgbstride;
-+    const uint8_t* y_ptr = yplane + y * ystride;
-+    const uint8_t* u_ptr = uplane + (y >> y_shift) * uvstride;
-+    const uint8_t* v_ptr = vplane + (y >> y_shift) * uvstride;
-+
-+    ConvertYUVToRGB32Row_MMX(y_ptr,
-+                             u_ptr,
-+                             v_ptr,
-+                             rgb_row,
-+                             width,
-+                             GetLookupTable(yuv_type));
-+  }
-+
-+  EmptyRegisterState();
-+}
-+
  void ConvertYUVToRGB32_SSE(const uint8_t* yplane,
                             const uint8_t* uplane,
                             const uint8_t* vplane,
-diff --git a/src/3rdparty/chromium/media/base/simd/filter_yuv.h b/src/3rdparty/chromium/media/base/simd/filter_yuv.h
-index af30bd133..206fb7f11 100644
---- a/src/3rdparty/chromium/media/base/simd/filter_yuv.h
-+++ b/src/3rdparty/chromium/media/base/simd/filter_yuv.h
-@@ -20,6 +20,12 @@ MEDIA_EXPORT void FilterYUVRows_C(uint8_t* ybuf,
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/filter_yuv.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/filter_yuv.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv.h	2017-03-05 17:26:26.167986340 +0100
+@@ -20,6 +20,12 @@
                                    int source_width,
                                    uint8_t source_y_fraction);
  
@@ -455,11 +417,9 @@ index af30bd133..206fb7f11 100644
  MEDIA_EXPORT void FilterYUVRows_SSE2(uint8_t* ybuf,
                                       const uint8_t* y0_ptr,
                                       const uint8_t* y1_ptr,
-diff --git a/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc b/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc
-new file mode 100644
-index 000000000..416aca699
---- /dev/null
-+++ b/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc	2017-03-05 17:26:26.167986340 +0100
 @@ -0,0 +1,79 @@
 +// Copyright (c) 2011 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -540,11 +500,9 @@ index 000000000..416aca699
 +#endif
 +
 +}  // namespace media
-diff --git a/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc b/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc
-new file mode 100644
-index 000000000..c5d03dc48
---- /dev/null
-+++ b/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc	2017-03-05 17:26:26.168986325 +0100
 @@ -0,0 +1,50 @@
 +// Copyright 2013 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -596,11 +554,9 @@ index 000000000..c5d03dc48
 +}
 +
 +}  // namespace media
-diff --git a/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc b/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc
-new file mode 100644
-index 000000000..c2121225c
---- /dev/null
-+++ b/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc	2017-03-05 17:26:26.168986325 +0100
 @@ -0,0 +1,118 @@
 +// Copyright 2013 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -720,10 +676,9 @@ index 000000000..c2121225c
 +
 +}  // namespace vector_math
 +}  // namespace media
-diff --git a/src/3rdparty/chromium/media/base/sinc_resampler.cc b/src/3rdparty/chromium/media/base/sinc_resampler.cc
-index cffb0c9d6..010775544 100644
---- a/src/3rdparty/chromium/media/base/sinc_resampler.cc
-+++ b/src/3rdparty/chromium/media/base/sinc_resampler.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.cc	2017-03-05 17:26:26.168986325 +0100
 @@ -81,17 +81,12 @@
  #include <cmath>
  #include <limits>
@@ -744,7 +699,7 @@ index cffb0c9d6..010775544 100644
  #endif
  
  namespace media {
-@@ -112,10 +107,41 @@ static double SincScaleFactor(double io_ratio) {
+@@ -112,10 +107,41 @@
    return sinc_scale_factor;
  }
  
@@ -786,7 +741,7 @@ index cffb0c9d6..010775544 100644
  SincResampler::SincResampler(double io_sample_rate_ratio,
                               int request_frames,
                               const ReadCB& read_cb)
-@@ -328,46 +354,7 @@ float SincResampler::Convolve_C(const float* input_ptr, const float* k1,
+@@ -343,46 +369,7 @@
        kernel_interpolation_factor * sum2);
  }
  
@@ -834,11 +789,10 @@ index cffb0c9d6..010775544 100644
  float SincResampler::Convolve_NEON(const float* input_ptr, const float* k1,
                                     const float* k2,
                                     double kernel_interpolation_factor) {
-diff --git a/src/3rdparty/chromium/media/base/sinc_resampler.h b/src/3rdparty/chromium/media/base/sinc_resampler.h
-index afbd2abc9..9e3df2c55 100644
---- a/src/3rdparty/chromium/media/base/sinc_resampler.h
-+++ b/src/3rdparty/chromium/media/base/sinc_resampler.h
-@@ -36,6 +36,10 @@ class MEDIA_EXPORT SincResampler {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.h	2017-03-05 17:26:26.169986310 +0100
+@@ -36,6 +36,10 @@
      kKernelStorageSize = kKernelSize * (kKernelOffsetCount + 1),
    };
  
@@ -849,10 +803,9 @@ index afbd2abc9..9e3df2c55 100644
    // Callback type for providing more data into the resampler.  Expects |frames|
    // of data to be rendered into |destination|; zero padded if not enough frames
    // are available to satisfy the request.
-diff --git a/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc b/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc
-index 9cb7f4f2e..285382490 100644
---- a/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc
-+++ b/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc	2017-03-05 17:26:26.169986310 +0100
 @@ -4,6 +4,7 @@
  
  #include "base/bind.h"
@@ -861,7 +814,7 @@ index 9cb7f4f2e..285382490 100644
  #include "base/time/time.h"
  #include "build/build_config.h"
  #include "media/base/sinc_resampler.h"
-@@ -61,6 +62,9 @@ TEST(SincResamplerPerfTest, Convolve) {
+@@ -61,6 +62,9 @@
        &resampler, SincResampler::Convolve_C, true, "unoptimized_aligned");
  
  #if defined(CONVOLVE_FUNC)
@@ -871,10 +824,9 @@ index 9cb7f4f2e..285382490 100644
    RunConvolveBenchmark(
        &resampler, SincResampler::CONVOLVE_FUNC, true, "optimized_aligned");
    RunConvolveBenchmark(
-diff --git a/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc b/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc
-index 8dd346ee4..7401eee96 100644
---- a/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc
-+++ b/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc	2017-03-05 17:26:26.169986310 +0100
 @@ -10,6 +10,7 @@
  
  #include "base/bind.h"
@@ -883,7 +835,7 @@ index 8dd346ee4..7401eee96 100644
  #include "base/macros.h"
  #include "base/strings/string_number_conversions.h"
  #include "base/time/time.h"
-@@ -166,6 +167,10 @@ TEST(SincResamplerTest, DISABLED_SetRatioBench) {
+@@ -166,6 +167,10 @@
  static const double kKernelInterpolationFactor = 0.5;
  
  TEST(SincResamplerTest, Convolve) {
@@ -894,10 +846,9 @@ index 8dd346ee4..7401eee96 100644
    // Initialize a dummy resampler.
    MockSource mock_source;
    SincResampler resampler(
-diff --git a/src/3rdparty/chromium/media/base/vector_math.cc b/src/3rdparty/chromium/media/base/vector_math.cc
-index 578290538..e041d8d4c 100644
---- a/src/3rdparty/chromium/media/base/vector_math.cc
-+++ b/src/3rdparty/chromium/media/base/vector_math.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.cc	2017-03-05 17:26:26.170986295 +0100
 @@ -7,12 +7,17 @@
  
  #include <algorithm>
@@ -973,7 +924,7 @@ index 578290538..e041d8d4c 100644
  void FMAC(const float src[], float scale, int len, float dest[]) {
    // Ensure |src| and |dest| are 16-byte aligned.
    DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(src) & (kRequiredAlignment - 1));
-@@ -89,111 +126,6 @@ std::pair<float, float> EWMAAndMaxPower_C(
+@@ -89,111 +126,6 @@
    return result;
  }
  
@@ -1085,11 +1036,10 @@ index 578290538..e041d8d4c 100644
  #if defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
  void FMAC_NEON(const float src[], float scale, int len, float dest[]) {
    const int rem = len % 4;
-diff --git a/src/3rdparty/chromium/media/base/vector_math.h b/src/3rdparty/chromium/media/base/vector_math.h
-index a148ca050..0a2cb06f6 100644
---- a/src/3rdparty/chromium/media/base/vector_math.h
-+++ b/src/3rdparty/chromium/media/base/vector_math.h
-@@ -15,6 +15,11 @@ namespace vector_math {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.h	2017-03-05 17:26:26.170986295 +0100
+@@ -15,6 +15,11 @@
  // Required alignment for inputs and outputs to all vector math functions
  enum { kRequiredAlignment = 16 };
  
@@ -1101,10 +1051,9 @@ index a148ca050..0a2cb06f6 100644
  // Multiply each element of |src| (up to |len|) by |scale| and add to |dest|.
  // |src| and |dest| must be aligned by kRequiredAlignment.
  MEDIA_EXPORT void FMAC(const float src[], float scale, int len, float dest[]);
-diff --git a/src/3rdparty/chromium/media/base/vector_math_perftest.cc b/src/3rdparty/chromium/media/base/vector_math_perftest.cc
-index 59b259dc2..c4c89a3b5 100644
---- a/src/3rdparty/chromium/media/base/vector_math_perftest.cc
-+++ b/src/3rdparty/chromium/media/base/vector_math_perftest.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math_perftest.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_perftest.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math_perftest.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_perftest.cc	2017-03-05 17:26:26.171986280 +0100
 @@ -5,6 +5,7 @@
  #include <memory>
  
@@ -1113,7 +1062,7 @@ index 59b259dc2..c4c89a3b5 100644
  #include "base/memory/aligned_memory.h"
  #include "base/time/time.h"
  #include "build/build_config.h"
-@@ -82,15 +83,11 @@ class VectorMathPerfTest : public testing::Test {
+@@ -82,15 +83,11 @@
    DISALLOW_COPY_AND_ASSIGN(VectorMathPerfTest);
  };
  
@@ -1130,7 +1079,7 @@ index 59b259dc2..c4c89a3b5 100644
  #endif
  
  // Benchmark for each optimized vector_math::FMAC() method.
-@@ -99,6 +96,9 @@ TEST_F(VectorMathPerfTest, FMAC) {
+@@ -99,6 +96,9 @@
    RunBenchmark(
        vector_math::FMAC_C, true, "vector_math_fmac", "unoptimized");
  #if defined(FMAC_FUNC)
@@ -1140,7 +1089,7 @@ index 59b259dc2..c4c89a3b5 100644
    // Benchmark FMAC_FUNC() with unaligned size.
    ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                   sizeof(float)), 0U);
-@@ -112,12 +112,24 @@ TEST_F(VectorMathPerfTest, FMAC) {
+@@ -112,12 +112,24 @@
  #endif
  }
  
@@ -1165,7 +1114,7 @@ index 59b259dc2..c4c89a3b5 100644
    // Benchmark FMUL_FUNC() with unaligned size.
    ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                   sizeof(float)), 0U);
-@@ -131,6 +143,14 @@ TEST_F(VectorMathPerfTest, FMUL) {
+@@ -131,6 +143,14 @@
  #endif
  }
  
@@ -1180,7 +1129,7 @@ index 59b259dc2..c4c89a3b5 100644
  // Benchmark for each optimized vector_math::EWMAAndMaxPower() method.
  TEST_F(VectorMathPerfTest, EWMAAndMaxPower) {
    // Benchmark EWMAAndMaxPower_C().
-@@ -139,6 +159,9 @@ TEST_F(VectorMathPerfTest, EWMAAndMaxPower) {
+@@ -139,6 +159,9 @@
                 "vector_math_ewma_and_max_power",
                 "unoptimized");
  #if defined(EWMAAndMaxPower_FUNC)
@@ -1190,18 +1139,17 @@ index 59b259dc2..c4c89a3b5 100644
    // Benchmark EWMAAndMaxPower_FUNC() with unaligned size.
    ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                   sizeof(float)), 0U);
-@@ -156,4 +179,6 @@ TEST_F(VectorMathPerfTest, EWMAAndMaxPower) {
+@@ -156,4 +179,6 @@
  #endif
  }
  
 +#undef EWMAAndMaxPower_FUNC
 +
  } // namespace media
-diff --git a/src/3rdparty/chromium/media/base/vector_math_testing.h b/src/3rdparty/chromium/media/base/vector_math_testing.h
-index 9240fbf54..b0b304409 100644
---- a/src/3rdparty/chromium/media/base/vector_math_testing.h
-+++ b/src/3rdparty/chromium/media/base/vector_math_testing.h
-@@ -19,7 +19,7 @@ MEDIA_EXPORT void FMUL_C(const float src[], float scale, int len, float dest[]);
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math_testing.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_testing.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math_testing.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_testing.h	2017-03-05 17:26:26.171986280 +0100
+@@ -19,7 +19,7 @@
  MEDIA_EXPORT std::pair<float, float> EWMAAndMaxPower_C(
      float initial_value, const float src[], int len, float smoothing_factor);
  
@@ -1210,10 +1158,9 @@ index 9240fbf54..b0b304409 100644
  MEDIA_EXPORT void FMAC_SSE(const float src[], float scale, int len,
                             float dest[]);
  MEDIA_EXPORT void FMUL_SSE(const float src[], float scale, int len,
-diff --git a/src/3rdparty/chromium/media/base/vector_math_unittest.cc b/src/3rdparty/chromium/media/base/vector_math_unittest.cc
-index 3fcb3fad4..c4e8586aa 100644
---- a/src/3rdparty/chromium/media/base/vector_math_unittest.cc
-+++ b/src/3rdparty/chromium/media/base/vector_math_unittest.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math_unittest.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_unittest.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/vector_math_unittest.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_unittest.cc	2017-03-05 17:26:26.172986265 +0100
 @@ -9,6 +9,7 @@
  #include <memory>
  
@@ -1222,7 +1169,7 @@ index 3fcb3fad4..c4e8586aa 100644
  #include "base/memory/aligned_memory.h"
  #include "base/strings/string_number_conversions.h"
  #include "base/strings/stringize_macros.h"
-@@ -78,6 +79,7 @@ TEST_F(VectorMathTest, FMAC) {
+@@ -78,6 +79,7 @@
  
  #if defined(ARCH_CPU_X86_FAMILY)
    {
@@ -1230,7 +1177,7 @@ index 3fcb3fad4..c4e8586aa 100644
      SCOPED_TRACE("FMAC_SSE");
      FillTestVectors(kInputFillValue, kOutputFillValue);
      vector_math::FMAC_SSE(
-@@ -119,6 +121,7 @@ TEST_F(VectorMathTest, FMUL) {
+@@ -119,6 +121,7 @@
  
  #if defined(ARCH_CPU_X86_FAMILY)
    {
@@ -1238,7 +1185,7 @@ index 3fcb3fad4..c4e8586aa 100644
      SCOPED_TRACE("FMUL_SSE");
      FillTestVectors(kInputFillValue, kOutputFillValue);
      vector_math::FMUL_SSE(
-@@ -227,6 +230,7 @@ class EWMATestScenario {
+@@ -227,6 +230,7 @@
  
  #if defined(ARCH_CPU_X86_FAMILY)
      {
@@ -1246,10 +1193,9 @@ index 3fcb3fad4..c4e8586aa 100644
        SCOPED_TRACE("EWMAAndMaxPower_SSE");
        const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_SSE(
            initial_value_, data_.get(), data_len_, smoothing_factor_);
-diff --git a/src/3rdparty/chromium/media/base/yuv_convert.cc b/src/3rdparty/chromium/media/base/yuv_convert.cc
-index 2cdd9b1fd..2fc643416 100644
---- a/src/3rdparty/chromium/media/base/yuv_convert.cc
-+++ b/src/3rdparty/chromium/media/base/yuv_convert.cc
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/yuv_convert.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/yuv_convert.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert.cc	2017-03-05 17:26:26.173986250 +0100
 @@ -32,7 +32,7 @@
  #include "media/base/simd/convert_yuv_to_rgb.h"
  #include "media/base/simd/filter_yuv.h"
@@ -1259,7 +1205,7 @@ index 2cdd9b1fd..2fc643416 100644
  #if defined(COMPILER_MSVC)
  #include <intrin.h>
  #else
-@@ -133,7 +133,7 @@ static const int16_t* g_table_rec709_ptr = NULL;
+@@ -133,7 +133,7 @@
  
  // Empty SIMD registers state after using them.
  void EmptyRegisterStateStub() {}
@@ -1268,7 +1214,7 @@ index 2cdd9b1fd..2fc643416 100644
  void EmptyRegisterStateIntrinsic() { _mm_empty(); }
  #endif
  typedef void (*EmptyRegisterStateProc)();
-@@ -247,34 +247,46 @@ void InitializeCPUSpecificYUVConversions() {
+@@ -247,34 +247,46 @@
    // Assembly code confuses MemorySanitizer. Also not available in iOS builds.
  #if defined(ARCH_CPU_X86_FAMILY) && !defined(MEMORY_SANITIZER) && \
      !defined(OS_IOS)
@@ -1332,11 +1278,10 @@ index 2cdd9b1fd..2fc643416 100644
    if (cpu.has_ssse3()) {
      g_convert_rgb24_to_yuv_proc_ = &ConvertRGB24ToYUV_SSSE3;
  
-diff --git a/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc b/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc
-index ddf777cf3..f5520fd58 100644
---- a/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc
-+++ b/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc
-@@ -71,6 +71,29 @@ class YUVConvertPerfTest : public testing::Test {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc	2017-03-05 17:26:26.173986250 +0100
+@@ -71,6 +71,29 @@
    DISALLOW_COPY_AND_ASSIGN(YUVConvertPerfTest);
  };
  
@@ -1366,7 +1311,7 @@ index ddf777cf3..f5520fd58 100644
  TEST_F(YUVConvertPerfTest, ConvertYUVToRGB32Row_SSE) {
    ASSERT_TRUE(base::CPU().has_sse());
  
-@@ -161,9 +184,32 @@ TEST_F(YUVConvertPerfTest, I422AlphaToARGBRow_SSSE3) {
+@@ -161,9 +184,32 @@
  }
  #endif
  
@@ -1402,7 +1347,7 @@ index ddf777cf3..f5520fd58 100644
  TEST_F(YUVConvertPerfTest, ScaleYUVToRGB32Row_SSE) {
    ASSERT_TRUE(base::CPU().has_sse());
  
-@@ -190,6 +236,32 @@ TEST_F(YUVConvertPerfTest, ScaleYUVToRGB32Row_SSE) {
+@@ -190,6 +236,32 @@
        kPerfTestIterations / total_time_seconds, "runs/s", true);
  }
  
@@ -1435,7 +1380,7 @@ index ddf777cf3..f5520fd58 100644
  TEST_F(YUVConvertPerfTest, LinearScaleYUVToRGB32Row_SSE) {
    ASSERT_TRUE(base::CPU().has_sse());
  
-@@ -215,7 +287,6 @@ TEST_F(YUVConvertPerfTest, LinearScaleYUVToRGB32Row_SSE) {
+@@ -215,7 +287,6 @@
        "yuv_convert_perftest", "", "LinearScaleYUVToRGB32Row_SSE",
        kPerfTestIterations / total_time_seconds, "runs/s", true);
  }
@@ -1443,11 +1388,10 @@ index ddf777cf3..f5520fd58 100644
  
  #endif  // !defined(ARCH_CPU_ARM_FAMILY) && !defined(ARCH_CPU_MIPS_FAMILY)
  
-diff --git a/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc b/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc
-index ec872c89b..801466add 100644
---- a/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc
-+++ b/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc
-@@ -643,6 +643,37 @@ TEST(YUVConvertTest, RGB32ToYUV_SSE2_MatchReference) {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc	2017-03-05 17:26:26.174986235 +0100
+@@ -643,6 +643,37 @@
    EXPECT_EQ(0, error);
  }
  
@@ -1485,7 +1429,7 @@ index ec872c89b..801466add 100644
  TEST(YUVConvertTest, ConvertYUVToRGB32Row_SSE) {
    base::CPU cpu;
    if (!cpu.has_sse()) {
-@@ -674,9 +705,40 @@ TEST(YUVConvertTest, ConvertYUVToRGB32Row_SSE) {
+@@ -674,9 +705,40 @@
                        kWidth * kBpp));
  }
  
@@ -1529,7 +1473,7 @@ index ec872c89b..801466add 100644
  TEST(YUVConvertTest, ScaleYUVToRGB32Row_SSE) {
    base::CPU cpu;
    if (!cpu.has_sse()) {
-@@ -711,6 +773,40 @@ TEST(YUVConvertTest, ScaleYUVToRGB32Row_SSE) {
+@@ -711,6 +773,40 @@
                        kWidth * kBpp));
  }
  
@@ -1570,7 +1514,7 @@ index ec872c89b..801466add 100644
  TEST(YUVConvertTest, LinearScaleYUVToRGB32Row_SSE) {
    base::CPU cpu;
    if (!cpu.has_sse()) {
-@@ -744,7 +840,6 @@ TEST(YUVConvertTest, LinearScaleYUVToRGB32Row_SSE) {
+@@ -744,7 +840,6 @@
                        rgb_bytes_converted.get(),
                        kWidth * kBpp));
  }
@@ -1578,7 +1522,7 @@ index ec872c89b..801466add 100644
  
  TEST(YUVConvertTest, FilterYUVRows_C_OutOfBounds) {
    std::unique_ptr<uint8_t[]> src(new uint8_t[16]);
-@@ -761,6 +856,30 @@ TEST(YUVConvertTest, FilterYUVRows_C_OutOfBounds) {
+@@ -761,6 +856,30 @@
    }
  }
  
@@ -1609,7 +1553,7 @@ index ec872c89b..801466add 100644
  TEST(YUVConvertTest, FilterYUVRows_SSE2_OutOfBounds) {
    base::CPU cpu;
    if (!cpu.has_sse2()) {
-@@ -782,6 +901,38 @@ TEST(YUVConvertTest, FilterYUVRows_SSE2_OutOfBounds) {
+@@ -782,6 +901,38 @@
    }
  }
  
@@ -1648,55 +1592,172 @@ index ec872c89b..801466add 100644
  TEST(YUVConvertTest, FilterYUVRows_SSE2_UnalignedDestination) {
    base::CPU cpu;
    if (!cpu.has_sse2()) {
-diff --git a/src/3rdparty/chromium/skia/BUILD.gn b/src/3rdparty/chromium/skia/BUILD.gn
-index 55854ffe6..9a1d4ec0f 100644
---- a/src/3rdparty/chromium/skia/BUILD.gn
-+++ b/src/3rdparty/chromium/skia/BUILD.gn
-@@ -1,38 +1,3 @@
--# Copyright (c) 2013 The Chromium Authors. All rights reserved.
--# Use of this source code is governed by a BSD-style license that can be
--# found in the LICENSE file.
--
--import("//build/config/features.gni")
--import("//build/config/ui.gni")
--import("//printing/features/features.gni")
--import("//testing/test.gni")
--import("//third_party/skia/gn/shared_sources.gni")
--
--if (current_cpu == "arm") {
--  import("//build/config/arm.gni")
--}
--if (current_cpu == "mipsel" || current_cpu == "mips64el") {
--  import("//build/config/mips.gni")
--}
--
--skia_support_gpu = !is_ios
--skia_support_pdf = !is_ios && (enable_basic_printing || enable_print_preview)
--
--# When building Chrome for iOS with GYP, the target cpu is not known during
--# the invocation of gyp. This cause the iOS build to use non-optimised skia.
--# Replicate this with GN to avoid introducing regression as recommended by
--# the OWNERS of skia.
--
--declare_args() {
--  skia_whitelist_serialized_typefaces = false
--
--  # TODO(crbug.com/607933): Once GYP is no longer supported, port iOS to use
--  # optimised skia.
--  skia_build_no_opts = is_ios
--}
--
--# External-facing config for dependent code.
--config("skia_config") {
-   include_dirs = [
-     "config",
-     "ext",
-@@ -608,7 +573,15 @@ source_set("skia_opts") {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/BUILD.gn qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/BUILD.gn
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/BUILD.gn	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/BUILD.gn	2017-03-05 17:26:26.175986220 +0100
+@@ -805,6 +805,26 @@
+     "//base",
+     "//ui/gfx/geometry",
+   ]
++  if (current_cpu == "x86" || current_cpu == "x64") {
++    deps += [
++      ":shared_memory_support_sse",
++    ]
++  }
++}
++
++if (current_cpu == "x86" || current_cpu == "x64") {
++  source_set("shared_memory_support_sse") {
++    sources = [
++      "base/simd/vector_math_sse.cc",
++    ]
++    configs += [
++      "//media:media_config",
++      "//media:media_implementation",
++    ]
++    if (!is_win) {
++      cflags = [ "-msse" ]
++    }
++  }
+ }
+ 
+ # TODO(watk): Refactor tests that could be made to run on Android. See
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/media.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/media.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/media/media.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/media/media.gyp	2017-03-05 17:51:56.424188330 +0100
+@@ -1020,12 +1020,12 @@
+         ['target_arch=="ia32" or target_arch=="x64"', {
+           'dependencies': [
+             'media_asm',
++            'media_mmx',
++            'media_sse',
++            'media_sse2',
+           ],
+           'sources': [
+-            'base/simd/convert_rgb_to_yuv_sse2.cc',
+-            'base/simd/convert_rgb_to_yuv_ssse3.cc',
+             'base/simd/convert_yuv_to_rgb_x86.cc',
+-            'base/simd/filter_yuv_sse2.cc',
+           ],
+         }],
+         ['OS!="linux" and OS!="win"', {
+@@ -1616,6 +1616,11 @@
+             'USE_NEON'
+           ],
+         }],
++        ['target_arch=="ia32" or target_arch=="x64"', {
++          'dependencies': [
++            'shared_memory_support_sse'
++          ],
++        }],
+       ],
+     },
+     {
+@@ -1633,6 +1638,7 @@
+           'type': 'static_library',
+           'sources': [
+             'base/simd/convert_rgb_to_yuv_ssse3.asm',
++            'base/simd/convert_yuv_to_rgb_mmx.asm',
+             'base/simd/convert_yuv_to_rgb_sse.asm',
+             'base/simd/convert_yuva_to_argb_mmx.asm',
+             'base/simd/empty_register_state_mmx.asm',
+@@ -1713,6 +1719,75 @@
+             '../third_party/yasm/yasm_compile.gypi',
+           ],
+         },
++        {
++          # GN version: //media/base:media_mmx
++          'target_name': 'media_mmx',
++          'type': 'static_library',
++          'cflags': [
++            '-mmmx',
++          ],
++          'defines': [
++            'MEDIA_IMPLEMENTATION',
++          ],
++          'include_dirs': [
++            '..',
++          ],
++          'sources': [
++            'base/simd/filter_yuv_mmx.cc',
++          ],
++        },
++        {
++          # GN version: //media/base:media_sse
++          'target_name': 'media_sse',
++          'type': 'static_library',
++          'cflags': [
++            '-msse',
++          ],
++          'defines': [
++            'MEDIA_IMPLEMENTATION',
++          ],
++          'include_dirs': [
++            '..',
++          ],
++          'sources': [
++            'base/simd/sinc_resampler_sse.cc',
++          ],
++        },
++        {
++          # GN version: //media/base:media_sse2
++          'target_name': 'media_sse2',
++          'type': 'static_library',
++          'cflags': [
++            '-msse2',
++          ],
++          'defines': [
++            'MEDIA_IMPLEMENTATION',
++          ],
++          'include_dirs': [
++            '..',
++          ],
++          'sources': [
++            'base/simd/convert_rgb_to_yuv_sse2.cc',
++            'base/simd/convert_rgb_to_yuv_ssse3.cc',
++            'base/simd/filter_yuv_sse2.cc',
++          ],
++        },
++        {
++          'target_name': 'shared_memory_support_sse',
++          'type': 'static_library',
++          'cflags': [
++            '-msse',
++          ],
++          'defines': [
++            'MEDIA_IMPLEMENTATION',
++          ],
++          'include_dirs': [
++            '..',
++          ],
++          'sources': [
++            'base/simd/vector_math_sse.cc',
++          ],
++        },
+       ], # targets
+     }],
+     ['OS=="win"', {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/BUILD.gn	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn	2017-03-05 17:56:08.829413581 +0100
+@@ -329,11 +329,6 @@
+   if (!is_ios) {
+     sources += [ "ext/platform_canvas.cc" ]
+   }
+-  if (!is_ios && (current_cpu == "x86" || current_cpu == "x64")) {
+-    sources += [ "ext/convolver_SSE2.cc" ]
+-  } else if (current_cpu == "mipsel" && mips_dsp_rev >= 2) {
+-    sources += [ "ext/convolver_mips_dspr2.cc" ]
+-  }
+ 
+   # The skia gypi values are relative to the skia_dir, so we need to rebase.
+   sources += gypi_skia_core.sources
+@@ -642,7 +637,15 @@
    if (skia_build_no_opts) {
-     sources = skia_opts.none_sources
+     sources = gypi_skia_opts.none_sources
    } else if (current_cpu == "x86" || current_cpu == "x64") {
--    sources = skia_opts.sse2_sources
-+    sources = skia_opts.sse2_sources +
+-    sources = gypi_skia_opts.sse2_sources
++    sources = gypi_skia_opts.sse2_sources +
 +              [
 +                # Chrome-specific.
 +                "ext/convolver_SSE2.cc",
@@ -1707,11 +1768,11 @@ index 55854ffe6..9a1d4ec0f 100644
 +    }
      deps += [
        ":skia_opts_avx",
-       ":skia_opts_hsw",
-@@ -644,6 +617,13 @@ source_set("skia_opts") {
+       ":skia_opts_avx2",
+@@ -677,6 +680,13 @@
  
      if (mips_dsp_rev >= 1) {
-       sources = skia_opts.mips_dsp_sources
+       sources = gypi_skia_opts.mips_dsp_sources
 +      if (mips_dsp_rev >= 2) {
 +        sources += [
 +          # Chrome-specific.
@@ -1720,13 +1781,12 @@ index 55854ffe6..9a1d4ec0f 100644
 +        ]
 +      }
      } else {
-       sources = skia_opts.none_sources
+       sources = gypi_skia_opts.none_sources
      }
-diff --git a/src/3rdparty/chromium/skia/ext/convolver.cc b/src/3rdparty/chromium/skia/ext/convolver.cc
-index 092fefaa9..4b40ffd2c 100644
---- a/src/3rdparty/chromium/skia/ext/convolver.cc
-+++ b/src/3rdparty/chromium/skia/ext/convolver.cc
-@@ -362,10 +362,13 @@ struct ConvolveProcs {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/ext/convolver.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/ext/convolver.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.cc	2017-03-05 17:26:26.176986205 +0100
+@@ -362,10 +362,13 @@
  
  void SetupSIMD(ConvolveProcs *procs) {
  #ifdef SIMD_SSE2
@@ -1744,10 +1804,9 @@ index 092fefaa9..4b40ffd2c 100644
  #elif defined SIMD_MIPS_DSPR2
    procs->extra_horizontal_reads = 3;
    procs->convolve_vertically = &ConvolveVertically_mips_dspr2;
-diff --git a/src/3rdparty/chromium/skia/ext/convolver.h b/src/3rdparty/chromium/skia/ext/convolver.h
-index 1f33d4c0f..f7cd4770a 100644
---- a/src/3rdparty/chromium/skia/ext/convolver.h
-+++ b/src/3rdparty/chromium/skia/ext/convolver.h
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/ext/convolver.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/ext/convolver.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.h	2017-03-05 17:26:26.239985269 +0100
 @@ -11,6 +11,7 @@
  #include <vector>
  
@@ -1756,11 +1815,215 @@ index 1f33d4c0f..f7cd4770a 100644
  #include "third_party/skia/include/core/SkSize.h"
  #include "third_party/skia/include/core/SkTypes.h"
  
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp b/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-index 8e558f439..20ba17688 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
-@@ -31,7 +31,7 @@
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/skia_chrome.gypi qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/skia_chrome.gypi
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/skia_chrome.gypi	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/skia_chrome.gypi	2017-03-05 17:26:26.239985269 +0100
+@@ -9,6 +9,7 @@
+ {
+   'dependencies': [
+     'skia_library',
++    'skia_chrome_opts',
+     '../base/base.gyp:base',
+     '../base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
+   ],
+@@ -67,22 +68,16 @@
+         'ext/skia_utils_base.cc',
+       ],
+     }],
++    ['OS == "ios"', {
++      'dependencies!': [
++        'skia_chrome_opts',
++      ],
++    }],
+     [ 'OS != "android" and (OS != "linux" or use_cairo==1)', {
+       'sources!': [
+         'ext/bitmap_platform_device_skia.cc',
+       ],
+     }],
+-    [ 'OS != "ios" and target_arch != "arm" and target_arch != "mipsel" and \
+-       target_arch != "arm64" and target_arch != "mips64el"', {
+-      'sources': [
+-        'ext/convolver_SSE2.cc',
+-      ],
+-    }],
+-    [ 'target_arch == "mipsel" and mips_dsp_rev >= 2',{
+-      'sources': [
+-        'ext/convolver_mips_dspr2.cc',
+-      ],
+-    }],
+   ],
+ 
+   'target_conditions': [
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/skia.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/skia.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/skia.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/skia.gyp	2017-03-05 17:26:26.239985269 +0100
+@@ -128,6 +128,37 @@
+   # targets that are not dependent upon the component type
+   'targets': [
+     {
++      'target_name': 'skia_chrome_opts',
++      'type': 'static_library',
++      'include_dirs': [
++        '..',
++        'config',
++        '../third_party/skia/include/core',
++      ],
++      'conditions': [
++        [ 'os_posix == 1 and OS != "mac" and OS != "android" and \
++            target_arch != "arm" and target_arch != "mipsel" and \
++            target_arch != "arm64" and target_arch != "mips64el"', {
++          'cflags': [
++            '-msse2',
++          ],
++        }],
++        [ 'target_arch != "arm" and target_arch != "mipsel" and \
++           target_arch != "arm64" and target_arch != "mips64el"', {
++          'sources': [
++            'ext/convolver_SSE2.cc',
++            'ext/convolver_SSE2.h',
++          ],
++        }],
++        [ 'target_arch == "mipsel" and mips_dsp_rev >= 2',{
++          'sources': [
++            'ext/convolver_mips_dspr2.cc',
++            'ext/convolver_mips_dspr2.h',
++          ],
++        }],
++      ],
++    },
++    {
+       'target_name': 'image_operations_bench',
+       # The optimize: 'max' scattered throughout are particularly
+       # important when compiled by MSVC 2013, which seems
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/skia_library_opts.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/skia_library_opts.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/skia/skia_library_opts.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/skia/skia_library_opts.gyp	2017-03-05 17:26:26.239985269 +0100
+@@ -19,10 +19,22 @@
+    },
+ 
+   'targets': [
+-    # SSE files have to be built in a separate target, because gcc needs
+-    # different -msse flags for different SSE levels which enable use of SSE
+-    # intrinsics but also allow emission of SSE2 instructions for scalar code.
+-    # gyp does not allow per-file compiler flags.
++    # Due to an unfortunate intersection of lameness between gcc and gyp,
++    # we have to build the *_SSE2.cpp files in a separate target.  The
++    # gcc lameness is that, in order to compile SSE2 intrinsics code, it
++    # must be passed the -msse2 flag.  However, with this flag, it may
++    # emit SSE2 instructions even for scalar code, such as the CPUID
++    # test used to test for the presence of SSE2.  So that, and all other
++    # code must be compiled *without* -msse2.  The gyp lameness is that it
++    # does not allow file-specific CFLAGS, so we must create this extra
++    # target for those files to be compiled with -msse2.
++    #
++    # This is actually only a problem on 32-bit Linux (all Intel Macs have
++    # SSE2, Linux x86_64 has SSE2 by definition, and MSC will happily emit
++    # SSE2 from instrinsics, which generating plain ol' 386 for everything
++    # else).  However, to keep the .gyp file simple and avoid platform-specific
++    # build breakage, we do this on all platforms.
++
+     # For about the same reason, we need to compile the ARM opts files
+     # separately as well.
+     {
+@@ -45,12 +57,13 @@
+       ],
+       'include_dirs': [ '<@(include_dirs)' ],
+       'conditions': [
++        [ 'os_posix == 1 and OS != "mac" and OS != "android" and \
++           target_arch != "arm" and target_arch != "arm64" and \
++           target_arch != "mipsel" and target_arch != "mips64el"', {
++          'cflags': [ '-msse2' ],
++        }],
+         [ 'target_arch != "arm" and target_arch != "mipsel" and \
+            target_arch != "arm64" and target_arch != "mips64el"', {
+-          # Chrome builds with -msse2 locally, so sse2_sources could in theory
+-          # be in the regular skia target. But we need skia_opts for arm
+-          # anyway, so putting sse2_sources here is simpler than making this
+-          # conditionally a type none target on x86.
+           'sources': [ '<@(sse2_sources)' ],
+           'dependencies': [
+             'skia_opts_ssse3',
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/qcms/BUILD.gn qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2017-03-05 17:26:26.240985255 +0100
+@@ -31,8 +31,8 @@
+     ]
+ 
+     if (current_cpu == "x86" || current_cpu == "x64") {
+-      defines = [ "SSE2_ENABLE" ]
+-      sources += [ "src/transform-sse2.c" ]
++      defines = [ "SSE2_ENABLE" ]  # runtime detection
++      deps = [ "qcms_sse2" ]
+     }
+   }
+ 
+@@ -75,3 +75,15 @@
+     public_configs = [ ":qcms_config" ]
+   }
+ }
++
++source_set("qcms_sse2") {
++  configs -= [ "//build/config/compiler:chromium_code" ]
++  configs += [ "//build/config/compiler:no_chromium_code" ]
++  public_configs = [ ":qcms_config" ]
++
++  if (current_cpu == "x86" || current_cpu == "x64") {
++    defines = [ "SSE2_ENABLE" ]
++    sources = [ "src/transform-sse2.c" ]
++    cflags = [ "-msse2" ]
++  }
++}
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/qcms/qcms.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/qcms/qcms.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/qcms/qcms.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/qcms/qcms.gyp	2017-03-05 18:01:48.843328633 +0100
+@@ -52,10 +52,10 @@
+           'conditions': [
+             ['target_arch=="ia32" or target_arch=="x64"', {
+               'defines': [
+-                'SSE2_ENABLE',
++                'SSE2_ENABLE',  # runtime detection
+               ],
+-              'sources': [
+-                'src/transform-sse2.c',
++              'dependencies': [
++                'qcms_sse2',
+               ],
+             }],
+           ],
+@@ -68,6 +68,29 @@
+         }],
+       ],
+     },
++    {
++      'target_name': 'qcms_sse2',
++      'type': 'static_library',
++      'conditions': [
++        ['target_arch == "ia32" or target_arch == "x64"', {
++          'defines': [
++            'SSE2_ENABLE',
++          ],
++          'sources': [
++            # Conditional compilation for SSE2 code on x86 and x64 machines
++            'src/transform-sse2.c',
++          ],
++          'cflags': [
++            '-msse2',
++          ],
++        }],
++      ],
++      'direct_dependent_settings': {
++        'include_dirs': [
++          './src',
++        ],
++      },
++    },
+   ],
+   'conditions': [
+     ['disable_qcms == 0', {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp	2017-03-05 17:26:26.240985255 +0100
+@@ -32,7 +32,7 @@
  #include "wtf/MathExtras.h"
  #include <algorithm>
  
@@ -1769,37 +2032,36 @@ index 8e558f439..20ba17688 100644
  #include <emmintrin.h>
  #endif
  
-@@ -662,7 +662,7 @@ float AudioParamTimeline::valuesForFrameRangeImpl(size_t startFrame,
-     // the next event.
-     if (nextEventType == ParamEvent::LinearRampToValue) {
-       const float valueDelta = value2 - value1;
+@@ -575,7 +575,7 @@
+         // First handle linear and exponential ramps which require looking ahead to the next event.
+         if (nextEventType == ParamEvent::LinearRampToValue) {
+             const float valueDelta = value2 - value1;
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-       if (fillToFrame > writeIndex) {
-         // Minimize in-loop operations. Calculate starting value and increment.
-         // Next step: value += inc.
-@@ -841,7 +841,7 @@ float AudioParamTimeline::valuesForFrameRangeImpl(size_t startFrame,
-             for (; writeIndex < fillToFrame; ++writeIndex)
-               values[writeIndex] = target;
-           } else {
+             // Minimize in-loop operations. Calculate starting value and increment. Next step: value += inc.
+             //  value = value1 + (currentFrame/sampleRate - time1) * k * (value2 - value1);
+             //  inc = 4 / sampleRate * k * (value2 - value1);
+@@ -738,7 +738,7 @@
+                         for (; writeIndex < fillToFrame; ++writeIndex)
+                             values[writeIndex] = target;
+                     } else {
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-             if (fillToFrame > writeIndex) {
-               // Resolve recursion by expanding constants to achieve a 4-step
-               // loop unrolling.
-@@ -959,7 +959,7 @@ float AudioParamTimeline::valuesForFrameRangeImpl(size_t startFrame,
-           // Oversampled curve data can be provided if sharp discontinuities are
-           // desired.
-           unsigned k = 0;
+                         // Resolve recursion by expanding constants to achieve a 4-step loop unrolling.
+                         // v1 = v0 + (t - v0) * c
+                         // v2 = v1 + (t - v1) * c
+@@ -843,7 +843,7 @@
+                     // Render the stretched curve data using linear interpolation.  Oversampled
+                     // curve data can be provided if sharp discontinuities are desired.
+                     unsigned k = 0;
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-           if (fillToFrame > writeIndex) {
-             const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
-             const __m128 vCurvePointsPerFrame =
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
-index a77ec195c..d76c2d015 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
+                     const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
+                     const __m128 vCurvePointsPerFrame = _mm_set_ps1(curvePointsPerFrame);
+                     const __m128 vNumberOfCurvePointsM1 = _mm_set_ps1(numberOfCurvePoints - 1);
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2017-03-05 18:09:17.132624414 +0100
 @@ -26,6 +26,9 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -1810,7 +2072,7 @@ index a77ec195c..d76c2d015 100644
  #include "platform/audio/DirectConvolver.h"
  
  #if OS(MACOSX)
-@@ -35,21 +38,45 @@
+@@ -35,22 +38,44 @@
  #include "platform/audio/VectorMath.h"
  #include "wtf/CPU.h"
  
@@ -1830,68 +2092,68 @@ index a77ec195c..d76c2d015 100644
 +#ifndef BUILD_ONLY_THE_SSE2_PARTS
 +
  DirectConvolver::DirectConvolver(size_t inputBlockSize)
--    : m_inputBlockSize(inputBlockSize), m_buffer(inputBlockSize * 2) {}
-+    : m_inputBlockSize(inputBlockSize), m_buffer(inputBlockSize * 2)
-+{
+     : m_inputBlockSize(inputBlockSize)
+     , m_buffer(inputBlockSize * 2)
+ {
 +#if CPU(X86)
 +    base::CPU cpu;
 +    m_haveSSE2 = cpu.has_sse2();
 +#endif
-+}
-+#endif
+ }
  
++#endif
++
 +#ifdef BUILD_ONLY_THE_SSE2_PARTS
 +void DirectConvolver::m_processSSE2(AudioFloatArray* convolutionKernel, const float* sourceP, float* destP, size_t framesToProcess)
 +#else
- void DirectConvolver::process(AudioFloatArray* convolutionKernel,
-                               const float* sourceP,
-                               float* destP,
--                              size_t framesToProcess) {
-+                              size_t framesToProcess)
+ void DirectConvolver::process(AudioFloatArray* convolutionKernel, const float* sourceP, float* destP, size_t framesToProcess)
 +#endif
-+{
-+#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+ {
++#if CPU(X86) && !defined(__SSE2__)
 +    if (m_haveSSE2) {
 +        m_processSSE2(convolutionKernel, sourceP, destP, framesToProcess);
 +        return;
 +    }
 +#endif
-   ASSERT(framesToProcess == m_inputBlockSize);
-   if (framesToProcess != m_inputBlockSize)
-     return;
-@@ -83,7 +110,7 @@ void DirectConvolver::process(AudioFloatArray* convolutionKernel,
- #endif  // CPU(X86)
+     ASSERT(framesToProcess == m_inputBlockSize);
+     if (framesToProcess != m_inputBlockSize)
+         return;
+@@ -82,7 +107,7 @@
+ #endif // CPU(X86)
  #else
-   size_t i = 0;
+     size_t i = 0;
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   // Convolution using SSE2. Currently only do this if both |kernelSize| and
-   // |framesToProcess| are multiples of 4. If not, use the straightforward loop
-   // below.
-@@ -397,7 +424,7 @@ void DirectConvolver::process(AudioFloatArray* convolutionKernel,
-       }
-       destP[i++] = sum;
+     // Convolution using SSE2. Currently only do this if both |kernelSize| and |framesToProcess|
+     // are multiples of 4. If not, use the straightforward loop below.
+ 
+@@ -392,7 +417,7 @@
+         }
+         destP[i++] = sum;
      }
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   }
+     }
  #endif
- #endif  // OS(MACOSX)
-@@ -406,8 +433,9 @@ void DirectConvolver::process(AudioFloatArray* convolutionKernel,
-   memcpy(m_buffer.data(), inputP, sizeof(float) * framesToProcess);
+ #endif // OS(MACOSX)
+@@ -401,10 +426,14 @@
+     memcpy(m_buffer.data(), inputP, sizeof(float) * framesToProcess);
  }
  
 +#ifndef BUILD_ONLY_THE_SSE2_PARTS
- void DirectConvolver::reset() {
-   m_buffer.zero();
++
+ void DirectConvolver::reset()
+ {
+     m_buffer.zero();
  }
--
+ 
 +#endif
- }  // namespace blink
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h
-index 848f6aa73..78ea0d84c 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h
++
+ } // namespace blink
+ 
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h	2017-03-05 17:26:26.241985240 +0100
 @@ -32,6 +32,7 @@
  #include "platform/PlatformExport.h"
  #include "platform/audio/AudioArray.h"
@@ -1900,23 +2162,27 @@ index 848f6aa73..78ea0d84c 100644
  #include "wtf/Noncopyable.h"
  
  namespace blink {
-@@ -54,6 +55,12 @@ class PLATFORM_EXPORT DirectConvolver {
-   size_t m_inputBlockSize;
+@@ -50,6 +51,11 @@
+     size_t m_inputBlockSize;
  
-   AudioFloatArray m_buffer;
+     AudioFloatArray m_buffer;
 +
 +#if CPU(X86)
 +    bool m_haveSSE2;
 +    void m_processSSE2(AudioFloatArray* convolutionKernel, const float* sourceP, float* destP, size_t framesToProcess);
 +#endif
-+
  };
  
- }  // namespace blink
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp
-index e7ca2c77d..a0ad93953 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp
+ } // namespace blink
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp	2017-03-05 17:26:26.242985225 +0100
+@@ -0,0 +1,2 @@
++#define BUILD_ONLY_THE_SSE2_PARTS
++#include "DirectConvolver.cpp"
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp	2017-03-05 17:26:26.242985225 +0100
 @@ -26,15 +26,22 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -1940,64 +2206,60 @@ index e7ca2c77d..a0ad93953 100644
 +
  // Input buffer layout, dividing the total buffer into regions (r0 - r5):
  //
- // |----------------|-----------------------------------------|----------------|
-@@ -66,6 +73,8 @@
+ // |----------------|----------------------------------------------------------------|----------------|
+@@ -64,6 +71,8 @@
  
  namespace blink {
  
 +#ifndef BUILD_ONLY_THE_SSE2_PARTS
 +
- SincResampler::SincResampler(double scaleFactor,
-                              unsigned kernelSize,
-                              unsigned numberOfKernelOffsets)
-@@ -81,6 +90,10 @@ SincResampler::SincResampler(double scaleFactor,
-       m_sourceFramesAvailable(0),
-       m_sourceProvider(nullptr),
-       m_isBufferPrimed(false) {
+ SincResampler::SincResampler(double scaleFactor, unsigned kernelSize, unsigned numberOfKernelOffsets)
+     : m_scaleFactor(scaleFactor)
+     , m_kernelSize(kernelSize)
+@@ -77,6 +86,10 @@
+     , m_sourceProvider(nullptr)
+     , m_isBufferPrimed(false)
+ {
 +#if CPU(X86)
 +    base::CPU cpu;
 +    m_haveSSE2 = cpu.has_sse2();
 +#endif
-   initializeKernel();
+     initializeKernel();
  }
  
-@@ -200,10 +213,22 @@ void SincResampler::process(const float* source,
-     remaining -= framesThisTime;
-   }
+@@ -193,8 +206,20 @@
+     }
  }
-+#endif //BUILD_ONLY_THE_SSE2_PARTS
  
++#endif
++
 +#ifdef BUILD_ONLY_THE_SSE2_PARTS
 +void SincResampler::m_processSSE2(AudioSourceProvider* sourceProvider, float* destination, size_t framesToProcess)
 +#else
- void SincResampler::process(AudioSourceProvider* sourceProvider,
-                             float* destination,
--                            size_t framesToProcess) {
-+                            size_t framesToProcess)
+ void SincResampler::process(AudioSourceProvider* sourceProvider, float* destination, size_t framesToProcess)
 +#endif
-+{
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (m_haveSSE2) {
 +        m_processSSE2(sourceProvider, destination, framesToProcess);
 +        return;
 +    }
 +#endif
-   bool isGood = sourceProvider && m_blockSize > m_kernelSize &&
-                 m_inputBuffer.size() >= m_blockSize + m_kernelSize &&
-                 !(m_kernelSize % 2);
-@@ -269,7 +294,7 @@ void SincResampler::process(AudioSourceProvider* sourceProvider,
-       {
-         float input;
+     bool isGood = sourceProvider && m_blockSize > m_kernelSize && m_inputBuffer.size() >= m_blockSize + m_kernelSize && !(m_kernelSize % 2);
+     ASSERT(isGood);
+     if (!isGood)
+@@ -256,7 +281,7 @@
+             {
+                 float input;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-         // If the sourceP address is not 16-byte aligned, the first several
-         // frames (at most three) should be processed seperately.
-         while ((reinterpret_cast<uintptr_t>(inputP) & 0x0F) && n) {
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h
-index b96ec94cf..4b6b3293e 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h
+                 // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed seperately.
+                 while ((reinterpret_cast<uintptr_t>(inputP) & 0x0F) && n) {
+                     CONVOLVE_ONE_SAMPLE
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h	2017-03-05 17:26:26.305984290 +0100
 @@ -33,6 +33,7 @@
  #include "platform/audio/AudioArray.h"
  #include "platform/audio/AudioSourceProvider.h"
@@ -2006,25 +2268,29 @@ index b96ec94cf..4b6b3293e 100644
  #include "wtf/Noncopyable.h"
  
  namespace blink {
-@@ -96,6 +97,12 @@ class PLATFORM_EXPORT SincResampler {
+@@ -84,6 +85,11 @@
  
-   // The buffer is primed once at the very beginning of processing.
-   bool m_isBufferPrimed;
+     // The buffer is primed once at the very beginning of processing.
+     bool m_isBufferPrimed;
 +
 +#if CPU(X86)
-+  bool m_haveSSE2;
-+  void m_processSSE2(AudioSourceProvider*, float* destination, size_t framesToProcess);
++    bool m_haveSSE2;
++    void m_processSSE2(AudioSourceProvider*, float* destination, size_t framesToProcess);
 +#endif
-+ };
  };
  
- }  // namespace blink
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp
-index 8f3592cd7..ba9fc1a73 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp
-@@ -23,6 +23,9 @@
-  * DAMAGE.
+ } // namespace blink
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp	2017-03-05 17:26:26.305984290 +0100
+@@ -0,0 +1,2 @@
++#define BUILD_ONLY_THE_SSE2_PARTS
++#include "SincResampler.cpp"
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp	2017-03-05 17:26:26.306984275 +0100
+@@ -22,6 +22,9 @@
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
  
 +// include this first to get it before the CPU() function-like macro
@@ -2033,7 +2299,7 @@ index 8f3592cd7..ba9fc1a73 100644
  #include "platform/audio/VectorMath.h"
  #include "wtf/Assertions.h"
  #include "wtf/CPU.h"
-@@ -33,10 +36,14 @@
+@@ -32,10 +35,14 @@
  #include <Accelerate/Accelerate.h>
  #endif
  
@@ -2049,7 +2315,7 @@ index 8f3592cd7..ba9fc1a73 100644
  #if HAVE(ARM_NEON_INTRINSICS)
  #include <arm_neon.h>
  #endif
-@@ -165,15 +172,30 @@ void vclip(const float* sourceP,
+@@ -118,11 +125,25 @@
  }
  #else
  
@@ -2061,181 +2327,167 @@ index 8f3592cd7..ba9fc1a73 100644
 +static base::CPU cpu;
 +#endif
 +
- void vsma(const float* sourceP,
-           int sourceStride,
-           const float* scale,
-           float* destP,
-           int destStride,
-           size_t framesToProcess) {
--  int n = framesToProcess;
+ void vsma(const float* sourceP, int sourceStride, const float* scale, float* destP, int destStride, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::vsma(sourceP, sourceStride, scale, destP, destStride, framesToProcess);
 +        return;
 +    }
 +#endif
-+
-+int n = framesToProcess;
+     int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   if ((sourceStride == 1) && (destStride == 1)) {
-     float k = *scale;
+     if ((sourceStride == 1) && (destStride == 1)) {
+         float k = *scale;
  
-@@ -269,9 +291,16 @@ void vsmul(const float* sourceP,
-            float* destP,
-            int destStride,
-            size_t framesToProcess) {
+@@ -193,9 +214,15 @@
+ 
+ void vsmul(const float* sourceP, int sourceStride, const float* scale, float* destP, int destStride, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::vsmul(sourceP, sourceStride, scale, destP, destStride, framesToProcess);
 +        return;
 +    }
 +#endif
-+
-   int n = framesToProcess;
+     int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   if ((sourceStride == 1) && (destStride == 1)) {
-     float k = *scale;
+     if ((sourceStride == 1) && (destStride == 1)) {
+         float k = *scale;
  
-@@ -360,7 +389,7 @@ void vsmul(const float* sourceP,
-       sourceP += sourceStride;
-       destP += destStride;
+@@ -266,16 +293,22 @@
+         sourceP += sourceStride;
+         destP += destStride;
      }
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   }
+     }
  #endif
  }
-@@ -372,9 +401,16 @@ void vadd(const float* source1P,
-           float* destP,
-           int destStride,
-           size_t framesToProcess) {
--  int n = framesToProcess;
+ 
+ void vadd(const float* source1P, int sourceStride1, const float* source2P, int sourceStride2, float* destP, int destStride, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::vadd(source1P, sourceStride1, source2P, sourceStride2, destP, destStride, framesToProcess);
 +        return;
 +    }
 +#endif
+     int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
-+    int n = framesToProcess;
-+
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
-     // If the sourceP address is not 16-byte aligned, the first several frames
-     // (at most three) should be processed separately.
-@@ -501,7 +537,7 @@ void vadd(const float* source1P,
-       source2P += sourceStride2;
-       destP += destStride;
+     if ((sourceStride1 ==1) && (sourceStride2 == 1) && (destStride == 1)) {
+         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<size_t>(source1P) & 0x0F) && n) {
+@@ -378,17 +411,23 @@
+         source2P += sourceStride2;
+         destP += destStride;
      }
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   }
+     }
  #endif
  }
-@@ -513,9 +549,16 @@ void vmul(const float* source1P,
-           float* destP,
-           int destStride,
-           size_t framesToProcess) {
--  int n = framesToProcess;
+ 
+ void vmul(const float* source1P, int sourceStride1, const float* source2P, int sourceStride2, float* destP, int destStride, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::vmul(source1P, sourceStride1, source2P, sourceStride2, destP, destStride, framesToProcess);
 +        return;
 +    }
 +#endif
-+
-+int n = framesToProcess;
+ 
+     int n = framesToProcess;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
-     // If the source1P address is not 16-byte aligned, the first several frames
-     // (at most three) should be processed separately.
-@@ -614,8 +657,15 @@ void zvmul(const float* real1P,
-            float* realDestP,
-            float* imagDestP,
-            size_t framesToProcess) {
+     if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
+         // If the source1P address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<uintptr_t>(source1P) & 0x0F) && n) {
+@@ -460,8 +499,14 @@
+ 
+ void zvmul(const float* real1P, const float* imag1P, const float* real2P, const float* imag2P, float* realDestP, float* imagDestP, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::zvmul(real1P, imag1P, real2P, imag2P, realDestP, imagDestP, framesToProcess);
 +        return;
 +    }
 +#endif
-+
-   unsigned i = 0;
+     unsigned i = 0;
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   // Only use the SSE optimization in the very common case that all addresses
-   // are 16-byte aligned.  Otherwise, fall through to the scalar code below.
-   if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F) &&
-@@ -671,10 +721,17 @@ void vsvesq(const float* sourceP,
-             int sourceStride,
-             float* sumP,
-             size_t framesToProcess) {
--  int n = framesToProcess;
+     // Only use the SSE optimization in the very common case that all addresses are 16-byte aligned.
+     // Otherwise, fall through to the scalar code below.
+     if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F)
+@@ -516,10 +561,16 @@
+ 
+ void vsvesq(const float* sourceP, int sourceStride, float* sumP, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::vsvesq(sourceP, sourceStride, sumP, framesToProcess);
 +        return;
 +    }
 +#endif
-+
-+    int n = framesToProcess;
-   float sum = 0;
+     int n = framesToProcess;
+     float sum = 0;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   if (sourceStride == 1) {
-     // If the sourceP address is not 16-byte aligned, the first several frames
-     // (at most three) should be processed separately.
-@@ -740,10 +797,16 @@ void vmaxmgv(const float* sourceP,
-              int sourceStride,
-              float* maxP,
-              size_t framesToProcess) {
+     if (sourceStride == 1) {
+         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
+@@ -581,10 +632,16 @@
+ 
+ void vmaxmgv(const float* sourceP, int sourceStride, float* maxP, size_t framesToProcess)
+ {
 +#if CPU(X86) && !defined(__SSE2__)
 +    if (cpu.has_sse2()) {
 +        blink::VectorMath::SSE2::vmaxmgv(sourceP, sourceStride, maxP, framesToProcess);
 +        return;
 +    }
 +#endif
-   int n = framesToProcess;
-   float max = 0;
+     int n = framesToProcess;
+     float max = 0;
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   if (sourceStride == 1) {
-     // If the sourceP address is not 16-byte aligned, the first several frames
-     // (at most three) should be processed separately.
-@@ -839,6 +902,7 @@ void vclip(const float* sourceP,
-            float* destP,
-            int destStride,
-            size_t framesToProcess) {
-+#ifndef BUILD_ONLY_THE_SSE2_PARTS
-   int n = framesToProcess;
-   float lowThreshold = *lowThresholdP;
-   float highThreshold = *highThresholdP;
-@@ -888,6 +952,11 @@ void vclip(const float* sourceP,
-     destP += destStride;
-   }
+     if (sourceStride == 1) {
+         // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
+         while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
+@@ -648,6 +705,8 @@
+     *maxP = max;
  }
+ 
++#ifndef BUILD_ONLY_THE_SSE2_PARTS
++
+ void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, const float* highThresholdP, float* destP, int destStride, size_t framesToProcess)
+ {
+     int n = framesToProcess;
+@@ -678,6 +737,12 @@
+     }
+ }
+ 
 +#endif
 +
 +#ifdef BUILD_ONLY_THE_SSE2_PARTS
 +} // namespace SSE2
 +#endif
++
+ #endif // OS(MACOSX)
  
- #endif  // OS(MACOSX)
- 
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h
-index 8f375071c..d92e5b85e 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h
-@@ -27,6 +27,7 @@
+ } // namespace VectorMath
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h	2017-03-05 17:26:26.306984275 +0100
+@@ -26,6 +26,7 @@
  #define VectorMath_h
  
  #include "platform/PlatformExport.h"
@@ -2243,9 +2495,9 @@ index 8f375071c..d92e5b85e 100644
  #include "wtf/build_config.h"
  #include <cstddef>
  
-@@ -97,6 +98,28 @@ PLATFORM_EXPORT void vclip(const float* sourceP,
-                            int destStride,
-                            size_t framesToProcess);
+@@ -55,6 +56,28 @@
+ // Copies elements while clipping values to the threshold inputs.
+ PLATFORM_EXPORT void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, const float* highThresholdP, float* destP, int destStride, size_t framesToProcess);
  
 +#if CPU(X86)
 +namespace SSE2 {
@@ -2269,13 +2521,70 @@ index 8f375071c..d92e5b85e 100644
 +}
 +#endif
 +
- }  // namespace VectorMath
- }  // namespace blink
+ } // namespace VectorMath
+ } // namespace blink
  
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h b/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
-index e30fcb464..4b3437057 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp	2017-03-05 17:26:26.307984260 +0100
+@@ -0,0 +1,2 @@
++#define BUILD_ONLY_THE_SSE2_PARTS
++#include "VectorMath.cpp"
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp	2017-03-05 17:26:26.307984260 +0100
+@@ -392,6 +392,11 @@
+           '<(DEPTH)/third_party/openmax_dl/dl/dl.gyp:openmax_dl',
+         ],
+       }],
++      ['target_arch == "ia32"', {
++        'dependencies': [
++          'blink_sse2',
++        ],
++      }],
+       ['target_arch=="arm"', {
+         'dependencies': [
+           'blink_arm_neon',
+@@ -406,6 +411,36 @@
+       }],
+     ],
+   },
++  {
++    'target_name': 'blink_sse2',
++    'conditions': [
++      ['target_arch=="ia32"', {
++        'type': 'static_library',
++        'dependencies': [
++          '<(DEPTH)/third_party/khronos/khronos.gyp:khronos_headers',
++          '../config.gyp:config',
++          '../wtf/wtf.gyp:wtf',
++          'blink_common',
++          'blink_heap_asm_stubs',
++        ],
++        'defines': [
++          'BLINK_PLATFORM_IMPLEMENTATION=1',
++          'INSIDE_BLINK',
++        ],
++        'sources': [
++          'audio/DirectConvolverSSE2.cpp',
++          'audio/SincResamplerSSE2.cpp',
++          'audio/VectorMathSSE2.cpp',
++        ],
++        'cflags': [
++          '-msse2',
++          '-mfpmath=sse',
++        ],
++      },{  # target_arch != "ia32"
++        'type': 'none',
++      }],
++    ],
++  },
+   # The *NEON.cpp files fail to compile when -mthumb is passed. Force
+   # them to build in ARM mode.
+   # See https://bugs.webkit.org/show_bug.cgi?id=62916.
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2017-03-05 17:26:26.308984245 +0100
 @@ -5,7 +5,7 @@
  #ifndef WebGLImageConversionSSE_h
  #define WebGLImageConversionSSE_h
@@ -2285,100 +2594,66 @@ index e30fcb464..4b3437057 100644
  
  #include <emmintrin.h>
  
-diff --git a/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp b/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
-index be417ea88..e79034424 100644
---- a/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
-+++ b/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
-@@ -441,7 +441,7 @@ void unpack<WebGLImageConversion::DataFormatBGRA8, uint8_t, uint8_t>(
-   const uint32_t* source32 = reinterpret_cast_ptr<const uint32_t*>(source);
-   uint32_t* destination32 = reinterpret_cast_ptr<uint32_t*>(destination);
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp	2017-03-05 17:26:26.309984231 +0100
+@@ -423,7 +423,7 @@
+     const uint32_t* source32 = reinterpret_cast_ptr<const uint32_t*>(source);
+     uint32_t* destination32 = reinterpret_cast_ptr<uint32_t*>(destination);
  
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   SIMD::unpackOneRowOfBGRA8LittleToRGBA8(source32, destination32, pixelsPerRow);
+     SIMD::unpackOneRowOfBGRA8LittleToRGBA8(source32, destination32, pixelsPerRow);
  #endif
- #if HAVE(MIPS_MSA_INTRINSICS)
-@@ -467,7 +467,7 @@ void unpack<WebGLImageConversion::DataFormatRGBA5551, uint16_t, uint8_t>(
-     const uint16_t* source,
-     uint8_t* destination,
-     unsigned pixelsPerRow) {
+     for (unsigned i = 0; i < pixelsPerRow; ++i) {
+@@ -442,7 +442,7 @@
+ 
+ template<> void unpack<WebGLImageConversion::DataFormatRGBA5551, uint16_t, uint8_t>(const uint16_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   SIMD::unpackOneRowOfRGBA5551LittleToRGBA8(source, destination, pixelsPerRow);
+     SIMD::unpackOneRowOfRGBA5551LittleToRGBA8(source, destination, pixelsPerRow);
  #endif
  #if HAVE(ARM_NEON_INTRINSICS)
-@@ -496,7 +496,7 @@ void unpack<WebGLImageConversion::DataFormatRGBA4444, uint16_t, uint8_t>(
-     const uint16_t* source,
-     uint8_t* destination,
-     unsigned pixelsPerRow) {
+@@ -464,7 +464,7 @@
+ 
+ template<> void unpack<WebGLImageConversion::DataFormatRGBA4444, uint16_t, uint8_t>(const uint16_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   SIMD::unpackOneRowOfRGBA4444LittleToRGBA8(source, destination, pixelsPerRow);
+     SIMD::unpackOneRowOfRGBA4444LittleToRGBA8(source, destination, pixelsPerRow);
  #endif
  #if HAVE(ARM_NEON_INTRINSICS)
-@@ -711,7 +711,7 @@ void pack<WebGLImageConversion::DataFormatR8,
-           uint8_t>(const uint8_t* source,
-                    uint8_t* destination,
-                    unsigned pixelsPerRow) {
+@@ -630,7 +630,7 @@
+ // FIXME: this routine is lossy and must be removed.
+ template<> void pack<WebGLImageConversion::DataFormatR8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   SIMD::packOneRowOfRGBA8LittleToR8(source, destination, pixelsPerRow);
+     SIMD::packOneRowOfRGBA8LittleToR8(source, destination, pixelsPerRow);
  #endif
- #if HAVE(MIPS_MSA_INTRINSICS)
-@@ -768,7 +768,7 @@ void pack<WebGLImageConversion::DataFormatRA8,
-           uint8_t>(const uint8_t* source,
-                    uint8_t* destination,
-                    unsigned pixelsPerRow) {
+     for (unsigned i = 0; i < pixelsPerRow; ++i) {
+@@ -667,7 +667,7 @@
+ // FIXME: this routine is lossy and must be removed.
+ template<> void pack<WebGLImageConversion::DataFormatRA8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   SIMD::packOneRowOfRGBA8LittleToRA8(source, destination, pixelsPerRow);
+     SIMD::packOneRowOfRGBA8LittleToRA8(source, destination, pixelsPerRow);
  #endif
- #if HAVE(MIPS_MSA_INTRINSICS)
-@@ -880,7 +880,7 @@ void pack<WebGLImageConversion::DataFormatRGBA8,
-           uint8_t>(const uint8_t* source,
-                    uint8_t* destination,
-                    unsigned pixelsPerRow) {
+     for (unsigned i = 0; i < pixelsPerRow; ++i) {
+@@ -741,7 +741,7 @@
+ // FIXME: this routine is lossy and must be removed.
+ template<> void pack<WebGLImageConversion::DataFormatRGBA8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
 -#if CPU(X86) || CPU(X86_64)
 +#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
-   SIMD::packOneRowOfRGBA8LittleToRGBA8(source, destination, pixelsPerRow);
- #endif
- #if HAVE(MIPS_MSA_INTRINSICS)
-diff --git a/src/3rdparty/chromium/third_party/qcms/BUILD.gn b/src/3rdparty/chromium/third_party/qcms/BUILD.gn
-index 1183569be..771dd02c8 100644
---- a/src/3rdparty/chromium/third_party/qcms/BUILD.gn
-+++ b/src/3rdparty/chromium/third_party/qcms/BUILD.gn
-@@ -30,8 +30,8 @@ static_library("qcms") {
-     ]
- 
-     if (current_cpu == "x86" || current_cpu == "x64") {
--      defines = [ "SSE2_ENABLE" ]
--      sources += [ "src/transform-sse2.c" ]
-+      defines = [ "SSE2_ENABLE" ]  # runtime detection
-+      deps = [ "qcms_sse2" ]
-     }
-   }
- 
-@@ -74,3 +74,16 @@ if (!disable_qcms) {
-     public_configs = [ ":qcms_config" ]
-   }
- }
-+
-+source_set("qcms_sse2") {
-+  configs -= [ "//build/config/compiler:chromium_code" ]
-+  configs += [ "//build/config/compiler:no_chromium_code" ]
-+  public_configs = [ ":qcms_config" ]
-+
-+  if (current_cpu == "x86" || current_cpu == "x64") {
-+    defines = [ "SSE2_ENABLE" ]
-+    sources = [ "src/transform-sse2.c" ]
-+    cflags = [ "-msse2" ]
-+  }
-+}
-+
-diff --git a/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc b/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc
-index e721346f3..ef5a4e4a7 100644
---- a/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc
-+++ b/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc
+     SIMD::packOneRowOfRGBA8LittleToRGBA8(source, destination, pixelsPerRow);
+ #else
+     for (unsigned i = 0; i < pixelsPerRow; ++i) {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc	2017-03-05 18:14:44.694725685 +0100
 @@ -14,6 +14,7 @@
  #include "webrtc/common_audio/real_fourier_ooura.h"
  #include "webrtc/common_audio/real_fourier_openmax.h"
@@ -2387,7 +2662,7 @@ index e721346f3..ef5a4e4a7 100644
  
  namespace webrtc {
  
-@@ -23,7 +24,15 @@ const size_t RealFourier::kFftBufferAlignment = 32;
+@@ -23,7 +24,15 @@
  
  std::unique_ptr<RealFourier> RealFourier::Create(int fft_order) {
  #if defined(RTC_USE_OPENMAX_DL)
@@ -2403,15 +2678,34 @@ index e721346f3..ef5a4e4a7 100644
  #else
    return std::unique_ptr<RealFourier>(new RealFourierOoura(fft_order));
  #endif
-diff --git a/src/3rdparty/chromium/v8/BUILD.gn b/src/3rdparty/chromium/v8/BUILD.gn
-index 9b209dfff..d88261d53 100644
---- a/src/3rdparty/chromium/v8/BUILD.gn
-+++ b/src/3rdparty/chromium/v8/BUILD.gn
-@@ -1769,43 +1769,41 @@ v8_static_library("v8_base") {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py	2017-03-05 17:26:26.310984216 +0100
+@@ -1345,6 +1345,8 @@
+       # Make sure that we have relative paths to our out/(Release|Debug), where we generate our .pri file, and then prepend $$PWD to them.
+       prefixed_objects = ['$$PWD/' + o for o in toAbsPaths(objects)]
+       prefixed_archives = ['$$PWD/' + o for o in toAbsPaths(libs)]
++      if len(solibs):
++        prefixed_solibs = ['$$PWD/' + so for so in toAbsPaths(solibs)]
  
-   if (v8_current_cpu == "x86") {
-     sources += [  ### gcmole(arch:ia32) ###
--      "src/builtins/ia32/builtins-ia32.cc",
+       pri_file.write("QMAKE_LFLAGS += %s\n" % qmakeLiteral(' '.join(prefixed_lflags)))
+       pri_file.write("OBJECTS += %s\n" % qmakeLiteral(' '.join(prefixed_objects)))
+@@ -1353,6 +1355,8 @@
+         pri_file.write("LIBS_PRIVATE += -Wl,--start-group %s -Wl,--end-group\n" % qmakeLiteral(' '.join(prefixed_archives)))
+       else:
+         pri_file.write("LIBS_PRIVATE += %s\n" % qmakeLiteral(' '.join(prefixed_archives)))
++      if len(solibs):
++        pri_file.write("LIBS_PRIVATE += %s\n" % qmakeLiteral(' '.join(prefixed_solibs)))
+       # External libs have to come after objects/archives, the linker resolve them in order.
+       pri_file.write("LIBS_PRIVATE += %s\n" % qmakeLiteral(' '.join(prefixed_library_dirs + prefixed_libraries)))
+       # Make sure that if ninja modifies one of the inputs, qmake/make will link again.
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/BUILD.gn	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-03-05 18:22:29.296777508 +0100
+@@ -1523,41 +1523,41 @@
+ 
+   if (v8_target_cpu == "x86") {
+     sources += [
 -      "src/compiler/ia32/code-generator-ia32.cc",
 -      "src/compiler/ia32/instruction-codes-ia32.h",
 -      "src/compiler/ia32/instruction-scheduler-ia32.cc",
@@ -2427,6 +2721,7 @@ index 9b209dfff..d88261d53 100644
 -      "src/ia32/assembler-ia32-inl.h",
 -      "src/ia32/assembler-ia32.cc",
 -      "src/ia32/assembler-ia32.h",
+-      "src/ia32/builtins-ia32.cc",
 -      "src/ia32/code-stubs-ia32.cc",
 -      "src/ia32/code-stubs-ia32.h",
 -      "src/ia32/codegen-ia32.cc",
@@ -2439,8 +2734,6 @@ index 9b209dfff..d88261d53 100644
 -      "src/ia32/interface-descriptors-ia32.cc",
 -      "src/ia32/macro-assembler-ia32.cc",
 -      "src/ia32/macro-assembler-ia32.h",
--      "src/ia32/simulator-ia32.cc",
--      "src/ia32/simulator-ia32.h",
 -      "src/ic/ia32/access-compiler-ia32.cc",
 -      "src/ic/ia32/handler-compiler-ia32.cc",
 -      "src/ic/ia32/ic-compiler-ia32.cc",
@@ -2484,13 +2777,37 @@ index 9b209dfff..d88261d53 100644
 +      "src/regexp/x87/regexp-macro-assembler-x87.cc",
 +      "src/regexp/x87/regexp-macro-assembler-x87.h",
      ]
-   } else if (v8_current_cpu == "x64") {
-     sources += [  ### gcmole(arch:x64) ###
-diff --git a/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh b/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh
-new file mode 100644
-index 000000000..0e7ec1621
---- /dev/null
-+++ b/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh
+   } else if (v8_target_cpu == "x64") {
+     sources += [
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/gypfiles/standalone.gypi qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/gypfiles/standalone.gypi
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/gypfiles/standalone.gypi	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/gypfiles/standalone.gypi	2017-03-05 18:20:24.988636550 +0100
+@@ -159,6 +159,9 @@
+         }, {
+           'gomadir': '<!(/bin/echo -n ${HOME}/goma)',
+         }],
++        ['target_arch=="ia32"', {
++          'v8_target_arch%': 'x87',
++        }],
+         ['host_arch!="ppc" and host_arch!="ppc64" and host_arch!="ppc64le" and host_arch!="s390" and host_arch!="s390x"', {
+           'host_clang%': 1,
+         }, {
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/gypfiles/toolchain.gypi qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/gypfiles/toolchain.gypi
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/gypfiles/toolchain.gypi	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/gypfiles/toolchain.gypi	2017-03-05 17:27:34.951965375 +0100
+@@ -95,6 +95,9 @@
+     'binutils_dir%': '',
+ 
+     'conditions': [
++      ['target_arch=="ia32"', {
++        'v8_target_arch%': 'x87',
++      }],
+       ['OS=="linux" and host_arch=="x64"', {
+         'binutils_dir%': 'third_party/binutils/Linux_x64/Release/bin',
+       }],
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/src/make-v8-sse2-gyp.sh	2017-03-05 17:27:34.953965345 +0100
 @@ -0,0 +1,56 @@
 +#!/bin/sh
 +# This script renames the v8 targets to _sse2 names so that they do not conflict
@@ -2548,11 +2865,25 @@ index 000000000..0e7ec1621
 +    -e "s/\.bin/_sse2.bin/g" \
 +    -e "s#^\( *\)\('target_name': 'v8_sse2',\)#\1\2\n\1'product_name': 'v8',\n\1'product_dir': '<(PRODUCT_DIR)/lib/sse2',#g" \
 +    v8.gyp >>v8_sse2.gyp
-diff --git a/src/3rdparty/chromium/v8/src/v8.gyp b/src/3rdparty/chromium/v8/src/v8.gyp
-index 020ec0928..2add932fc 100644
---- a/src/3rdparty/chromium/v8/src/v8.gyp
-+++ b/src/3rdparty/chromium/v8/src/v8.gyp
-@@ -51,8 +51,8 @@
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/src/v8.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/src/v8.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/src/v8.gyp	2017-01-03 10:28:53.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/src/v8.gyp	2017-03-05 17:30:17.500552662 +0100
+@@ -36,6 +36,14 @@
+     'v8_experimental_extra_library_files%': [],
+     'mksnapshot_exec': '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)mksnapshot<(EXECUTABLE_SUFFIX)',
+     'remove_v8base_debug_symbols%': 0,
++    'conditions': [
++      # build V8 shared on ia32 so we can swap x87 vs. SSE2 builds
++      ['target_arch == "ia32"', {
++        'v8_component%': 'shared_library',
++      }, {
++        'v8_component%': '<(component)',
++      }],
++    ],
+   },
+   'includes': ['../gypfiles/toolchain.gypi', '../gypfiles/features.gypi'],
+   'targets': [
+@@ -49,8 +57,8 @@
          }, {
            'toolsets': ['target'],
          }],
@@ -2563,16 +2894,16 @@ index 020ec0928..2add932fc 100644
            'sources': [
              # Note: on non-Windows we still build this file so that gyp
              # has some sources to link into the component.
-@@ -151,7 +151,7 @@
+@@ -161,7 +169,7 @@
              'js2c',
            ],
          }],
 -        ['component=="shared_library"', {
 +        ['v8_component=="shared_library"', {
            'defines': [
+             'V8_SHARED',
              'BUILDING_V8_SHARED',
-           ],
-@@ -243,7 +243,7 @@
+@@ -253,7 +261,7 @@
            'toolsets': ['target'],
            'dependencies': ['js2c'],
          }],
@@ -2580,17 +2911,17 @@ index 020ec0928..2add932fc 100644
 +        ['v8_component=="shared_library"', {
            'defines': [
              'BUILDING_V8_SHARED',
-           ],
-@@ -270,7 +270,7 @@
+             'V8_SHARED',
+@@ -281,7 +289,7 @@
                  'natives_blob',
                ],
              }],
 -            ['component=="shared_library"', {
 +            ['v8_component=="shared_library"', {
                'defines': [
+                 'V8_SHARED',
                  'BUILDING_V8_SHARED',
-               ],
-@@ -1727,7 +1727,7 @@
+@@ -1608,7 +1616,7 @@
            # See http://crbug.com/485155.
            'msvs_shard': 4,
          }],
@@ -2598,12 +2929,10 @@ index 020ec0928..2add932fc 100644
 +        ['v8_component=="shared_library"', {
            'defines': [
              'BUILDING_V8_SHARED',
-           ],
-diff --git a/src/3rdparty/chromium/v8/src/v8_sse2.gyp b/src/3rdparty/chromium/v8/src/v8_sse2.gyp
-new file mode 100644
-index 000000000..140b071a6
---- /dev/null
-+++ b/src/3rdparty/chromium/v8/src/v8_sse2.gyp
+             'V8_SHARED',
+diff -Nur qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/src/v8_sse2.gyp qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/src/v8_sse2.gyp
+--- qtwebengine-opensource-src-5.8.0/src/3rdparty/chromium/v8/src/v8_sse2.gyp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/3rdparty/chromium/v8/src/v8_sse2.gyp	2017-03-05 18:25:37.781958850 +0100
 @@ -0,0 +1,2313 @@
 +# Generated from v8.gyp by make-v8-sse2-gyp.sh
 +# Copyright 2012 the V8 project authors. All rights reserved.
@@ -4918,12 +5247,11 @@ index 000000000..140b071a6
 +    },
 +  ],
 +}
-diff --git a/src/core/core_module.pro b/src/core/core_module.pro
-index 44e8ac613..7fe1a49e9 100644
---- a/src/core/core_module.pro
-+++ b/src/core/core_module.pro
-@@ -10,6 +10,29 @@ linking_pri = $$OUT_PWD/$$getConfigDir()/$${TARGET}.pri
-     error("Could not find the linking information that gn should have generated.")
+diff -Nur qtwebengine-opensource-src-5.8.0/src/core/core_module.pro qtwebengine-opensource-src-5.8.0-no-sse2/src/core/core_module.pro
+--- qtwebengine-opensource-src-5.8.0/src/core/core_module.pro	2017-01-03 11:35:11.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/core/core_module.pro	2017-03-05 17:30:17.502552632 +0100
+@@ -9,6 +9,29 @@
+     error("Could not find the linking information that gyp should have generated.")
  }
  
 +# find the shared libraries in the link line
@@ -4952,7 +5280,7 @@ index 44e8ac613..7fe1a49e9 100644
  load(qt_module)
  
  api_library_name = qtwebenginecoreapi$$qtPlatformTargetSuffix()
-@@ -100,7 +123,12 @@ icu.files = $$OUT_PWD/$$getConfigDir()/icudtl.dat
+@@ -74,7 +97,12 @@
          locales.path = $$[QT_INSTALL_TRANSLATIONS]/qtwebengine_locales
          resources.CONFIG += no_check_exist
          resources.path = $$[QT_INSTALL_DATA]/resources
@@ -4966,6 +5294,18 @@ index 44e8ac613..7fe1a49e9 100644
  
          !use?(system_icu) {
              icu.CONFIG += no_check_exist
--- 
-2.13.0
-
+diff -Nur qtwebengine-opensource-src-5.8.0/src/core/qtwebengine.gypi qtwebengine-opensource-src-5.8.0-no-sse2/src/core/qtwebengine.gypi
+--- qtwebengine-opensource-src-5.8.0/src/core/qtwebengine.gypi	2017-01-03 11:35:11.000000000 +0100
++++ qtwebengine-opensource-src-5.8.0-no-sse2/src/core/qtwebengine.gypi	2017-03-05 17:30:17.503552617 +0100
+@@ -63,6 +63,11 @@
+       },
+     },
+     'conditions': [
++      ['target_arch=="ia32"', {
++        'dependencies': [
++          '<(chromium_src_dir)/v8/src/v8_sse2.gyp:v8_sse2',
++        ],
++      }],
+       ['OS=="win" and win_use_allocator_shim==1', {
+         'dependencies': [
+           '<(chromium_src_dir)/base/allocator/allocator.gyp:allocator',
