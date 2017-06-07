@@ -270,9 +270,6 @@ done
 mkdir -p ../tmp_ffmpeg/chromium
 cp -pr chromium/config ../tmp_ffmpeg/chromium/
 
-# unused include
-sed -i -e '/synth_filter\.h/d' ../tmp_ffmpeg/libavcodec/arm/fft_init_arm.c
-
 cd ..
 rm -rf ffmpeg
 mv tmp_ffmpeg ffmpeg
