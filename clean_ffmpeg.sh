@@ -205,9 +205,14 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/mdct_template.c \
                 libavcodec/pel_template.c \
                 libavcodec/videodsp_template.c \
+                libavcodec/flacdec.c \
+                libavcodec/flacdsp.c \
+                libavcodec/flacdsp_template.c \
+                libavcodec/flacdsp_lpc_template.c \
                 libavcodec/h264pred.c \
                 libavcodec/hpeldsp.c \
                 libavcodec/videodsp.c \
+                libavcodec/vorbisdsp.c \
                 libavcodec/vp3.c \
                 libavcodec/vp3_parser.c \
                 libavcodec/vp3dsp.c \
@@ -216,14 +221,20 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/vp8_parser.c \
                 libavcodec/vp8dsp.c \
                 libavutil/cpu.c \
+                libavutil/float_dsp.c \
+                libavutil/fixed_dsp.c \
+                libavutil/aarch64/float_dsp_neon.S \
                 libavutil/arm/cpu.c \
                 libavutil/arm/float_dsp_neon.S \
                 libavformat/options.c \
                 libavformat/pcm.c \
                 libavformat/utils.c \
                 libavcodec/utils.c \
+                libavcodec/aarch64/fft_neon.S \
                 libavcodec/aarch64/hpeldsp_neon.S \
                 libavcodec/aarch64/h264pred_neon.S \
+                libavcodec/aarch64/mdct_neon.S \
+                libavcodec/aarch64/vorbisdsp_neon.S \
                 libavcodec/arm/vorbisdsp_neon.S \
                 libavcodec/arm/mdct_neon.S \
                 libavcodec/arm/fft_neon.S \
