@@ -2489,7 +2489,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
 +
 +    public_configs = [ ":external_config" ]
 +  }
-+} else if (v8_is_component_build) {
++} else if (is_component_build) {
    v8_component("v8") {
      sources = [
        "src/v8dll-main.cc",
