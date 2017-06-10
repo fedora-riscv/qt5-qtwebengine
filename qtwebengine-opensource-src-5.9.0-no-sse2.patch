@@ -2285,7 +2285,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/Web
 +      "audio/SincResamplerSSE2.cpp",
 +      "audio/VectorMathSSE2.cpp",
 +    ]
-+    cflags = [ "-msse2", '-mfpmath=sse' ]
++    cflags = [ "-msse2", "-mfpmath=sse" ]
 +    deps = [
 +      ":blink_common",
 +    ]
