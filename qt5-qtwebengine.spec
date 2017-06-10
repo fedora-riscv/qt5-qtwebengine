@@ -100,6 +100,8 @@ Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 Patch20: qtwebengine-opensource-src-5.8.0-qt57.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
+# Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
+Patch22: qtwebengine-opensource-src-5.9.0-system-re2.patch
 # Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 # https://codereview.qt-project.org/196178
 Patch100: qtwebengine-opensource-src-5.9.0-gn-aarch64.patch
@@ -350,6 +352,7 @@ BuildArch: noarch
 %patch12 -p1 -b .webrtc-neon-detect
 %patch20 -p1 -b .qt57
 %patch21 -p1 -b .gn-bootstrap-verbose
+%patch22 -p1 -b .system-re2
 %patch100 -p1 -b .gn-aarch64
 %patch101 -p1 -b .aarch64-gcc-toolchain
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
@@ -567,6 +570,7 @@ done
 - Force verbose output from the GN bootstrap process
 - Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 - Backport patch to fix FTBFS with GCC on aarch64 from upstream Chromium
+- Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
 
 * Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
 - fix rpm macros
