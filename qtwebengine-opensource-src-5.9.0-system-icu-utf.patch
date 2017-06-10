@@ -355,6 +355,17 @@ diff -ur qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromi
      ldflags.extend(['-pthread'])
  
      static_libraries['xdg_user_dirs'] = {
+diff -ur qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/tools/gn/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 21:47:32.622964060 +0200
++++ qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 21:47:45.780913699 +0200
+@@ -277,6 +277,7 @@
+ 
+   libs += [
+     "nspr4",
++    "icuuc",
+   ]
+ }
+ 
 diff -ur qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/ui/gfx/utf16_indexing.cc qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/ui/gfx/utf16_indexing.cc
 --- qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/ui/gfx/utf16_indexing.cc	2017-05-18 16:51:44.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/ui/gfx/utf16_indexing.cc	2017-06-08 11:02:21.776777974 +0200

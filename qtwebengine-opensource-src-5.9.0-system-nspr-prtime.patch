@@ -64,3 +64,17 @@ diff -ur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/tools/gn/bootstr
      ldflags.extend(['-pthread'])
  
      static_libraries['xdg_user_dirs'] = {
+diff -ur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/tools/gn/BUILD.gn qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 21:47:32.622964060 +0200
+@@ -274,6 +274,10 @@
+     "//build/config/sanitizers:deps",
+     "//build/win:default_exe_manifest",
+   ]
++
++  libs += [
++    "nspr4",
++  ]
+ }
+ 
+ test("gn_unittests") {
