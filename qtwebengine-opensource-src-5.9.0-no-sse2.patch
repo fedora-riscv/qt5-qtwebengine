@@ -1683,7 +1683,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/qcm
 -      defines = [ "SSE2_ENABLE" ]
 -      sources += [ "src/transform-sse2.c" ]
 +      defines = [ "SSE2_ENABLE" ]  # runtime detection
-+      deps = [ "qcms_sse2" ]
++      deps = [ ":qcms_sse2" ]
      }
    }
  
