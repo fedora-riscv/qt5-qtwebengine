@@ -2499,7 +2499,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
 +      ":v8_maybe_snapshot",
 +    ]
 +
-+    configs = [ ":internal_config" ]
++    configs += [ ":internal_config" ]
 +
 +    public_configs = [ ":external_config" ]
 +  }
