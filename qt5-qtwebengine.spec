@@ -100,6 +100,9 @@ Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 Patch20: qtwebengine-opensource-src-5.8.0-qt57.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
+# Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
+# https://codereview.qt-project.org/196178
+Patch100: qtwebengine-opensource-src-5.9.0-gn-aarch64.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -344,6 +347,7 @@ BuildArch: noarch
 %patch12 -p1 -b .webrtc-neon-detect
 %patch20 -p1 -b .qt57
 %patch21 -p1 -b .gn-bootstrap-verbose
+%patch100 -p1 -b .gn-aarch64
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -557,6 +561,7 @@ done
 - Drop the flag hacks (-g1 -fno-delete-null-pointer-checks) that are fixed
   upstream, force -g2 on x86_64 instead
 - Force verbose output from the GN bootstrap process
+- Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 
 * Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
 - fix rpm macros
