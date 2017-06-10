@@ -30,6 +30,20 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/config/v8
 +    v8_current_cpu = "x87"
 +  }
 +}
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/toolchain/gcc_toolchain.gni qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/build/toolchain/gcc_toolchain.gni
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/toolchain/gcc_toolchain.gni	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/build/toolchain/gcc_toolchain.gni	2017-06-10 16:24:14.175128763 +0200
+@@ -213,6 +213,10 @@
+       extra_ldflags = ""
+     }
+ 
++    if (defined(invoker.shlib_subdir)) {
++      shlib_subdir = invoker.shlib_subdir
++    }
++
+     # These library switches can apply to all tools below.
+     lib_switch = "-l"
+     lib_dir_switch = "-L"
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/toolchain/linux/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/build/toolchain/linux/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/toolchain/linux/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/build/toolchain/linux/BUILD.gn	2017-06-10 02:09:47.874494730 +0200
@@ -2259,7 +2273,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/Web
 +#include "VectorMath.cpp"
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-06-09 00:40:12.361601303 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-06-10 15:47:49.419707504 +0200
 @@ -1529,6 +1529,10 @@
      deps += [ ":blink_x86_sse" ]
    }
@@ -2390,7 +2404,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/web
  #endif
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-06-10 02:09:29.227782885 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-06-10 15:20:10.847967062 +0200
 @@ -73,6 +73,9 @@
    # If true, doesn't compile debug symbols into v8base reducing the
    # size of the binary and increasing the speed of gdb.
