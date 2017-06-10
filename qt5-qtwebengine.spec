@@ -149,8 +149,6 @@ BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(zlib)
 BuildRequires: pkgconfig(minizip)
-BuildRequires: pkgconfig(libxml-2.0)
-BuildRequires: pkgconfig(libxslt)
 BuildRequires: pkgconfig(x11)
 BuildRequires: pkgconfig(xi)
 BuildRequires: pkgconfig(xcursor)
@@ -231,6 +229,10 @@ Provides: bundled(libvpx) = 1.6.0
 %if !0%{?use_system_libwebp}
 Provides: bundled(libwebp) = 0.5.1
 %endif
+# see src/3rdparty/chromium/third_party/libxml/linux/include/libxml/xmlversion.h
+Provides: bundled(libxml2) = 2.9.4
+# see src/3rdparty/chromium/third_party/libxslt/libxslt/xsltconfig.h for version
+Provides: bundled(libxslt) = 1.1.29
 Provides: bundled(libXNVCtrl) = 302.17
 Provides: bundled(libyuv) = 1634
 Provides: bundled(modp_b64)
@@ -541,6 +543,8 @@ done
 - Update to 5.9.0
 - Update version numbers of bundled stuff
 - Use bundled libsrtp and protobuf, Chromium dropped unbundling support for them
+- Use bundled libxml2 and libxslt, QtWebEngine 5.9 requires a libxml2 built with
+  ICU due to https://bugreports.qt.io/browse/QTBUG-59094, Fedora libxml2 is not
 - Add missing Provides: bundled(hunspell) for the spellchecking added in 5.8
 - Rebase linux-pri, no-neon, system-icu-utf, no-sse2, arm-fpu-fix,
   openmax-dl-neon and webrtc-neon-detect patches (port to GN)
