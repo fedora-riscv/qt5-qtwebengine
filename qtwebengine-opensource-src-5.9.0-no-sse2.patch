@@ -1673,9 +1673,233 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/ext/convol
  #include "third_party/skia/include/core/SkSize.h"
  #include "third_party/skia/include/core/SkTypes.h"
  
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 01:02:55.060513393 +0200
+@@ -160,6 +160,17 @@
+   public_deps = [
+     ":angle_common",
+   ]
++
++  deps = [
++    ":angle_image_util_x86_sse2",
++  ]
++}
++
++source_set("angle_image_util_x86_sse2") {
++  sources = [
++    "image_util/loadimage_SSE2.cpp",
++  ]
++  cflags = [ "-msse2", "-mfpmath=sse" ]
+ }
+ 
+ static_library("translator") {
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h	2017-06-11 01:08:46.225333830 +0200
+@@ -17,6 +17,7 @@
+ #include <stdlib.h>
+ 
+ #include <base/numerics/safe_math.h>
++#include <base/cpu.h>
+ 
+ #include "common/debug.h"
+ #include "common/platform.h"
+@@ -142,9 +143,12 @@
+     }
+ }
+ 
+-inline bool supportsSSE2()
++static inline bool supportsSSE2()
+ {
+ #if defined(ANGLE_USE_SSE)
++#if defined(__x86_64__) || defined(__SSE2__)
++    return true;
++#else
+     static bool checked = false;
+     static bool supports = false;
+ 
+@@ -153,21 +157,10 @@
+         return supports;
+     }
+ 
+-#if defined(ANGLE_PLATFORM_WINDOWS) && !defined(_M_ARM)
+-    {
+-        int info[4];
+-        __cpuid(info, 0);
+-
+-        if (info[0] >= 1)
+-        {
+-            __cpuid(info, 1);
+-
+-            supports = (info[3] >> 26) & 1;
+-        }
+-    }
+-#endif  // defined(ANGLE_PLATFORM_WINDOWS) && !defined(_M_ARM)
++    supports = base::CPU().has_sse2();
+     checked = true;
+     return supports;
++#endif  // defined(x86_64) || defined(__SSE2__)
+ #else  // defined(ANGLE_USE_SSE)
+     return false;
+ #endif
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/common/platform.h qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/platform.h
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/common/platform.h	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/platform.h	2017-06-11 00:43:54.961552623 +0200
+@@ -81,7 +81,9 @@
+ #include <intrin.h>
+ #define ANGLE_USE_SSE
+ #elif defined(__GNUC__) && (defined(__x86_64__) || defined(__i386__))
++#if defined(__x86_64__) || defined(__SSE2__)
+ #include <x86intrin.h>
++#endif
+ #define ANGLE_USE_SSE
+ #endif
+ 
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.cpp qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.cpp
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.cpp	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.cpp	2017-06-11 00:58:53.706120530 +0200
+@@ -12,9 +12,17 @@
+ #include "common/platform.h"
+ #include "image_util/imageformats.h"
+ 
++#if defined(BUILD_ONLY_THE_SSE2_PARTS) && !defined(__SSE2__)
++#error SSE2 parts must be built with -msse2
++#endif
++
+ namespace angle
+ {
+ 
++#ifdef BUILD_ONLY_THE_SSE2_PARTS
++namespace SSE2 {
++#endif
++
+ void LoadA8ToRGBA8(size_t width,
+                    size_t height,
+                    size_t depth,
+@@ -28,6 +36,11 @@
+ #if defined(ANGLE_USE_SSE)
+     if (gl::supportsSSE2())
+     {
++#if !defined(__x86_64__) && !defined(__SSE2__)
++        angle::SSE2::LoadA8ToRGBA8(width, height, depth, input, inputRowPitch,
++                                   inputDepthPitch, output, outputRowPitch,
++                                   outputDepthPitch);
++#else
+         __m128i zeroWide = _mm_setzero_si128();
+ 
+         for (size_t z = 0; z < depth; z++)
+@@ -68,6 +81,7 @@
+                 }
+             }
+         }
++#endif
+ 
+         return;
+     }
+@@ -89,6 +103,8 @@
+     }
+ }
+ 
++#ifndef BUILD_ONLY_THE_SSE2_PARTS
++
+ void LoadA8ToBGRA8(size_t width,
+                    size_t height,
+                    size_t depth,
+@@ -584,6 +600,8 @@
+     }
+ }
+ 
++#endif
++
+ void LoadRGBA8ToBGRA8(size_t width,
+                       size_t height,
+                       size_t depth,
+@@ -597,6 +615,11 @@
+ #if defined(ANGLE_USE_SSE)
+     if (gl::supportsSSE2())
+     {
++#if !defined(__x86_64__) && !defined(__SSE2__)
++        angle::SSE2::LoadRGBA8ToBGRA8(width, height, depth, input,
++                                      inputRowPitch, inputDepthPitch, output,
++                                      outputRowPitch, outputDepthPitch);
++#else
+         __m128i brMask = _mm_set1_epi32(0x00ff00ff);
+ 
+         for (size_t z = 0; z < depth; z++)
+@@ -641,6 +664,7 @@
+                 }
+             }
+         }
++#endif
+ 
+         return;
+     }
+@@ -663,6 +687,8 @@
+     }
+ }
+ 
++#ifndef BUILD_ONLY_THE_SSE2_PARTS
++
+ void LoadRGBA8ToBGRA4(size_t width,
+                       size_t height,
+                       size_t depth,
+@@ -1320,4 +1346,10 @@
+     }
+ }
+ 
++#endif
++
++#ifdef BUILD_ONLY_THE_SSE2_PARTS
++} // namespace SSE2
++#endif
++
+ }  // namespace angle
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.h qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.h
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.h	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage.h	2017-06-11 00:52:18.251030762 +0200
+@@ -611,6 +611,32 @@
+                             size_t outputRowPitch,
+                             size_t outputDepthPitch);
+ 
++#if defined(__i386__)
++namespace SSE2 {
++
++void LoadA8ToRGBA8(size_t width,
++                   size_t height,
++                   size_t depth,
++                   const uint8_t *input,
++                   size_t inputRowPitch,
++                   size_t inputDepthPitch,
++                   uint8_t *output,
++                   size_t outputRowPitch,
++                   size_t outputDepthPitch);
++
++void LoadRGBA8ToBGRA8(size_t width,
++                      size_t height,
++                      size_t depth,
++                      const uint8_t *input,
++                      size_t inputRowPitch,
++                      size_t inputDepthPitch,
++                      uint8_t *output,
++                      size_t outputRowPitch,
++                      size_t outputDepthPitch);
++
++}
++#endif // defined(__i386__)
++
+ }  // namespace angle
+ 
+ #include "loadimage.inl"
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage_SSE2.cpp qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage_SSE2.cpp
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage_SSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/image_util/loadimage_SSE2.cpp	2017-06-11 00:59:45.318349164 +0200
+@@ -0,0 +1,2 @@
++#define BUILD_ONLY_THE_SSE2_PARTS
++#include "loadimage.cpp"
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/qcms/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2017-06-08 22:50:07.147111135 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2017-06-10 21:27:01.666198494 +0200
 @@ -30,8 +30,8 @@
      ]
  
@@ -2404,7 +2628,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/web
  #endif
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-06-10 15:20:10.847967062 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-06-10 21:40:01.510564765 +0200
 @@ -73,6 +73,9 @@
    # If true, doesn't compile debug symbols into v8base reducing the
    # size of the binary and increasing the speed of gdb.
