@@ -356,11 +356,11 @@ diff -ur qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromi
  
      static_libraries['xdg_user_dirs'] = {
 diff -ur qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/tools/gn/BUILD.gn
---- qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 21:47:32.622964060 +0200
-+++ qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 21:47:45.780913699 +0200
+--- qtwebengine-opensource-src-5.9.0-system-nspr-prtime/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 22:18:26.863178931 +0200
++++ qtwebengine-opensource-src-5.9.0-system-icu-utf/src/3rdparty/chromium/tools/gn/BUILD.gn	2017-06-10 22:18:30.168114045 +0200
 @@ -277,6 +277,7 @@
  
-   libs += [
+   libs = [
      "nspr4",
 +    "icuuc",
    ]
