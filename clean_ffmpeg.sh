@@ -139,6 +139,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/rnd_avg.h \
                 libavcodec/thread.h \
                 libavcodec/tpel_template.c \
+                libavcodec/unary.h \
                 libavcodec/version.h \
                 libavcodec/videodsp.h \
                 libavcodec/vlc.h \
