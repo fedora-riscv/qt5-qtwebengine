@@ -371,9 +371,12 @@ sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
 # can't just delete, but we'll overwrite with system headers to be on the safe side
 cp -bv /usr/include/re2/*.h src/3rdparty/chromium/third_party/re2/src/re2/
 
-%ifarch x86_64
-# most arches run out of memory with full debuginfo, so use -g1 on non-x86_64
-# (which is now the upstream default), force -g2 on x86_64
+%if 0
+#ifarch x86_64
+# enable this to force -g2 on x86_64 (most arches run out of memory with -g2)
+# DISABLED BECAUSE OF:
+# /usr/lib/rpm/find-debuginfo.sh: line 188:  3619 Segmentation fault
+# (core dumped) eu-strip --remove-comment $r $g -f "$1" "$2"
 sed -i -e 's/symbol_level=1/symbol_level=2/g' src/core/config/common.pri
 %endif
 
@@ -569,8 +572,7 @@ done
 - Drop webrtc-neon, v8-gcc7, pdfium-gcc7, wtf-gcc7, fix-open-in-new-tab and
   fix-dead-keys patches, fixed upstream
 - Update system libvpx/libwebp version requirements (libvpx now F25+ only)
-- Drop the flag hacks (-g1 -fno-delete-null-pointer-checks) that are fixed
-  upstream, force -g2 on x86_64 instead
+- Drop the flag hacks (-g1 -fno-delete-null-pointer-checks), fixed upstream
 - Force verbose output from the GN bootstrap process
 - Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 - Backport patch to fix FTBFS with GCC on aarch64 from upstream Chromium
