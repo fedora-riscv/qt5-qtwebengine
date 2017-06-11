@@ -550,7 +550,7 @@ done
 
 
 %changelog
-* Sat Jun 10 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-1
+* Sun Jun 11 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-1
 - Update to 5.9.0
 - Update version numbers of bundled stuff
 - Use bundled libsrtp and protobuf, Chromium dropped unbundling support for them

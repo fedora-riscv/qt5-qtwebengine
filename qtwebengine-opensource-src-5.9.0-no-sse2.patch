@@ -1675,20 +1675,22 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/ext/convol
  
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 01:02:55.060513393 +0200
-@@ -160,6 +160,17 @@
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 02:14:15.319585286 +0200
+@@ -160,6 +160,19 @@
    public_deps = [
      ":angle_common",
    ]
 +
-+  deps = [
-+    ":angle_image_util_x86_sse2",
-+  ]
++  if (current_cpu == "x86") {
++    deps = [
++      ":angle_image_util_x86_sse2",
++    ]
++  }
 +}
 +
 +source_set("angle_image_util_x86_sse2") {
 +  sources = [
-+    "image_util/loadimage_SSE2.cpp",
++    "src/image_util/loadimage_SSE2.cpp",
 +  ]
 +  cflags = [ "-msse2", "-mfpmath=sse" ]
  }
