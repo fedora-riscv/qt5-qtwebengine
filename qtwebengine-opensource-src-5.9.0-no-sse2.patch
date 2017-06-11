@@ -2553,7 +2553,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/Web
 +#include "VectorMath.cpp"
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-06-10 15:47:49.419707504 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-06-12 00:21:47.738315411 +0200
 @@ -1529,6 +1529,10 @@
      deps += [ ":blink_x86_sse" ]
    }
@@ -2565,12 +2565,10 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/Web
    if (use_webaudio_ffmpeg) {
      include_dirs += [ "//third_party/ffmpeg" ]
      deps += [ "//third_party/ffmpeg" ]
-@@ -1912,6 +1916,20 @@
-     deps = [
-       ":blink_common",
+@@ -1914,6 +1918,26 @@
      ]
-+  }
-+}
+   }
+ }
 +
 +if (current_cpu == "x86") {
 +  source_set("blink_x86_sse2") {
@@ -2583,9 +2581,17 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/Web
 +    deps = [
 +      ":blink_common",
 +    ]
-   }
- }
++    configs += [
++        # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
++        "//build/config/compiler:no_size_t_to_int_warning",
++        "//third_party/WebKit/Source:config",
++        "//third_party/WebKit/Source:non_test_config",
++    ]
++  }
++}
  
+ # This source set is used for fuzzers that need an environment similar to unit
+ # tests.
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2017-05-18 16:51:44.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2017-06-08 22:50:09.251079402 +0200
@@ -2849,21 +2855,24 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/make-v8-sse2
 +    v8.gyp >>v8_sse2.gyp
 diff -Nur qtwebengine-opensource-src-5.9.0/src/core/core_module.pro qtwebengine-opensource-src-5.9.0-no-sse2/src/core/core_module.pro
 --- qtwebengine-opensource-src-5.9.0/src/core/core_module.pro	2017-05-19 06:22:04.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/core/core_module.pro	2017-06-09 00:59:19.199411383 +0200
-@@ -41,6 +41,28 @@
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/core/core_module.pro	2017-06-12 00:25:07.241337485 +0200
+@@ -41,6 +41,31 @@
  else: QMAKE_LFLAGS += $$NINJA_LFLAGS
  POST_TARGETDEPS += $$NINJA_TARGETDEPS
  
 +# go through the shared libraries that GN wants to link to
++# ignore the dummy convert_dict shared library used only to get a .pri file
 +# add the ones NOT in lib/sse2 to LIBS_PRIVATE
 +# don't add those in lib/sse2 that are only replacements for the normal ones
 +# collect all shared libraries, non-SSE2 and SSE2, so they can be installed
 +for(shlib, NINJA_SOLIBS) {
-+    contains(shlib, .*/lib/sse2/.*) {
-+        shlibs_sse2 += $$shlib
-+    } else {
-+        LIBS_PRIVATE += $$shlib
-+        shlibs += $$shlib
++    !contains(shlib, .*convert_dict.*) {
++        contains(shlib, .*/lib/sse2/.*) {
++            shlibs_sse2 += $$shlib
++        } else {
++            LIBS_PRIVATE += $$shlib
++            shlibs += $$shlib
++        }
 +    }
 +}
 +
@@ -2879,7 +2888,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/core/core_module.pro qtwebengine-
  
  LIBS_PRIVATE += -L$$api_library_path
  CONFIG *= no_smart_library_merge
-@@ -100,7 +122,12 @@
+@@ -100,7 +125,12 @@
          locales.path = $$[QT_INSTALL_TRANSLATIONS]/qtwebengine_locales
          resources.CONFIG += no_check_exist
          resources.path = $$[QT_INSTALL_DATA]/resources
