@@ -1675,8 +1675,8 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/ext/convol
  
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 02:59:25.143867714 +0200
-@@ -160,6 +160,22 @@
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 03:28:05.966523743 +0200
+@@ -160,6 +160,26 @@
    public_deps = [
      ":angle_common",
    ]
@@ -1691,6 +1691,10 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ang
 +source_set("angle_image_util_x86_sse2") {
 +  configs -= angle_undefine_configs
 +  configs += [ ":internal_config" ]
++
++  deps = [
++    ":angle_common",
++  ]
 +
 +  sources = [
 +    "src/image_util/loadimage_SSE2.cpp",
