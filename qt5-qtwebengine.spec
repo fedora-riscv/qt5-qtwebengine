@@ -362,6 +362,10 @@ sed -i -e 's!gpu//!gpu/!g' \
 sed -i -e 's!\./!!g' \
   src/3rdparty/chromium/third_party/angle/src/compiler/preprocessor/Tokenizer.cpp \
   src/3rdparty/chromium/third_party/angle/src/compiler/translator/glslang_lex.cpp
+# delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
+# never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
+sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
+  src/3rdparty/chromium/build/toolchain/linux/BUILD.gn
 
 # http://bugzilla.redhat.com/1337585
 # can't just delete, but we'll overwrite with system headers to be on the safe side
@@ -571,6 +575,7 @@ done
 - Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 - Backport patch to fix FTBFS with GCC on aarch64 from upstream Chromium
 - Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
+- Delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn
 
 * Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
 - fix rpm macros
