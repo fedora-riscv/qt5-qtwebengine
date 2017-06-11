@@ -1675,16 +1675,8 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/ext/convol
  
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 02:44:06.761460476 +0200
-@@ -154,12 +154,32 @@
- 
-   configs -= angle_undefine_configs
-   configs += [ ":internal_config" ]
-+  # readd the default include directories after ours, for base/cpu.h
-+  configs += angle_undefine_configs
- 
-   public_configs = [ ":angle_image_util_config" ]
- 
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/BUILD.gn	2017-06-11 02:59:25.143867714 +0200
+@@ -160,6 +160,22 @@
    public_deps = [
      ":angle_common",
    ]
@@ -1699,8 +1691,6 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ang
 +source_set("angle_image_util_x86_sse2") {
 +  configs -= angle_undefine_configs
 +  configs += [ ":internal_config" ]
-+  # readd the default include directories after ours, for base/cpu.h
-+  configs += angle_undefine_configs
 +
 +  sources = [
 +    "src/image_util/loadimage_SSE2.cpp",
@@ -1711,20 +1701,42 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ang
  static_library("translator") {
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h	2017-06-11 01:08:46.225333830 +0200
-@@ -17,6 +17,7 @@
- #include <stdlib.h>
- 
- #include <base/numerics/safe_math.h>
-+#include <base/cpu.h>
- 
- #include "common/debug.h"
- #include "common/platform.h"
-@@ -142,9 +143,12 @@
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/third_party/angle/src/common/mathutil.h	2017-06-11 03:04:02.402397018 +0200
+@@ -142,9 +142,42 @@
      }
  }
  
 -inline bool supportsSSE2()
++#if defined(ANGLE_USE_SSE) && !defined(__x86_64__) && !defined(__SSE2__) && !defined(_MSC_VER)
++
++// From the base/cpu.cc in Chromium, to avoid depending on Chromium headers
++
++#if defined(__pic__) && defined(__i386__)
++
++static inline void __cpuid(int cpu_info[4], int info_type) {
++  __asm__ volatile (
++    "mov %%ebx, %%edi\n"
++    "cpuid\n"
++    "xchg %%edi, %%ebx\n"
++    : "=a"(cpu_info[0]), "=D"(cpu_info[1]), "=c"(cpu_info[2]), "=d"(cpu_info[3])
++    : "a"(info_type)
++  );
++}
++
++#else
++
++static inline void __cpuid(int cpu_info[4], int info_type) {
++  __asm__ volatile (
++    "cpuid\n"
++    : "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]), "=d"(cpu_info[3])
++    : "a"(info_type)
++  );
++}
++
++#endif
++
++#endif
++
 +static inline bool supportsSSE2()
  {
  #if defined(ANGLE_USE_SSE)
@@ -1734,24 +1746,19 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ang
      static bool checked = false;
      static bool supports = false;
  
-@@ -153,21 +157,10 @@
+@@ -153,7 +186,6 @@
          return supports;
      }
  
 -#if defined(ANGLE_PLATFORM_WINDOWS) && !defined(_M_ARM)
--    {
--        int info[4];
--        __cpuid(info, 0);
--
--        if (info[0] >= 1)
--        {
--            __cpuid(info, 1);
--
--            supports = (info[3] >> 26) & 1;
--        }
--    }
+     {
+         int info[4];
+         __cpuid(info, 0);
+@@ -165,9 +197,9 @@
+             supports = (info[3] >> 26) & 1;
+         }
+     }
 -#endif  // defined(ANGLE_PLATFORM_WINDOWS) && !defined(_M_ARM)
-+    supports = base::CPU().has_sse2();
      checked = true;
      return supports;
 +#endif  // defined(x86_64) || defined(__SSE2__)
