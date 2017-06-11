@@ -60,6 +60,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/cpu_internal.h \
                 libavutil/cpu.h \
                 libavutil/dynarray.h \
+                libavutil/ffmath.h \
                 libavutil/float_dsp.h \
                 libavutil/fixed_dsp.h \
                 libavutil/internal.h \
