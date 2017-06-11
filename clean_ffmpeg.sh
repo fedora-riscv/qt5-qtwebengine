@@ -63,6 +63,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/ffmath.h \
                 libavutil/float_dsp.h \
                 libavutil/fixed_dsp.h \
+                libavutil/hwcontext_internal.h \
                 libavutil/internal.h \
                 libavutil/intfloat.h \
                 libavutil/intreadwrite.h \
