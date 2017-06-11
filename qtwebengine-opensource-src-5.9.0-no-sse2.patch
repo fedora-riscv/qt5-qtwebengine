@@ -1597,7 +1597,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/media/BUILD.gn 
  # TODO(watk): Refactor tests that could be made to run on Android. See
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn	2017-06-08 23:34:35.516753817 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn	2017-06-11 12:15:56.825339699 +0200
 @@ -231,11 +231,6 @@
    if (!is_ios) {
      sources += [ "ext/platform_canvas.cc" ]
@@ -1610,24 +1610,54 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn q
  
    # The skia gypi values are relative to the skia_dir, so we need to rebase.
    sources += skia_core_sources
-@@ -608,7 +603,15 @@
+@@ -500,6 +495,31 @@
+     }
+   }
+   if (current_cpu == "x86" || current_cpu == "x64") {
++    source_set("skia_opts_sse2") {
++      sources = skia_opts.sse2_sources +
++                [
++                  # Chrome-specific.
++                  "ext/convolver_SSE2.cc",
++                  "ext/convolver_SSE2.h",
++                ]
++      sources -= [
++        # Detection code must not be built with -msse2
++        "//third_party/skia/src/opts/opts_check_x86.cpp",
++      ]
++      if (!is_win || is_clang) {
++        cflags = [ "-msse2" ]
++      }
++      if (is_win) {
++        defines = [ "SK_CPU_SSE_LEVEL=20" ]
++      }
++      visibility = [ ":skia_opts" ]
++      configs -= [ "//build/config/compiler:chromium_code" ]
++      configs += [
++        ":skia_config",
++        ":skia_library_config",
++        "//build/config/compiler:no_chromium_code",
++      ]
++    }
+     source_set("skia_opts_sse3") {
+       sources = skia_opts.ssse3_sources
+       if (!is_win || is_clang) {
+@@ -608,10 +628,13 @@
    if (skia_build_no_opts) {
      sources = skia_opts.none_sources
    } else if (current_cpu == "x86" || current_cpu == "x64") {
 -    sources = skia_opts.sse2_sources
-+    sources = skia_opts.sse2_sources +
-+              [
-+                # Chrome-specific.
-+                "ext/convolver_SSE2.cc",
-+                "ext/convolver_SSE2.h",
-+              ]
-+    if (!is_win || is_clang) {
-+      cflags += [ "-msse2" ]
-+    }
++    sources = [
++      "//third_party/skia/src/opts/opts_check_x86.cpp",
++    ]
      deps += [
        ":skia_opts_avx",
        ":skia_opts_hsw",
-@@ -644,6 +647,13 @@
++      ":skia_opts_sse2",
+       ":skia_opts_sse3",
+       ":skia_opts_sse41",
+       ":skia_opts_sse42",
+@@ -644,6 +667,13 @@
  
      if (mips_dsp_rev >= 1) {
        sources = skia_opts.mips_dsp_sources
