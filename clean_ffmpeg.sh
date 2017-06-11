@@ -60,6 +60,8 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/cpu_internal.h \
                 libavutil/cpu.h \
                 libavutil/dynarray.h \
+                libavutil/float_dsp.h \
+                libavutil/fixed_dsp.h \
                 libavutil/internal.h \
                 libavutil/intfloat.h \
                 libavutil/intreadwrite.h \
@@ -102,6 +104,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/error_resilience.h \
                 libavcodec/fdctdsp.h \
                 libavcodec/flac.h \
+                libavcodec/flacdsp.h \
                 libavcodec/fft.h \
                 libavcodec/fft-internal.h \
                 libavcodec/fft_table.h \
@@ -138,7 +141,9 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/tpel_template.c \
                 libavcodec/version.h \
                 libavcodec/videodsp.h \
+                libavcodec/vlc.h \
                 libavcodec/vorbis_parser_internal.h \
+                libavcodec/vorbisdsp.h \
                 libavcodec/vp3data.h \
                 libavcodec/vp3dsp.h \
                 libavcodec/vp56.h \
