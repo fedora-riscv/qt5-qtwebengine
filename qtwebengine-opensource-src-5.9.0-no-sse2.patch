@@ -1595,6 +1595,18 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/media/BUILD.gn 
  }
  
  # TODO(watk): Refactor tests that could be made to run on Android. See
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/media/filters/wsola_internals.cc qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/media/filters/wsola_internals.cc
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/media/filters/wsola_internals.cc	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/media/filters/wsola_internals.cc	2017-06-12 12:30:26.903281839 +0200
+@@ -15,7 +15,7 @@
+ #include "base/logging.h"
+ #include "media/base/audio_bus.h"
+ 
+-#if defined(ARCH_CPU_X86_FAMILY)
++#if defined(ARCH_CPU_X86_FAMILY) && defined(__SSE2__)
+ #define USE_SIMD 1
+ #include <xmmintrin.h>
+ #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn	2017-06-11 12:15:56.825339699 +0200
