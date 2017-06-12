@@ -2953,3 +2953,15 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/core/core_module.pro qtwebengine-
  
          !use?(system_icu) {
              icu.CONFIG += no_check_exist
+diff -Nur qtwebengine-opensource-src-5.9.0/src/process/process.pro qtwebengine-opensource-src-5.9.0-no-sse2/src/process/process.pro
+--- qtwebengine-opensource-src-5.9.0/src/process/process.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/process/process.pro	2017-06-12 16:36:03.823777310 +0200
+@@ -9,6 +9,8 @@
+ 
+ SOURCES = main.cpp
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../core/Release
++
+ win32 {
+     SOURCES += \
+         support_win.cpp
