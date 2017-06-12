@@ -1,6 +1,50 @@
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/skia/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/skia/BUILD.gn	2017-06-12 12:24:57.026914055 +0200
+@@ -486,6 +486,24 @@
+ 
+ # Separated out so it can be compiled with different flags for SSE.
+ if (!skia_build_no_opts) {
++  if (current_cpu == "arm" && (arm_use_neon || arm_optionally_use_neon)) {
++    source_set("skia_opts_neon") {
++      sources = skia_opts.neon_sources
++      # Root build config sets -mfpu=$arm_fpu, which we expect to be neon
++      # when running this.
++      if (!arm_use_neon) {
++        configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
++        cflags += [ "-mfpu=neon" ]
++      }
++      visibility = [ ":skia_opts" ]
++      configs -= [ "//build/config/compiler:chromium_code" ]
++      configs += [
++        ":skia_config",
++        ":skia_library_config",
++        "//build/config/compiler:no_chromium_code",
++      ]
++    }
++  }
+   if (current_cpu == "arm64") {
+     source_set("skia_opts_crc32") {
+       sources = skia_opts.crc32_sources
+@@ -624,14 +642,7 @@
+     if (arm_version >= 7) {
+       sources = skia_opts.armv7_sources
+       if (arm_use_neon || arm_optionally_use_neon) {
+-        sources += skia_opts.neon_sources
+-
+-        # Root build config sets -mfpu=$arm_fpu, which we expect to be neon
+-        # when running this.
+-        if (!arm_use_neon) {
+-          configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+-          cflags += [ "-mfpu=neon" ]
+-        }
++        deps += [ ":skia_opts_neon" ]
+       }
+     } else {
+       sources = skia_opts.none_sources
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/gn/opts.gni qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/gn/opts.gni
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/gn/opts.gni	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/gn/opts.gni	2017-06-10 13:01:07.120762647 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/gn/opts.gni	2017-06-12 12:20:30.277109309 +0200
 @@ -23,6 +23,7 @@
    "$_src/opts/SkBitmapProcState_matrixProcs_neon.cpp",
    "$_src/opts/SkBlitMask_opts_arm_neon.cpp",
@@ -19,7 +63,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
  crc32 = [ "$_src/opts/SkOpts_crc32.cpp" ]
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState.cpp qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState.cpp
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState.cpp	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState.cpp	2017-06-10 12:52:48.259092758 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState.cpp	2017-06-12 12:20:30.382107811 +0200
 @@ -19,7 +19,7 @@
  #include "SkImageEncoder.h"
  #include "SkResourceCache.h"
@@ -40,7 +84,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
              S32_alpha_D32_nofilter_DXDY,
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState_matrixProcs.cpp qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState_matrixProcs.cpp
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState_matrixProcs.cpp	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState_matrixProcs.cpp	2017-06-10 12:52:48.259092758 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBitmapProcState_matrixProcs.cpp	2017-06-12 12:20:30.448106869 +0200
 @@ -47,16 +47,16 @@
  ///////////////////////////////////////////////////////////////////////////////
  
@@ -63,7 +107,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
  #define TILEY_PROCF(fy, max)    SkClampMax((fy) >> 16, max)
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkBlitter_RGB16.cpp qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBlitter_RGB16.cpp
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkBlitter_RGB16.cpp	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBlitter_RGB16.cpp	2017-06-10 12:52:48.260092743 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkBlitter_RGB16.cpp	2017-06-12 12:20:30.449106855 +0200
 @@ -20,7 +20,7 @@
                                        uint32_t expanded32, unsigned maskRB);
  #endif
@@ -102,7 +146,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
      do {
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkCpu.cpp qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkCpu.cpp
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkCpu.cpp	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkCpu.cpp	2017-06-10 13:10:57.090108380 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkCpu.cpp	2017-06-12 12:20:30.449106855 +0200
 @@ -73,6 +73,124 @@
          return features;
      }
@@ -230,7 +274,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
       !defined(SK_BUILD_FOR_ANDROID_FRAMEWORK)
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkOpts.cpp qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkOpts.cpp
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkOpts.cpp	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkOpts.cpp	2017-06-10 12:56:42.672648362 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkOpts.cpp	2017-06-12 12:20:30.449106855 +0200
 @@ -99,6 +99,7 @@
      void Init_avx();
      void Init_hsw();
@@ -251,7 +295,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
  
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkUtilsArm.h qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkUtilsArm.h
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/core/SkUtilsArm.h	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkUtilsArm.h	2017-06-10 12:52:48.260092743 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/core/SkUtilsArm.h	2017-06-12 12:20:30.450106841 +0200
 @@ -8,12 +8,75 @@
  #ifndef SkUtilsArm_DEFINED
  #define SkUtilsArm_DEFINED
@@ -334,7 +378,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/ski
  #endif // SkUtilsArm_DEFINED
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/opts/SkOpts_neon.cpp qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/opts/SkOpts_neon.cpp
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/skia/src/opts/SkOpts_neon.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/opts/SkOpts_neon.cpp	2017-06-10 12:52:48.259092758 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/third_party/skia/src/opts/SkOpts_neon.cpp	2017-06-12 12:20:30.450106841 +0200
 @@ -0,0 +1,54 @@
 +/*
 + * Copyright 2015 Google Inc.
