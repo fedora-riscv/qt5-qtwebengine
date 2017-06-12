@@ -1,6 +1,6 @@
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/skia/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/skia/BUILD.gn	2017-06-12 12:24:57.026914055 +0200
++++ qtwebengine-opensource-src-5.9.0-skia-neon/src/3rdparty/chromium/skia/BUILD.gn	2017-06-12 12:59:26.707922417 +0200
 @@ -486,6 +486,24 @@
  
  # Separated out so it can be compiled with different flags for SSE.
@@ -12,7 +12,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/skia/BUILD.gn q
 +      # when running this.
 +      if (!arm_use_neon) {
 +        configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
-+        cflags += [ "-mfpu=neon" ]
++        cflags = [ "-mfpu=neon" ]
 +      }
 +      visibility = [ ":skia_opts" ]
 +      configs -= [ "//build/config/compiler:chromium_code" ]
