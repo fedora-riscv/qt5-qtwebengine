@@ -1,0 +1,32 @@
+From 33b69c4d138a8eebc392737ee1a58d999f922d59 Mon Sep 17 00:00:00 2001
+From: Allan Sandfeld Jensen <allan.jensen@qt.io>
+Date: Mon, 12 Jun 2017 12:36:17 +0200
+Subject: [PATCH] Always set a host toolchain
+
+If we don't give Chromium a host toolchain it will pick one of its own
+overriding which compiler should be used, and breaking native builds
+on non-x86 architectuers.
+
+Task-number: QTBUG-61128
+Change-Id: Ia25a4f43a28214003abcb11dc75a0e57064f76a7
+---
+ src/core/config/linux.pri | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/config/linux.pri b/src/core/config/linux.pri
+index 24951cd..076d8a3 100644
+--- a/src/core/config/linux.pri
++++ b/src/core/config/linux.pri
+@@ -103,8 +103,8 @@ host_build {
+     gn_args += use_system_libffi=false
+ } else {
+     gn_args += custom_toolchain=\"$$QTWEBENGINE_OUT_ROOT/src/toolchain:target\"
++    gn_args += host_toolchain=\"$$QTWEBENGINE_OUT_ROOT/src/toolchain:host\"
+     cross_compile {
+-        gn_args += host_toolchain=\"$$QTWEBENGINE_OUT_ROOT/src/toolchain:host\"
+         gn_args += v8_snapshot_toolchain=\"$$QTWEBENGINE_OUT_ROOT/src/toolchain:v8_snapshot\"
+         GN_HOST_CPU = $$gnArch($$QMAKE_HOST.arch)
+         GN_TARGET_CPU = $$gnArch($$QT_ARCH)
+-- 
+2.7.4
+
