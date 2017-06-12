@@ -105,9 +105,9 @@ Patch22: qtwebengine-opensource-src-5.9.0-system-re2.patch
 # Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 # https://codereview.qt-project.org/196178
 Patch100: qtwebengine-opensource-src-5.9.0-gn-aarch64.patch
-# Backport upstream patch to fix native builds on ARM and aarch64 (QTBUG-61128)
-# https://codereview.qt-project.org/197071
-Patch101: qtwebengine-opensource-src-5.9.0-host-toolchain.patch
+# Backport patch to fix FTBFS with GCC on aarch64 from upstream Chromium
+# https://codereview.chromium.org/2545053002
+Patch101: qtwebengine-opensource-src-5.9.0-aarch64-gcc-toolchain.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -354,7 +354,7 @@ BuildArch: noarch
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .system-re2
 %patch100 -p1 -b .gn-aarch64
-%patch101 -p1 -b .host-toolchain
+%patch101 -p1 -b .aarch64-gcc-toolchain
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -362,6 +362,10 @@ sed -i -e 's!gpu//!gpu/!g' \
 sed -i -e 's!\./!!g' \
   src/3rdparty/chromium/third_party/angle/src/compiler/preprocessor/Tokenizer.cpp \
   src/3rdparty/chromium/third_party/angle/src/compiler/translator/glslang_lex.cpp
+# delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
+# never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
+sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
+  src/3rdparty/chromium/build/toolchain/linux/BUILD.gn
 
 # http://bugzilla.redhat.com/1337585
 # can't just delete, but we'll overwrite with system headers to be on the safe side
@@ -571,8 +575,9 @@ done
 - Drop the flag hacks (-g1 -fno-delete-null-pointer-checks), fixed upstream
 - Force verbose output from the GN bootstrap process
 - Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
-- Backport upstream patch to fix native builds on ARM and aarch64 (QTBUG-61128)
+- Backport patch to fix FTBFS with GCC on aarch64 from upstream Chromium
 - Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
+- Delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn
 
 * Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
 - fix rpm macros
