@@ -136,22 +136,23 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/cc/BUILD.gn qtw
  static_library("test_support") {
    testonly = true
    sources = [
-diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/chrome/renderer/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/chrome/renderer/BUILD.gn
---- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/chrome/renderer/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/chrome/renderer/BUILD.gn	2017-06-10 02:12:19.472150369 +0200
-@@ -136,6 +136,12 @@
-     "//v8:v8",
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/content/renderer/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/content/renderer/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/content/renderer/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/content/renderer/BUILD.gn	2017-06-12 14:19:26.095936011 +0200
+@@ -468,6 +468,13 @@
+     "//ui/surface",
+     "//v8",
    ]
- 
++
 +  if (current_cpu == "x86") {
 +    deps += [
-+      "//v8:v8(//build/toolchain/linux:x86_sse2)",
++      "//v8(//build/toolchain/linux:x86_sse2)",
 +    ]
 +  }
 +
-   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+   allow_circular_includes_from = []
  
-   if (enable_nacl) {
+   if (use_aura && !use_qt) {
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/media/base/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/media/base/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn	2017-06-08 22:49:57.484256877 +0200
@@ -2702,29 +2703,8 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/third_party/web
  #endif
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-06-12 01:48:06.425611303 +0200
-@@ -73,6 +73,9 @@
-   # If true, doesn't compile debug symbols into v8base reducing the
-   # size of the binary and increasing the speed of gdb.
-   remove_v8base_debug_symbols = false
-+
-+  # Whether to build V8 as a shared library
-+  v8_build_shared = false
- }
- 
- # Set project-specific defaults for some args if not provided in args.gn. The
-@@ -99,6 +102,10 @@
- if (v8_enable_disassembler == "") {
-   v8_enable_disassembler = is_debug && !v8_optimized_debug
- }
-+if (v8_current_cpu == "x86" || v8_current_cpu == "x87") {
-+  # build V8 shared on x86 so we can swap x87 vs. SSE2 builds
-+  v8_build_shared = true
-+}
- 
- # Specifies if the target build is a simulator build. Comparing target cpu
- # with v8 target cpu to not affect simulator builds for making cross-compile
-@@ -117,7 +124,7 @@
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-06-12 14:15:23.270523710 +0200
+@@ -117,7 +117,7 @@
  
    include_dirs = [ "." ]
  
@@ -2733,7 +2713,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
      defines = [ "BUILDING_V8_SHARED" ]
    }
  }
-@@ -131,14 +138,14 @@
+@@ -131,14 +131,14 @@
  # This config should be applied to code using the libplatform.
  config("libplatform_config") {
    include_dirs = [ "include" ]
@@ -2750,7 +2730,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
      defines = [ "USING_V8_BASE_SHARED" ]
    }
    libs = []
-@@ -155,7 +162,7 @@
+@@ -155,7 +155,7 @@
  # This config should only be applied to code using V8 and not any V8 code
  # itself.
  config("external_config") {
@@ -2759,7 +2739,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
      defines = [ "USING_V8_SHARED" ]
    }
    include_dirs = [ "include" ]
-@@ -331,6 +338,9 @@
+@@ -331,6 +331,9 @@
        cflags += [ "/arch:SSE2" ]
      }
    }
@@ -2769,7 +2749,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
    if (v8_current_cpu == "x64") {
      defines += [ "V8_TARGET_ARCH_X64" ]
      if (is_win) {
-@@ -2274,7 +2284,7 @@
+@@ -2274,7 +2277,7 @@
  
    defines = []
  
@@ -2778,7 +2758,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
      defines = [ "BUILDING_V8_BASE_SHARED" ]
    }
  
-@@ -2364,7 +2374,7 @@
+@@ -2364,7 +2367,7 @@
  
    configs = [ ":internal_config_base" ]
  
@@ -2787,7 +2767,7 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
      defines = [ "BUILDING_V8_PLATFORM_SHARED" ]
    }
  
-@@ -2507,7 +2517,26 @@
+@@ -2507,7 +2510,26 @@
    }
  }
  
@@ -2815,6 +2795,31 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/BUILD.gn qtw
    v8_component("v8") {
      sources = [
        "src/v8dll-main.cc",
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/gni/v8.gni qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/gni/v8.gni
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/gni/v8.gni	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/gni/v8.gni	2017-06-12 14:15:47.965158851 +0200
+@@ -30,6 +30,9 @@
+   # Enable ECMAScript Internationalization API. Enabling this feature will
+   # add a dependency on the ICU library.
+   v8_enable_i18n_support = true
++
++  # Whether to build V8 as a shared library
++  v8_build_shared = false
+ }
+ 
+ if (v8_use_external_startup_data == "") {
+@@ -42,6 +45,11 @@
+   v8_enable_backtrace = is_debug && !v8_optimized_debug
+ }
+ 
++if (v8_current_cpu == "x86" || v8_current_cpu == "x87") {
++  # build V8 shared on x86 so we can swap x87 vs. SSE2 builds
++  v8_build_shared = true
++}
++
+ # Points to // in v8 stand-alone or to //v8/ in chromium. We need absolute
+ # paths for all configs in templates as they are shared in different
+ # subdirectories.
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/make-v8-sse2-gyp.sh qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/make-v8-sse2-gyp.sh
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/make-v8-sse2-gyp.sh	1970-01-01 01:00:00.000000000 +0100
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/make-v8-sse2-gyp.sh	2017-06-08 22:50:09.496075706 +0200
@@ -2875,6 +2880,30 @@ diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/make-v8-sse2
 +    -e "s/\.bin/_sse2.bin/g" \
 +    -e "s#^\( *\)\('target_name': 'v8_sse2',\)#\1\2\n\1'product_name': 'v8',\n\1'product_dir': '<(PRODUCT_DIR)/lib/sse2',#g" \
 +    v8.gyp >>v8_sse2.gyp
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/src/inspector/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/src/inspector/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/src/inspector/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/src/inspector/BUILD.gn	2017-06-12 14:16:16.955730521 +0200
+@@ -106,7 +106,7 @@
+       "/wd4996",  # Deprecated function call.
+     ]
+   }
+-  if (is_component_build) {
++  if (is_component_build || v8_build_shared) {
+     defines = [ "BUILDING_V8_SHARED" ]
+   }
+ }
+diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/test/cctest/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/test/cctest/BUILD.gn
+--- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/v8/test/cctest/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/v8/test/cctest/BUILD.gn	2017-06-12 14:16:45.945302206 +0200
+@@ -335,7 +335,7 @@
+ 
+   defines = []
+ 
+-  if (is_component_build) {
++  if (is_component_build || v8_build_shared) {
+     # cctest can't be built against a shared library, so we
+     # need to depend on the underlying static target in that case.
+     deps += [ "../..:v8_maybe_snapshot" ]
 diff -Nur qtwebengine-opensource-src-5.9.0/src/core/core_module.pro qtwebengine-opensource-src-5.9.0-no-sse2/src/core/core_module.pro
 --- qtwebengine-opensource-src-5.9.0/src/core/core_module.pro	2017-05-19 06:22:04.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/core/core_module.pro	2017-06-12 00:25:07.241337485 +0200
