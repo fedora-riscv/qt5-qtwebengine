@@ -1,3 +1,144 @@
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webengine/customdialogs/customdialogs.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/customdialogs/customdialogs.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webengine/customdialogs/customdialogs.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/customdialogs/customdialogs.pro	2017-06-12 20:48:36.743167401 +0200
+@@ -1,5 +1,7 @@
+ QT += webengine
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ HEADERS += \
+     server.h
+ 
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webengine/minimal/minimal.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/minimal/minimal.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webengine/minimal/minimal.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/minimal/minimal.pro	2017-06-12 20:48:02.646665156 +0200
+@@ -2,6 +2,8 @@
+ 
+ QT += webengine
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ SOURCES += main.cpp
+ 
+ RESOURCES += qml.qrc
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webengine/quicknanobrowser/quicknanobrowser.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/quicknanobrowser/quicknanobrowser.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webengine/quicknanobrowser/quicknanobrowser.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/quicknanobrowser/quicknanobrowser.pro	2017-06-12 20:48:24.553340621 +0200
+@@ -20,5 +20,7 @@
+     QT += widgets # QApplication is required to get native styling with QtQuickControls
+ }
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ target.path = $$[QT_INSTALL_EXAMPLES]/webengine/quicknanobrowser
+ INSTALLS += target
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webengine/recipebrowser/recipebrowser.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/recipebrowser/recipebrowser.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webengine/recipebrowser/recipebrowser.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webengine/recipebrowser/recipebrowser.pro	2017-06-12 20:48:31.672239461 +0200
+@@ -2,6 +2,8 @@
+ 
+ QT += quick qml quickcontrols2 webengine
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ cross_compile {
+   posix|qnx|linux: DEFINES += QTWEBENGINE_RECIPE_BROWSER_EMBEDDED
+ }
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro	2017-06-12 20:47:51.870824827 +0200
+@@ -1,5 +1,7 @@
+ QT      +=  webenginewidgets
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ HEADERS =   mainwindow.h
+ SOURCES =   main.cpp \
+             mainwindow.cpp
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro	2017-06-12 20:47:00.603584486 +0200
+@@ -3,6 +3,8 @@
+ TEMPLATE = app
+ CONFIG += c++11
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ SOURCES += \
+     main.cpp\
+     mainwindow.cpp
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/demobrowser/demobrowser.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/demobrowser/demobrowser.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/demobrowser/demobrowser.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/demobrowser/demobrowser.pro	2017-06-12 20:47:26.036207636 +0200
+@@ -3,6 +3,8 @@
+ QT += webenginewidgets network widgets printsupport
+ CONFIG += c++11
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ qtHaveModule(uitools):!embedded: QT += uitools
+ else: DEFINES += QT_NO_UITOOLS
+ 
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/markdowneditor/markdowneditor.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/markdowneditor/markdowneditor.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/markdowneditor/markdowneditor.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/markdowneditor/markdowneditor.pro	2017-06-12 20:47:36.026059609 +0200
+@@ -3,6 +3,8 @@
+ QT += webenginewidgets webchannel
+ CONFIG += c++11
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ HEADERS += \
+     mainwindow.h \
+     previewpage.h \
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/minimal/minimal.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/minimal/minimal.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/minimal/minimal.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/minimal/minimal.pro	2017-06-12 20:46:13.714279273 +0200
+@@ -2,6 +2,8 @@
+ 
+ QT += webenginewidgets
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ SOURCES += main.cpp
+ 
+ target.path = $$[QT_INSTALL_EXAMPLES]/webenginewidgets/minimal
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/simplebrowser/simplebrowser.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/simplebrowser/simplebrowser.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/simplebrowser/simplebrowser.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/simplebrowser/simplebrowser.pro	2017-06-12 20:47:31.059133208 +0200
+@@ -3,6 +3,8 @@
+ QT += webenginewidgets
+ CONFIG += c++11
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ HEADERS += \
+     browser.h \
+     browserwindow.h \
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/spellchecker/spellchecker.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/spellchecker/spellchecker.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/spellchecker/spellchecker.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/spellchecker/spellchecker.pro	2017-06-12 20:47:46.165909361 +0200
+@@ -7,6 +7,8 @@
+     error("Spellcheck example can not be built when using native OS dictionaries.")
+ }
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ HEADERS += \
+     webview.h
+ 
+diff -Nur qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/videoplayer/videoplayer.pro qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/videoplayer/videoplayer.pro
+--- qtwebengine-opensource-src-5.9.0/examples/webenginewidgets/videoplayer/videoplayer.pro	2017-05-19 06:22:04.000000000 +0200
++++ qtwebengine-opensource-src-5.9.0-no-sse2/examples/webenginewidgets/videoplayer/videoplayer.pro	2017-06-12 20:47:20.160294702 +0200
+@@ -2,6 +2,8 @@
+ 
+ QT += webenginewidgets
+ 
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++
+ HEADERS += \
+     mainwindow.h \
+     fullscreenwindow.h \
 diff -Nur qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/config/compiler/BUILD.gn qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/build/config/compiler/BUILD.gn
 --- qtwebengine-opensource-src-5.9.0/src/3rdparty/chromium/build/config/compiler/BUILD.gn	2017-05-18 16:51:44.000000000 +0200
 +++ qtwebengine-opensource-src-5.9.0-no-sse2/src/3rdparty/chromium/build/config/compiler/BUILD.gn	2017-06-08 23:09:28.104582812 +0200
