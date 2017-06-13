@@ -41,7 +41,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -557,6 +557,9 @@ done
 
 
 %changelog
+* Tue Jun 13 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-2
+- arm-fpu-fix patch: Also build the host tools (i.e., GN) with the correct FPU
+
 * Mon Jun 12 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-1
 - Update to 5.9.0
 - Update version numbers of bundled stuff
