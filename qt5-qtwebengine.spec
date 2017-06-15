@@ -23,6 +23,10 @@
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
 %global arm_neon 1
 
+# the QMake CONFIG flags to force debugging information to be produced in
+# release builds, and for all parts of the code
+%global debug_config webcore_debug v8base_debug force_debug_info
+
 #global prerelease rc
 
 # spellchecking dictionary directory
@@ -399,7 +403,7 @@ export NINJA_PATH=%{_bindir}/ninja-build
 mkdir %{_target_platform}
 pushd %{_target_platform}
 
-%{qmake_qt5} CONFIG+="webcore_debug v8base_debug force_debug_info" \
+%{qmake_qt5} CONFIG+="%{debug_config}" \
   WEBENGINE_CONFIG+="use_system_icu use_spellchecker" ..
 
 make %{?_smp_mflags}
