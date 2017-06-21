@@ -23,9 +23,20 @@
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
 %global arm_neon 1
 
+%if 0%{?fedora} > 26
 # the QMake CONFIG flags to force debugging information to be produced in
 # release builds, and for all parts of the code
 %global debug_config webcore_debug v8base_debug force_debug_info
+%else
+%ifarch %{arm}
+# the ARM builder runs out of memory on Fedora 26 during linking with the full
+# setting below, so omit debugging information for the parts upstream deems it
+# dispensable for (webcore, v8base)
+%global debug_config force_debug_info
+%else
+%global debug_config webcore_debug v8base_debug force_debug_info
+%endif
+%endif
 
 #global prerelease rc
 
