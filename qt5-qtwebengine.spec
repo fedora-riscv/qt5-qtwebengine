@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -118,8 +118,8 @@ Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
 # Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
 Patch22: qtwebengine-opensource-src-5.9.0-system-re2.patch
 # Fix broken binary compatibility for C memory management functions (incomplete
-# upstream fix for QTBUG-60565)
-Patch23: qtwebengine-opensource-src-5.9.0-qtbug-60565-c-symbols.patch
+# upstream fix for QTBUG-60565) (QTBUG-61521)
+Patch23: qtwebengine-opensource-src-5.9.0-qtbug-61521.patch
 # Backport upstream patch to fix GN FTBFS on aarch64 (QTBUG-61128)
 # https://codereview.qt-project.org/196178
 Patch100: qtwebengine-opensource-src-5.9.0-gn-aarch64.patch
@@ -371,7 +371,7 @@ BuildArch: noarch
 %patch20 -p1 -b .qt57
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .system-re2
-%patch23 -p1 -b .qtbug-60565-c-symbols
+%patch23 -p1 -b .qtbug-61521
 %patch100 -p1 -b .gn-aarch64
 %patch101 -p1 -b .aarch64-gcc-toolchain
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
@@ -580,9 +580,12 @@ done
 
 
 %changelog
+* Mon Jun 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-4
+- Add a hunk to the QTBUG-61521 fix according to the upstream review
+
 * Sun Jun 25 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-3
 - Fix broken binary compatibility for C memory management functions (incomplete
-  upstream fix for QTBUG-60565)
+  upstream fix for QTBUG-60565) (QTBUG-61521)
 
 * Tue Jun 13 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-2
 - arm-fpu-fix patch: Also build the host tools (i.e., GN) with the correct FPU
