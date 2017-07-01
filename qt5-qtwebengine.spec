@@ -100,7 +100,7 @@ Patch5:  qtwebengine-opensource-src-5.9.0-system-icu-utf.patch
 # relevant to QtWebEngine only), 516543004, 1152053004 and 1161853008, along
 # with some custom fixes and improvements
 # also build V8 shared and twice on i686 (once for x87, once for SSE2)
-Patch6:  qtwebengine-opensource-src-5.9.0-no-sse2.patch
+Patch6:  qtwebengine-opensource-src-5.9.1-no-sse2.patch
 # fix missing ARM -mfpu setting
 Patch9:  qtwebengine-opensource-src-5.9.0-arm-fpu-fix.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
@@ -572,10 +572,11 @@ done
 
 
 %changelog
-* Fri Jun 30 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.1-1
+* Sat Jul 01 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.1-1
 - Update to 5.9.1
 - Rebase qtbug-61521 patch (drop the parts that are already in 5.9.1)
 - Drop backported GN aarch64 patches already included in 5.9.1
+- no-sse2 patch: Upstream added 2 examples, add -Wl,-rpath-link to them too
 
 * Mon Jun 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.0-4
 - Add a hunk to the QTBUG-61521 fix according to the upstream review
