@@ -186,7 +186,7 @@ BuildRequires: pkgconfig(alsa)
 BuildRequires: pkgconfig(libpci)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
-BuildRequires: perl
+BuildRequires: perl-interpreter
 BuildRequires: python
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.6.0
