@@ -1,6 +1,6 @@
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/breakpad/src/build/common.gypi qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/breakpad/src/build/common.gypi
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/breakpad/src/build/common.gypi	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/breakpad/src/build/common.gypi	2016-02-25 00:47:14.856720934 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/breakpad/src/build/common.gypi qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/breakpad/src/build/common.gypi
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/breakpad/src/build/common.gypi	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/breakpad/src/build/common.gypi	2016-07-17 18:06:28.022746102 +0200
 @@ -80,8 +80,8 @@
        # The system root for cross-compiles. Default: none.
        'sysroot%': '',
@@ -30,10 +30,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/breakpad/src/bu
              ],
              'ldflags': [
                '-m32',
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/build/common.gypi qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/build/common.gypi
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/build/common.gypi	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/build/common.gypi	2016-02-25 00:47:14.883721079 +0100
-@@ -3904,15 +3904,7 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/build/common.gypi qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/build/common.gypi
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/build/common.gypi	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/build/common.gypi	2016-07-17 18:06:28.025746118 +0200
+@@ -3898,15 +3898,7 @@
                  # value used during computation does not change depending on
                  # how the compiler optimized the code, since the value is
                  # always kept in its specified precision.
@@ -49,10 +49,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/build/common.gy
                    '-m32',
                  ],
                  'ldflags': [
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/BUILD.gn qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/cc/BUILD.gn
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/BUILD.gn	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/cc/BUILD.gn	2016-02-25 00:47:14.892721127 +0100
-@@ -502,13 +502,6 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/cc/BUILD.gn qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/cc/BUILD.gn
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/cc/BUILD.gn	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/cc/BUILD.gn	2016-07-17 19:24:47.069349645 +0200
+@@ -528,13 +528,6 @@
      "trees/tree_synchronizer.h",
    ]
  
@@ -63,18 +63,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/BUILD.gn qtw
 -    ]
 -  }
 -
+   configs += [ "//build/config:precompiled_headers" ]
+ 
    public_deps = [
-     "//cc/base",
-     "//skia",
-@@ -516,6 +509,7 @@
+@@ -544,6 +537,7 @@
    deps = [
      "//base",
      "//base/third_party/dynamic_annotations",
 +    "//cc:cc_opts",
+     "//cc/proto",
      "//cc/surfaces:surface_id",
      "//gpu",
-     "//gpu/command_buffer/client:gles2_interface",
-@@ -533,6 +527,36 @@
+@@ -563,6 +557,36 @@
    }
  }
  
@@ -111,18 +111,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/BUILD.gn qtw
  source_set("test_support") {
    testonly = true
    sources = [
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/cc.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/cc/cc.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/cc.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/cc/cc.gyp	2016-02-25 00:47:14.903721186 +0100
-@@ -21,6 +21,7 @@
-         '<(DEPTH)/ui/events/events.gyp:events_base',
-         '<(DEPTH)/ui/gfx/gfx.gyp:gfx',
-         '<(DEPTH)/ui/gfx/gfx.gyp:gfx_geometry',
-+        'cc_opts',
-       ],
-       'variables': {
-         'optimize': 'max',
-@@ -563,14 +564,6 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/cc/cc.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/cc/cc.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/cc/cc.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/cc/cc.gyp	2016-07-17 19:23:10.962834059 +0200
+@@ -595,14 +595,6 @@
        'includes': [
          '../build/android/increase_size_for_speed.gypi',
        ],
@@ -136,8 +128,16 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/cc.gyp qtweb
 -      ],
      },
      {
-       # GN version: //cc/surfaces
-@@ -621,5 +614,41 @@
+       # GN version: "//cc/proto"
+@@ -667,6 +659,7 @@
+         '<(DEPTH)/ui/events/events.gyp:events_base',
+         '<(DEPTH)/ui/gfx/gfx.gyp:gfx',
+         '<(DEPTH)/ui/gfx/gfx.gyp:gfx_geometry',
++        'cc_opts',
+       ],
+       'defines': [
+         'CC_SURFACES_IMPLEMENTATION=1',
+@@ -704,5 +697,41 @@
          '../build/android/increase_size_for_speed.gypi',
        ],
      },
@@ -179,10 +179,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/cc/cc.gyp qtweb
 +    },    
    ],
  }
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/BUILD.gn qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/BUILD.gn	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn	2016-02-25 00:47:14.941721390 +0100
-@@ -270,13 +270,13 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/BUILD.gn qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/BUILD.gn	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/BUILD.gn	2016-07-17 18:06:36.080790050 +0200
+@@ -279,13 +279,13 @@
    }
  
    if (current_cpu == "x86" || current_cpu == "x64") {
@@ -202,7 +202,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/BUIL
    }
  
    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-@@ -462,10 +462,47 @@
+@@ -484,10 +484,47 @@
  }
  
  if (current_cpu == "x86" || current_cpu == "x64") {
@@ -250,38 +250,38 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/BUIL
        "simd/convert_yuv_to_rgb_sse.asm",
        "simd/convert_yuva_to_argb_mmx.asm",
        "simd/empty_register_state_mmx.asm",
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/media.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/media.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/media.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/media.cc	2016-02-25 00:47:14.954721460 +0100
-@@ -9,6 +9,8 @@
- #include "base/path_service.h"
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/media.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/media.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/media.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/media.cc	2016-07-17 18:06:36.080790050 +0200
+@@ -11,6 +11,8 @@
  #include "base/synchronization/lock.h"
+ #include "base/trace_event/trace_event.h"
  #include "build/build_config.h"
 +#include "media/base/sinc_resampler.h"
 +#include "media/base/vector_math.h"
  #include "media/base/yuv_convert.h"
  
  #if !defined(MEDIA_DISABLE_FFMPEG)
-@@ -24,6 +26,8 @@
+@@ -29,6 +31,8 @@
+     TRACE_EVENT_WARMUP_CATEGORY("media");
  
-   MediaInitializer() {
      // Perform initialization of libraries which require runtime CPU detection.
 +    vector_math::Initialize();
 +    SincResampler::InitializeCPUSpecificFeatures();
      InitializeCPUSpecificYUVConversions();
  
  #if !defined(MEDIA_DISABLE_FFMPEG)
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h	2016-02-25 00:47:14.968721535 +0100
-@@ -63,6 +63,17 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb.h	2016-07-17 19:32:39.210872688 +0200
+@@ -65,6 +65,17 @@
                                          int rgbstride,
                                          YUVType yuv_type);
  
-+MEDIA_EXPORT void ConvertYUVToRGB32_MMX(const uint8* yplane,
-+                                        const uint8* uplane,
-+                                        const uint8* vplane,
-+                                        uint8* rgbframe,
++MEDIA_EXPORT void ConvertYUVToRGB32_MMX(const uint8_t* yplane,
++                                        const uint8_t* uplane,
++                                        const uint8_t* vplane,
++                                        uint8_t* rgbframe,
 +                                        int width,
 +                                        int height,
 +                                        int ystride,
@@ -289,56 +289,56 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +                                        int rgbstride,
 +                                        YUVType yuv_type);
 +
- MEDIA_EXPORT void ConvertYUVAToARGB_MMX(const uint8* yplane,
-                                         const uint8* uplane,
-                                         const uint8* vplane,
-@@ -114,6 +125,13 @@
- // issue on at least Win64.  The C-equivalent RowProc versions' prototypes
- // include the same change to ptrdiff_t to reuse the typedefs.
- 
-+MEDIA_EXPORT void ConvertYUVToRGB32Row_MMX(const uint8* yplane,
-+                                           const uint8* uplane,
-+                                           const uint8* vplane,
-+                                           uint8* rgbframe,
-+                                           ptrdiff_t width,
-+                                           const int16* convert_table);
-+
- MEDIA_EXPORT void ConvertYUVAToARGBRow_MMX(const uint8* yplane,
-                                            const uint8* uplane,
-                                            const uint8* vplane,
-@@ -129,6 +147,14 @@
+ MEDIA_EXPORT void ConvertYUVAToARGB_MMX(const uint8_t* yplane,
+                                         const uint8_t* uplane,
+                                         const uint8_t* vplane,
+@@ -124,6 +135,13 @@
                                             ptrdiff_t width,
-                                            const int16* convert_table);
+                                            const int16_t* convert_table);
  
-+MEDIA_EXPORT void ScaleYUVToRGB32Row_MMX(const uint8* y_buf,
-+                                         const uint8* u_buf,
-+                                         const uint8* v_buf,
-+                                         uint8* rgb_buf,
++MEDIA_EXPORT void ConvertYUVToRGB32Row_MMX(const uint8_t* yplane,
++                                           const uint8_t* uplane,
++                                           const uint8_t* vplane,
++                                           uint8_t* rgbframe,
++                                           ptrdiff_t width,
++                                           const int16_t* convert_table);
++
+ MEDIA_EXPORT void ConvertYUVToRGB32Row_SSE(const uint8_t* yplane,
+                                            const uint8_t* uplane,
+                                            const uint8_t* vplane,
+@@ -131,6 +149,14 @@
+                                            ptrdiff_t width,
+                                            const int16_t* convert_table);
+ 
++MEDIA_EXPORT void ScaleYUVToRGB32Row_MMX(const uint8_t* y_buf,
++                                         const uint8_t* u_buf,
++                                         const uint8_t* v_buf,
++                                         uint8_t* rgb_buf,
 +                                         ptrdiff_t width,
 +                                         ptrdiff_t source_dx,
-+                                         const int16* convert_table);
++                                         const int16_t* convert_table);
 +
- MEDIA_EXPORT void ScaleYUVToRGB32Row_SSE(const uint8* y_buf,
-                                          const uint8* u_buf,
-                                          const uint8* v_buf,
-@@ -145,6 +171,14 @@
+ MEDIA_EXPORT void ScaleYUVToRGB32Row_SSE(const uint8_t* y_buf,
+                                          const uint8_t* u_buf,
+                                          const uint8_t* v_buf,
+@@ -147,6 +173,14 @@
                                                ptrdiff_t source_dx,
-                                               const int16* convert_table);
+                                               const int16_t* convert_table);
  
-+MEDIA_EXPORT void LinearScaleYUVToRGB32Row_MMX(const uint8* y_buf,
-+                                               const uint8* u_buf,
-+                                               const uint8* v_buf,
-+                                               uint8* rgb_buf,
++MEDIA_EXPORT void LinearScaleYUVToRGB32Row_MMX(const uint8_t* y_buf,
++                                               const uint8_t* u_buf,
++                                               const uint8_t* v_buf,
++                                               uint8_t* rgb_buf,
 +                                               ptrdiff_t width,
 +                                               ptrdiff_t source_dx,
-+                                               const int16* convert_table);
++                                               const int16_t* convert_table);
 +
- MEDIA_EXPORT void LinearScaleYUVToRGB32Row_SSE(const uint8* y_buf,
-                                                const uint8* u_buf,
-                                                const uint8* v_buf,
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm	2016-02-25 00:47:14.968721535 +0100
+ MEDIA_EXPORT void LinearScaleYUVToRGB32Row_SSE(const uint8_t* y_buf,
+                                                const uint8_t* u_buf,
+                                                const uint8_t* v_buf,
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_mmx.asm	2016-07-17 18:06:36.101790164 +0200
 @@ -0,0 +1,23 @@
 +; Copyright (c) 2011 The Chromium Authors. All rights reserved.
 +; Use of this source code is governed by a BSD-style license that can be
@@ -363,17 +363,17 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +;                                          const int16* convert_table);
 +%define SYMBOL ConvertYUVToRGB32Row_MMX
 +%include "convert_yuv_to_rgb_mmx.inc"
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc	2016-02-25 00:47:14.976721578 +0100
-@@ -13,6 +13,34 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/convert_yuv_to_rgb_x86.cc	2016-07-17 19:36:04.063964591 +0200
+@@ -47,6 +47,34 @@
+   EmptyRegisterState();
+ }
  
- namespace media {
- 
-+void ConvertYUVToRGB32_MMX(const uint8* yplane,
-+                           const uint8* uplane,
-+                           const uint8* vplane,
-+                           uint8* rgbframe,
++void ConvertYUVToRGB32_MMX(const uint8_t* yplane,
++                           const uint8_t* uplane,
++                           const uint8_t* vplane,
++                           uint8_t* rgbframe,
 +                           int width,
 +                           int height,
 +                           int ystride,
@@ -382,10 +382,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +                           YUVType yuv_type) {
 +  unsigned int y_shift = GetVerticalShift(yuv_type);
 +  for (int y = 0; y < height; ++y) {
-+    uint8* rgb_row = rgbframe + y * rgbstride;
-+    const uint8* y_ptr = yplane + y * ystride;
-+    const uint8* u_ptr = uplane + (y >> y_shift) * uvstride;
-+    const uint8* v_ptr = vplane + (y >> y_shift) * uvstride;
++    uint8_t* rgb_row = rgbframe + y * rgbstride;
++    const uint8_t* y_ptr = yplane + y * ystride;
++    const uint8_t* u_ptr = uplane + (y >> y_shift) * uvstride;
++    const uint8_t* v_ptr = vplane + (y >> y_shift) * uvstride;
 +
 +    ConvertYUVToRGB32Row_MMX(y_ptr,
 +                             u_ptr,
@@ -398,28 +398,28 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +  EmptyRegisterState();
 +}
 +
- void ConvertYUVAToARGB_MMX(const uint8* yplane,
-                            const uint8* uplane,
-                            const uint8* vplane,
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/filter_yuv.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/filter_yuv.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv.h	2016-02-25 00:47:14.977721583 +0100
-@@ -19,6 +19,12 @@
+ void ConvertYUVToRGB32_SSE(const uint8_t* yplane,
+                            const uint8_t* uplane,
+                            const uint8_t* vplane,
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/filter_yuv.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/filter_yuv.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv.h	2016-07-17 19:37:17.605356580 +0200
+@@ -20,6 +20,12 @@
                                    int source_width,
-                                   uint8 source_y_fraction);
+                                   uint8_t source_y_fraction);
  
-+MEDIA_EXPORT void FilterYUVRows_MMX(uint8* ybuf,
-+                                    const uint8* y0_ptr,
-+                                    const uint8* y1_ptr,
++MEDIA_EXPORT void FilterYUVRows_MMX(uint8_t* ybuf,
++                                    const uint8_t* y0_ptr,
++                                    const uint8_t* y1_ptr,
 +                                    int source_width,
-+                                    uint8 source_y_fraction);
++                                    uint8_t source_y_fraction);
 +
- MEDIA_EXPORT void FilterYUVRows_SSE2(uint8* ybuf,
-                                      const uint8* y0_ptr,
-                                      const uint8* y1_ptr,
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc	2016-02-25 00:47:14.978721589 +0100
+ MEDIA_EXPORT void FilterYUVRows_SSE2(uint8_t* ybuf,
+                                      const uint8_t* y0_ptr,
+                                      const uint8_t* y1_ptr,
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/filter_yuv_mmx.cc	2016-07-17 19:37:56.249562560 +0200
 @@ -0,0 +1,79 @@
 +// Copyright (c) 2011 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -443,11 +443,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +#pragma warning(disable: 4799)
 +#endif
 +
-+void FilterYUVRows_MMX(uint8* dest,
-+                       const uint8* src0,
-+                       const uint8* src1,
++void FilterYUVRows_MMX(uint8_t* dest,
++                       const uint8_t* src0,
++                       const uint8_t* src1,
 +                       int width,
-+                       uint8 fraction) {
++                       uint8_t fraction) {
 +  int pixel = 0;
 +
 +  // Process the unaligned bytes first.
@@ -500,9 +500,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +#endif
 +
 +}  // namespace media
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc	2016-02-25 00:47:14.978721589 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/sinc_resampler_sse.cc	2016-07-17 18:06:36.111790219 +0200
 @@ -0,0 +1,50 @@
 +// Copyright 2013 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -554,9 +554,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +}
 +
 +}  // namespace media
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc	2016-02-25 00:47:14.978721589 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/simd/vector_math_sse.cc	2016-07-17 18:06:36.112790224 +0200
 @@ -0,0 +1,118 @@
 +// Copyright 2013 The Chromium Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -676,15 +676,16 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/simd
 +
 +}  // namespace vector_math
 +}  // namespace media
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.cc	2016-02-25 00:47:15.049721970 +0100
-@@ -81,16 +81,11 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.cc	2016-07-17 19:40:18.772322232 +0200
+@@ -81,17 +81,12 @@
  #include <cmath>
  #include <limits>
  
 +#include "base/cpu.h"
  #include "base/logging.h"
+ #include "build/build_config.h"
  
 -#if defined(ARCH_CPU_X86_FAMILY)
 -#include <xmmintrin.h>
@@ -698,7 +699,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc
  #endif
  
  namespace media {
-@@ -111,10 +106,41 @@
+@@ -112,10 +107,41 @@
    return sinc_scale_factor;
  }
  
@@ -740,7 +741,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc
  SincResampler::SincResampler(double io_sample_rate_ratio,
                               int request_frames,
                               const ReadCB& read_cb)
-@@ -342,46 +368,7 @@
+@@ -343,46 +369,7 @@
        kernel_interpolation_factor * sum2);
  }
  
@@ -788,10 +789,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc
  float SincResampler::Convolve_NEON(const float* input_ptr, const float* k1,
                                     const float* k2,
                                     double kernel_interpolation_factor) {
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.h	2016-02-25 00:47:15.055722002 +0100
-@@ -34,6 +34,10 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler.h	2016-07-17 18:06:36.163790503 +0200
+@@ -35,6 +35,10 @@
      kKernelStorageSize = kKernelSize * (kKernelOffsetCount + 1),
    };
  
@@ -802,18 +803,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc
    // Callback type for providing more data into the resampler.  Expects |frames|
    // of data to be rendered into |destination|; zero padded if not enough frames
    // are available to satisfy the request.
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc	2016-02-25 00:47:15.057722012 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_perftest.cc	2016-07-17 18:06:36.171790546 +0200
 @@ -4,6 +4,7 @@
  
  #include "base/bind.h"
  #include "base/bind_helpers.h"
 +#include "base/cpu.h"
  #include "base/time/time.h"
+ #include "build/build_config.h"
  #include "media/base/sinc_resampler.h"
- #include "testing/gmock/include/gmock/gmock.h"
-@@ -60,6 +61,9 @@
+@@ -61,6 +62,9 @@
        &resampler, SincResampler::Convolve_C, true, "unoptimized_aligned");
  
  #if defined(CONVOLVE_FUNC)
@@ -823,18 +824,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc
    RunConvolveBenchmark(
        &resampler, SincResampler::CONVOLVE_FUNC, true, "optimized_aligned");
    RunConvolveBenchmark(
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc	2016-02-25 00:47:15.060722029 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/sinc_resampler_unittest.cc	2016-07-17 19:41:45.620785149 +0200
 @@ -9,6 +9,7 @@
  
  #include "base/bind.h"
  #include "base/bind_helpers.h"
 +#include "base/cpu.h"
+ #include "base/macros.h"
  #include "base/strings/string_number_conversions.h"
  #include "base/time/time.h"
- #include "build/build_config.h"
-@@ -163,6 +164,10 @@
+@@ -164,6 +165,10 @@
  static const double kKernelInterpolationFactor = 0.5;
  
  TEST(SincResamplerTest, Convolve) {
@@ -845,9 +846,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/sinc
    // Initialize a dummy resampler.
    MockSource mock_source;
    SincResampler resampler(
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math.cc	2016-02-25 00:47:15.063722045 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.cc	2016-07-17 18:06:36.173790557 +0200
 @@ -7,12 +7,17 @@
  
  #include <algorithm>
@@ -1035,9 +1036,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
  #if defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
  void FMAC_NEON(const float src[], float scale, int len, float dest[]) {
    const int rem = len % 4;
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math.h	2016-02-25 00:47:15.068722072 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math.h	2016-07-17 18:06:36.174790563 +0200
 @@ -15,6 +15,11 @@
  // Required alignment for inputs and outputs to all vector math functions
  enum { kRequiredAlignment = 16 };
@@ -1050,18 +1051,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
  // Multiply each element of |src| (up to |len|) by |scale| and add to |dest|.
  // |src| and |dest| must be aligned by kRequiredAlignment.
  MEDIA_EXPORT void FMAC(const float src[], float scale, int len, float dest[]);
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math_perftest.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math_perftest.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math_perftest.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math_perftest.cc	2016-02-25 00:47:15.068722072 +0100
-@@ -2,6 +2,7 @@
- // Use of this source code is governed by a BSD-style license that can be
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math_perftest.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_perftest.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math_perftest.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_perftest.cc	2016-07-17 19:43:25.736318783 +0200
+@@ -3,6 +3,7 @@
  // found in the LICENSE file.
  
+ #include "base/macros.h"
 +#include "base/cpu.h"
  #include "base/memory/aligned_memory.h"
  #include "base/memory/scoped_ptr.h"
  #include "base/time/time.h"
-@@ -79,15 +80,11 @@
+@@ -81,15 +82,11 @@
    DISALLOW_COPY_AND_ASSIGN(VectorMathPerfTest);
  };
  
@@ -1078,7 +1079,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
  #endif
  
  // Benchmark for each optimized vector_math::FMAC() method.
-@@ -96,6 +93,9 @@
+@@ -98,6 +95,9 @@
    RunBenchmark(
        vector_math::FMAC_C, true, "vector_math_fmac", "unoptimized");
  #if defined(FMAC_FUNC)
@@ -1088,7 +1089,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
    // Benchmark FMAC_FUNC() with unaligned size.
    ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                   sizeof(float)), 0U);
-@@ -109,12 +109,24 @@
+@@ -111,12 +111,24 @@
  #endif
  }
  
@@ -1113,7 +1114,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
    // Benchmark FMUL_FUNC() with unaligned size.
    ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                   sizeof(float)), 0U);
-@@ -128,6 +140,14 @@
+@@ -130,6 +142,14 @@
  #endif
  }
  
@@ -1128,7 +1129,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
  // Benchmark for each optimized vector_math::EWMAAndMaxPower() method.
  TEST_F(VectorMathPerfTest, EWMAAndMaxPower) {
    // Benchmark EWMAAndMaxPower_C().
-@@ -136,6 +156,9 @@
+@@ -138,6 +158,9 @@
                 "vector_math_ewma_and_max_power",
                 "unoptimized");
  #if defined(EWMAAndMaxPower_FUNC)
@@ -1138,16 +1139,16 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
    // Benchmark EWMAAndMaxPower_FUNC() with unaligned size.
    ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                   sizeof(float)), 0U);
-@@ -153,4 +176,6 @@
+@@ -155,4 +178,6 @@
  #endif
  }
  
 +#undef EWMAAndMaxPower_FUNC
 +
  } // namespace media
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math_testing.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math_testing.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math_testing.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math_testing.h	2016-02-25 00:47:15.076722114 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math_testing.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_testing.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math_testing.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_testing.h	2016-07-17 18:06:36.193790666 +0200
 @@ -19,7 +19,7 @@
  MEDIA_EXPORT std::pair<float, float> EWMAAndMaxPower_C(
      float initial_value, const float src[], int len, float smoothing_factor);
@@ -1157,18 +1158,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
  MEDIA_EXPORT void FMAC_SSE(const float src[], float scale, int len,
                             float dest[]);
  MEDIA_EXPORT void FMUL_SSE(const float src[], float scale, int len,
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math_unittest.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math_unittest.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vector_math_unittest.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/vector_math_unittest.cc	2016-02-25 00:47:15.084722157 +0100
-@@ -6,6 +6,7 @@
- #define _USE_MATH_DEFINES
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math_unittest.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_unittest.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/vector_math_unittest.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/vector_math_unittest.cc	2016-07-17 19:44:10.094555220 +0200
+@@ -7,6 +7,7 @@
  #include <cmath>
  
+ #include "base/macros.h"
 +#include "base/cpu.h"
  #include "base/memory/aligned_memory.h"
  #include "base/memory/scoped_ptr.h"
  #include "base/strings/string_number_conversions.h"
-@@ -75,6 +76,7 @@
+@@ -77,6 +78,7 @@
  
  #if defined(ARCH_CPU_X86_FAMILY)
    {
@@ -1176,7 +1177,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
      SCOPED_TRACE("FMAC_SSE");
      FillTestVectors(kInputFillValue, kOutputFillValue);
      vector_math::FMAC_SSE(
-@@ -116,6 +118,7 @@
+@@ -118,6 +120,7 @@
  
  #if defined(ARCH_CPU_X86_FAMILY)
    {
@@ -1184,7 +1185,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
      SCOPED_TRACE("FMUL_SSE");
      FillTestVectors(kInputFillValue, kOutputFillValue);
      vector_math::FMUL_SSE(
-@@ -224,6 +227,7 @@
+@@ -226,6 +229,7 @@
  
  #if defined(ARCH_CPU_X86_FAMILY)
      {
@@ -1192,10 +1193,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/vect
        SCOPED_TRACE("EWMAAndMaxPower_SSE");
        const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_SSE(
            initial_value_, data_.get(), data_len_, smoothing_factor_);
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_convert.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/yuv_convert.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_convert.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/yuv_convert.cc	2016-02-25 00:47:15.088722179 +0100
-@@ -29,7 +29,7 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/yuv_convert.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/yuv_convert.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert.cc	2016-07-17 18:06:36.196790682 +0200
+@@ -33,7 +33,7 @@
  #include "media/base/simd/convert_yuv_to_rgb.h"
  #include "media/base/simd/filter_yuv.h"
  
@@ -1204,7 +1205,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  #if defined(COMPILER_MSVC)
  #include <intrin.h>
  #else
-@@ -133,7 +133,7 @@
+@@ -134,7 +134,7 @@
  
  // Empty SIMD registers state after using them.
  void EmptyRegisterStateStub() {}
@@ -1213,7 +1214,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  void EmptyRegisterStateIntrinsic() { _mm_empty(); }
  #endif
  typedef void (*EmptyRegisterStateProc)();
-@@ -247,34 +247,46 @@
+@@ -248,34 +248,46 @@
    // Assembly code confuses MemorySanitizer. Also not available in iOS builds.
  #if defined(ARCH_CPU_X86_FAMILY) && !defined(MEMORY_SANITIZER) && \
      !defined(OS_IOS)
@@ -1277,17 +1278,17 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
    if (cpu.has_ssse3()) {
      g_convert_rgb24_to_yuv_proc_ = &ConvertRGB24ToYUV_SSSE3;
  
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc	2016-02-25 00:47:15.089722184 +0100
-@@ -64,6 +64,31 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_perftest.cc	2016-07-17 19:48:57.702119844 +0200
+@@ -69,6 +69,29 @@
    DISALLOW_COPY_AND_ASSIGN(YUVConvertPerfTest);
  };
  
 +TEST_F(YUVConvertPerfTest, ConvertYUVToRGB32Row_MMX) {
 +  ASSERT_TRUE(base::CPU().has_mmx());
 +
-+  base::TimeTicks start = base::TimeTicks::HighResNow();
++  base::TimeTicks start = base::TimeTicks::Now();
 +  for (int i = 0; i < kPerfTestIterations; ++i) {
 +    for (int row = 0; row < kSourceHeight; ++row) {
 +      int chroma_row = row / 2;
@@ -1300,21 +1301,19 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
 +          GetLookupTable(YV12));
 +    }
 +  }
-+  double total_time_seconds =
-+      (base::TimeTicks::HighResNow() - start).InSecondsF();
++  media::EmptyRegisterState();
++  double total_time_seconds = (base::TimeTicks::Now() - start).InSecondsF();
 +  perf_test::PrintResult(
 +      "yuv_convert_perftest", "", "ConvertYUVToRGB32Row_MMX",
 +      kPerfTestIterations / total_time_seconds, "runs/s", true);
-+
-+  media::EmptyRegisterState();
 +}
 +
  TEST_F(YUVConvertPerfTest, ConvertYUVToRGB32Row_SSE) {
    ASSERT_TRUE(base::CPU().has_sse());
  
-@@ -87,9 +112,33 @@
-   media::EmptyRegisterState();
+@@ -159,9 +182,32 @@
  }
+ #endif
  
 -// 64-bit release + component builds on Windows are too smart and optimizes
 -// away the function being tested.
@@ -1324,7 +1323,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
 +
 +  const int kSourceDx = 80000;  // This value means a scale down.
 +
-+  base::TimeTicks start = base::TimeTicks::HighResNow();
++  base::TimeTicks start = base::TimeTicks::Now();
 +  for (int i = 0; i < kPerfTestIterations; ++i) {
 +    for (int row = 0; row < kSourceHeight; ++row) {
 +      int chroma_row = row / 2;
@@ -1338,19 +1337,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
 +          GetLookupTable(YV12));
 +    }
 +  }
-+  double total_time_seconds =
-+      (base::TimeTicks::HighResNow() - start).InSecondsF();
++  media::EmptyRegisterState();
++  double total_time_seconds = (base::TimeTicks::Now() - start).InSecondsF();
 +  perf_test::PrintResult(
 +      "yuv_convert_perftest", "", "ScaleYUVToRGB32Row_MMX",
 +      kPerfTestIterations / total_time_seconds, "runs/s", true);
-+  media::EmptyRegisterState();
 +}
 +
  TEST_F(YUVConvertPerfTest, ScaleYUVToRGB32Row_SSE) {
    ASSERT_TRUE(base::CPU().has_sse());
  
-@@ -116,6 +165,33 @@
-   media::EmptyRegisterState();
+@@ -188,6 +234,32 @@
+       kPerfTestIterations / total_time_seconds, "runs/s", true);
  }
  
 +TEST_F(YUVConvertPerfTest, LinearScaleYUVToRGB32Row_MMX) {
@@ -1358,7 +1356,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
 +
 +  const int kSourceDx = 80000;  // This value means a scale down.
 +
-+  base::TimeTicks start = base::TimeTicks::HighResNow();
++  base::TimeTicks start = base::TimeTicks::Now();
 +  for (int i = 0; i < kPerfTestIterations; ++i) {
 +    for (int row = 0; row < kSourceHeight; ++row) {
 +      int chroma_row = row / 2;
@@ -1372,29 +1370,28 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
 +          GetLookupTable(YV12));
 +    }
 +  }
-+  double total_time_seconds =
-+      (base::TimeTicks::HighResNow() - start).InSecondsF();
++  media::EmptyRegisterState();
++  double total_time_seconds = (base::TimeTicks::Now() - start).InSecondsF();
 +  perf_test::PrintResult(
 +      "yuv_convert_perftest", "", "LinearScaleYUVToRGB32Row_MMX",
 +      kPerfTestIterations / total_time_seconds, "runs/s", true);
-+  media::EmptyRegisterState();
 +}
 +
  TEST_F(YUVConvertPerfTest, LinearScaleYUVToRGB32Row_SSE) {
    ASSERT_TRUE(base::CPU().has_sse());
  
-@@ -141,7 +217,6 @@
+@@ -213,7 +285,6 @@
+       "yuv_convert_perftest", "", "LinearScaleYUVToRGB32Row_SSE",
        kPerfTestIterations / total_time_seconds, "runs/s", true);
-   media::EmptyRegisterState();
  }
 -#endif  // defined(OS_WIN) && (ARCH_CPU_X86 || COMPONENT_BUILD)
  
  #endif  // !defined(ARCH_CPU_ARM_FAMILY) && !defined(ARCH_CPU_MIPS_FAMILY)
  
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc	2016-02-25 00:47:15.090722190 +0100
-@@ -658,6 +658,37 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/base/yuv_convert_unittest.cc	2016-07-17 18:06:36.201790710 +0200
+@@ -635,6 +635,37 @@
    EXPECT_EQ(0, error);
  }
  
@@ -1432,7 +1429,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  TEST(YUVConvertTest, ConvertYUVToRGB32Row_SSE) {
    base::CPU cpu;
    if (!cpu.has_sse()) {
-@@ -689,9 +720,40 @@
+@@ -666,9 +697,40 @@
                        kWidth * kBpp));
  }
  
@@ -1476,7 +1473,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  TEST(YUVConvertTest, ScaleYUVToRGB32Row_SSE) {
    base::CPU cpu;
    if (!cpu.has_sse()) {
-@@ -726,6 +788,40 @@
+@@ -703,6 +765,40 @@
                        kWidth * kBpp));
  }
  
@@ -1517,15 +1514,15 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  TEST(YUVConvertTest, LinearScaleYUVToRGB32Row_SSE) {
    base::CPU cpu;
    if (!cpu.has_sse()) {
-@@ -759,7 +855,6 @@
+@@ -736,7 +832,6 @@
                        rgb_bytes_converted.get(),
                        kWidth * kBpp));
  }
 -#endif  // defined(OS_WIN) && (ARCH_CPU_X86 || COMPONENT_BUILD)
  
  TEST(YUVConvertTest, FilterYUVRows_C_OutOfBounds) {
-   scoped_ptr<uint8[]> src(new uint8[16]);
-@@ -776,6 +871,30 @@
+   scoped_ptr<uint8_t[]> src(new uint8_t[16]);
+@@ -753,6 +848,30 @@
    }
  }
  
@@ -1556,7 +1553,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  TEST(YUVConvertTest, FilterYUVRows_SSE2_OutOfBounds) {
    base::CPU cpu;
    if (!cpu.has_sse2()) {
-@@ -797,6 +916,38 @@
+@@ -774,6 +893,38 @@
    }
  }
  
@@ -1595,12 +1592,12 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/base/yuv_
  TEST(YUVConvertTest, FilterYUVRows_SSE2_UnalignedDestination) {
    base::CPU cpu;
    if (!cpu.has_sse2()) {
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/BUILD.gn qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/BUILD.gn
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/BUILD.gn	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/BUILD.gn	2016-02-25 00:47:15.118722340 +0100
-@@ -747,6 +747,26 @@
-   deps = [
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/BUILD.gn qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/BUILD.gn
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/BUILD.gn	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/BUILD.gn	2016-07-17 19:52:10.846175461 +0200
+@@ -907,6 +907,26 @@
      "//base",
+     "//ui/gfx/geometry",
    ]
 +  if (current_cpu == "x86" || current_cpu == "x64") {
 +    deps += [
@@ -1624,11 +1621,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/BUILD.gn 
 +  }
  }
  
- if (media_use_ffmpeg) {
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/media.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/media.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/media.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/media/media.gyp	2016-02-25 00:47:15.126722383 +0100
-@@ -1053,12 +1053,12 @@
+ # TODO(watk): Refactor tests that could be made to run on Android. See
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/media.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/media.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/media/media.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/media/media.gyp	2016-07-17 18:06:36.231790873 +0200
+@@ -1138,12 +1138,12 @@
          ['target_arch=="ia32" or target_arch=="x64"', {
            'dependencies': [
              'media_asm',
@@ -1644,7 +1641,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/media.gyp
            ],
          }],
          ['OS!="linux" and OS!="win"', {
-@@ -1572,6 +1572,11 @@
+@@ -1712,6 +1712,11 @@
              'USE_NEON'
            ],
          }],
@@ -1656,7 +1653,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/media.gyp
        ],
      },
    ],
-@@ -1583,6 +1588,7 @@
+@@ -1723,6 +1728,7 @@
            'type': 'static_library',
            'sources': [
              'base/simd/convert_rgb_to_yuv_ssse3.asm',
@@ -1664,7 +1661,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/media.gyp
              'base/simd/convert_yuv_to_rgb_sse.asm',
              'base/simd/convert_yuva_to_argb_mmx.asm',
              'base/simd/empty_register_state_mmx.asm',
-@@ -1663,6 +1669,75 @@
+@@ -1803,6 +1809,75 @@
              '../third_party/yasm/yasm_compile.gypi',
            ],
          },
@@ -1740,23 +1737,22 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/media/media.gyp
        ], # targets
      }],
      ['OS=="android"', {
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/BUILD.gn
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/BUILD.gn	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/BUILD.gn	2016-02-25 00:47:15.128722393 +0100
-@@ -300,12 +300,6 @@
-     "ext/skia_utils_win.cc",
-   ]
- 
--  if (current_cpu == "x86" || current_cpu == "x64") {
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/BUILD.gn qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/BUILD.gn	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/BUILD.gn	2016-07-17 19:56:57.665743057 +0200
+@@ -307,11 +307,6 @@
+   if (!is_ios) {
+     sources += [ "ext/platform_canvas.cc" ]
+   }
+-  if (!is_ios && (current_cpu == "x86" || current_cpu == "x64")) {
 -    sources += [ "ext/convolver_SSE2.cc" ]
 -  } else if (current_cpu == "mipsel" && mips_dsp_rev >= 2) {
 -    sources += [ "ext/convolver_mips_dspr2.cc" ]
 -  }
--
+ 
    # The skia gypi values are relative to the skia_dir, so we need to rebase.
    sources += gypi_skia_core.sources
-   sources += gypi_skia_effects.sources
-@@ -532,7 +526,15 @@
+@@ -597,7 +592,15 @@
    ]
  
    if (current_cpu == "x86" || current_cpu == "x64") {
@@ -1771,9 +1767,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/BUILD.gn q
 +      cflags += [ "-msse2" ]
 +    }
      deps += [
-       ":skia_opts_sse3",
-       ":skia_opts_sse4",
-@@ -562,6 +564,13 @@
+       ":skia_opts_avx",
+       ":skia_opts_avx2",
+@@ -632,6 +635,13 @@
  
      if (mips_dsp_rev >= 1) {
        sources = gypi_skia_opts.mips_dsp_sources
@@ -1787,9 +1783,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/BUILD.gn q
      } else {
        sources = gypi_skia_opts.none_sources
      }
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/ext/convolver.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/ext/convolver.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/ext/convolver.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/ext/convolver.cc	2016-02-25 00:47:15.165722592 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/ext/convolver.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/ext/convolver.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.cc	2016-07-17 18:06:40.213812591 +0200
 @@ -362,10 +362,13 @@
  
  void SetupSIMD(ConvolveProcs *procs) {
@@ -1808,20 +1804,20 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/ext/convol
  #elif defined SIMD_MIPS_DSPR2
    procs->extra_horizontal_reads = 3;
    procs->convolve_vertically = &ConvolveVertically_mips_dspr2;
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/ext/convolver.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/ext/convolver.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/ext/convolver.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/ext/convolver.h	2016-02-25 00:47:15.177722656 +0100
-@@ -9,6 +9,7 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/ext/convolver.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/ext/convolver.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/ext/convolver.h	2016-07-17 20:01:19.498174087 +0200
+@@ -11,6 +11,7 @@
  #include <vector>
  
- #include "base/basictypes.h"
+ #include "build/build_config.h"
 +#include "base/cpu.h"
  #include "third_party/skia/include/core/SkSize.h"
  #include "third_party/skia/include/core/SkTypes.h"
  
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_chrome.gypi qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/skia_chrome.gypi
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_chrome.gypi	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/skia_chrome.gypi	2016-02-25 00:47:15.178722662 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/skia_chrome.gypi qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/skia_chrome.gypi
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/skia_chrome.gypi	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/skia_chrome.gypi	2016-07-17 18:06:40.215812602 +0200
 @@ -9,6 +9,7 @@
  {
    'dependencies': [
@@ -1830,7 +1826,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_chrom
      '../base/base.gyp:base',
      '../base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
    ],
-@@ -60,22 +61,16 @@
+@@ -66,22 +67,16 @@
          'ext/skia_utils_base.cc',
        ],
      }],
@@ -1858,10 +1854,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_chrom
    ],
  
    'target_conditions': [
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/skia.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/skia.gyp	2016-02-25 00:47:15.178722662 +0100
-@@ -91,6 +91,37 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/skia.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/skia.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/skia.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/skia.gyp	2016-07-17 18:06:40.215812602 +0200
+@@ -128,6 +128,37 @@
    # targets that are not dependent upon the component type
    'targets': [
      {
@@ -1897,12 +1893,12 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia.gyp q
 +    },
 +    {
        'target_name': 'image_operations_bench',
-       'type': 'executable',
-       'dependencies': [
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_library_opts.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/skia_library_opts.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_library_opts.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/skia/skia_library_opts.gyp	2016-02-25 00:47:15.179722667 +0100
-@@ -18,10 +18,22 @@
+       # The optimize: 'max' scattered throughout are particularly
+       # important when compiled by MSVC 2013, which seems 
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/skia_library_opts.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/skia_library_opts.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/skia/skia_library_opts.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/skia/skia_library_opts.gyp	2016-07-17 18:06:40.216812607 +0200
+@@ -19,10 +19,22 @@
     },
  
    'targets': [
@@ -1929,7 +1925,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_libra
      # For about the same reason, we need to compile the ARM opts files
      # separately as well.
      {
-@@ -37,12 +49,13 @@
+@@ -45,12 +57,13 @@
        ],
        'include_dirs': [ '<@(include_dirs)' ],
        'conditions': [
@@ -1947,22 +1943,22 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/skia/skia_libra
            'sources': [ '<@(sse2_sources)' ],
            'dependencies': [
              'skia_opts_ssse3',
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/qcms/BUILD.gn qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2016-02-25 00:47:15.202722790 +0100
-@@ -26,8 +26,8 @@
-   public_configs = [ ":qcms_config" ]
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/qcms/BUILD.gn qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/qcms/BUILD.gn	2016-07-17 20:06:47.037962770 +0200
+@@ -27,8 +27,8 @@
+     ]
  
-   if (current_cpu == "x86" || current_cpu == "x64") {
--    defines = [ "SSE2_ENABLE" ]
--    sources += [ "src/transform-sse2.c" ]
-+    defines = [ "SSE2_ENABLE" ]  # runtime detection
-+    deps = [ "qcms_sse2" ]
+     if (current_cpu == "x86" || current_cpu == "x64") {
+-      defines = [ "SSE2_ENABLE" ]
+-      sources += [ "src/transform-sse2.c" ]
++      defines = [ "SSE2_ENABLE" ]  # runtime detection
++      deps = [ "qcms_sse2" ]
+     }
    }
  
-   if (is_win) {
-@@ -37,3 +37,15 @@
-     ]
+@@ -64,3 +64,15 @@
+     public_configs = [ ":qcms_config" ]
    }
  }
 +
@@ -1977,27 +1973,27 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/qcm
 +    cflags = [ "-msse2" ]
 +  }
 +}
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/qcms/qcms.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/qcms/qcms.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/qcms/qcms.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/qcms/qcms.gyp	2016-02-25 00:47:15.202722790 +0100
-@@ -33,10 +33,10 @@
-       'conditions': [
-         ['target_arch=="ia32" or target_arch=="x64"', {
-           'defines': [
--            'SSE2_ENABLE',
-+            'SSE2_ENABLE',  # runtime detection
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/qcms/qcms.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/qcms/qcms.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/qcms/qcms.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/qcms/qcms.gyp	2016-07-17 20:08:22.446483691 +0200
+@@ -42,10 +42,10 @@
+           'conditions': [
+             ['target_arch=="ia32" or target_arch=="x64"', {
+               'defines': [
+-                'SSE2_ENABLE',
++                'SSE2_ENABLE',  # runtime detection
+               ],
+-              'sources': [
+-                'src/transform-sse2.c',
++              'dependencies': [
++                'qcms_sse2',
+               ],
+             }],
            ],
--          'sources': [
--            'src/transform-sse2.c',
-+          'dependencies': [
-+            'qcms_sse2',
-           ],
-         }],
-         ['OS == "win"', {
-@@ -47,6 +47,29 @@
+@@ -85,6 +85,29 @@
          }],
        ],
-     },
+     },  
 +    {
 +      'target_name': 'qcms_sse2',
 +      'type': 'static_library',
@@ -2024,12 +2020,51 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/qcm
    ],
  }
  
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2016-02-25 00:47:15.220722887 +0100
-@@ -30,6 +30,9 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/modules/webaudio/AudioParamTimeline.cpp	2016-07-19 00:52:57.847430161 +0200
+@@ -32,7 +32,7 @@
+ #include "wtf/MathExtras.h"
+ #include <algorithm>
  
- #if ENABLE(WEB_AUDIO)
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+ #include <emmintrin.h>
+ #endif
+ 
+@@ -438,7 +438,7 @@
+         // First handle linear and exponential ramps which require looking ahead to the next event.
+         if (nextEventType == ParamEvent::LinearRampToValue) {
+             const float valueDelta = value2 - value1;
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+             // Minimize in-loop operations. Calculate starting value and increment. Next step: value += inc.
+             //  value = value1 + (currentFrame/sampleRate - time1) * k * (value2 - value1);
+             //  inc = 4 / sampleRate * k * (value2 - value1);
+@@ -581,7 +581,7 @@
+                         for (; writeIndex < fillToFrame; ++writeIndex)
+                             values[writeIndex] = target;
+                     } else {
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+                         // Resolve recursion by expanding constants to achieve a 4-step loop unrolling.
+                         // v1 = v0 + (t - v0) * c
+                         // v2 = v1 + (t - v1) * c
+@@ -674,7 +674,7 @@
+                     // Render the stretched curve data using linear interpolation.  Oversampled
+                     // curve data can be provided if sharp discontinuities are desired.
+                     unsigned k = 0;
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+                     const __m128 vCurveVirtualIndex = _mm_set_ps1(curveVirtualIndex);
+                     const __m128 vCurvePointsPerFrame = _mm_set_ps1(curvePointsPerFrame);
+                     const __m128 vNumberOfCurvePointsM1 = _mm_set_ps1(numberOfCurvePoints - 1);
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2016-07-17 18:06:40.274812924 +0200
+@@ -26,6 +26,9 @@
+  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
  
 +// include this first to get it before the CPU() function-like macro
 +#include "base/cpu.h"
@@ -2037,7 +2072,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  #include "platform/audio/DirectConvolver.h"
  
  #if OS(MACOSX)
-@@ -39,14 +42,20 @@
+@@ -35,14 +38,20 @@
  #include "platform/audio/VectorMath.h"
  #include "wtf/CPU.h"
  
@@ -2059,7 +2094,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  DirectConvolver::DirectConvolver(size_t inputBlockSize)
      : m_inputBlockSize(inputBlockSize)
  #if USE(WEBAUDIO_IPP)
-@@ -54,10 +63,26 @@
+@@ -50,10 +59,26 @@
  #endif // USE(WEBAUDIO_IPP)
      , m_buffer(inputBlockSize * 2)
  {
@@ -2086,7 +2121,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      ASSERT(framesToProcess == m_inputBlockSize);
      if (framesToProcess != m_inputBlockSize)
          return;
-@@ -102,7 +127,7 @@
+@@ -98,7 +123,7 @@
  #endif // CPU(X86)
  #else
      size_t i = 0;
@@ -2095,7 +2130,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      // Convolution using SSE2. Currently only do this if both |kernelSize| and |framesToProcess|
      // are multiples of 4. If not, use the straightforward loop below.
  
-@@ -412,7 +437,7 @@
+@@ -408,7 +433,7 @@
          }
          destP[i++] = sum;
      }
@@ -2104,7 +2139,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      }
  #endif
  #endif // OS(MACOSX)
-@@ -422,6 +447,8 @@
+@@ -418,6 +443,8 @@
  #endif
  }
  
@@ -2113,7 +2148,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  void DirectConvolver::reset()
  {
      m_buffer.zero();
-@@ -430,6 +457,8 @@
+@@ -426,5 +453,7 @@
  #endif // USE(WEBAUDIO_IPP)
  }
  
@@ -2121,19 +2156,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
 +
  } // namespace blink
  
- #endif // ENABLE(WEB_AUDIO)
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h	2016-02-25 00:47:15.221722892 +0100
-@@ -31,6 +31,7 @@
- 
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.h	2016-07-17 20:16:19.967090904 +0200
+@@ -32,6 +32,7 @@
  #include "platform/PlatformExport.h"
  #include "platform/audio/AudioArray.h"
+ #include "wtf/Allocator.h"
 +#include "wtf/CPU.h"
+ #include "wtf/Noncopyable.h"
  
  #if USE(WEBAUDIO_IPP)
- #include <ipps.h>
-@@ -53,6 +54,11 @@
+@@ -57,6 +58,11 @@
      AudioFloatArray m_overlayBuffer;
  #endif // USE(WEBAUDIO_IPP)
      AudioFloatArray m_buffer;
@@ -2145,24 +2179,23 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  };
  
  } // namespace blink
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp	2016-02-25 00:47:15.221722892 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolverSSE2.cpp	2016-07-17 18:06:40.274812924 +0200
 @@ -0,0 +1,2 @@
 +#define BUILD_ONLY_THE_SSE2_PARTS
 +#include "DirectConvolver.cpp"
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp	2016-02-25 00:47:15.230722941 +0100
-@@ -30,16 +30,23 @@
- 
- #if ENABLE(WEB_AUDIO)
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.cpp	2016-07-17 20:18:38.755848676 +0200
+@@ -26,15 +26,22 @@
+  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
  
 +// include this first to get it before the CPU() function-like macro
 +#include "base/cpu.h"
 +
  #include "platform/audio/SincResampler.h"
- 
  #include "platform/audio/AudioBus.h"
  #include "wtf/CPU.h"
  #include "wtf/MathExtras.h"
@@ -2179,7 +2212,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  // Input buffer layout, dividing the total buffer into regions (r0 - r5):
  //
  // |----------------|----------------------------------------------------------------|----------------|
-@@ -69,6 +76,8 @@
+@@ -64,6 +71,8 @@
  
  namespace blink {
  
@@ -2188,7 +2221,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  SincResampler::SincResampler(double scaleFactor, unsigned kernelSize, unsigned numberOfKernelOffsets)
      : m_scaleFactor(scaleFactor)
      , m_kernelSize(kernelSize)
-@@ -82,6 +91,10 @@
+@@ -77,6 +86,10 @@
      , m_sourceProvider(nullptr)
      , m_isBufferPrimed(false)
  {
@@ -2199,7 +2232,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      initializeKernel();
  }
  
-@@ -198,8 +211,20 @@
+@@ -193,8 +206,20 @@
      }
  }
  
@@ -2220,7 +2253,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      bool isGood = sourceProvider && m_blockSize > m_kernelSize && m_inputBuffer.size() >= m_blockSize + m_kernelSize && !(m_kernelSize % 2);
      ASSERT(isGood);
      if (!isGood)
-@@ -261,7 +286,7 @@
+@@ -256,7 +281,7 @@
              {
                  float input;
  
@@ -2229,18 +2262,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
                  // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed seperately.
                  while ((reinterpret_cast<uintptr_t>(inputP) & 0x0F) && n) {
                      CONVOLVE_ONE_SAMPLE
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h	2016-02-25 00:47:15.236722973 +0100
-@@ -32,6 +32,7 @@
- #include "platform/PlatformExport.h"
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResampler.h	2016-07-17 20:19:17.818061951 +0200
+@@ -33,6 +33,7 @@
  #include "platform/audio/AudioArray.h"
  #include "platform/audio/AudioSourceProvider.h"
+ #include "wtf/Allocator.h"
 +#include "wtf/CPU.h"
+ #include "wtf/Noncopyable.h"
  
  namespace blink {
- 
-@@ -80,6 +81,11 @@
+@@ -84,6 +85,11 @@
  
      // The buffer is primed once at the very beginning of processing.
      bool m_isBufferPrimed;
@@ -2252,18 +2285,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  };
  
  } // namespace blink
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp	2016-02-25 00:47:15.236722973 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/SincResamplerSSE2.cpp	2016-07-17 18:06:40.282812967 +0200
 @@ -0,0 +1,2 @@
 +#define BUILD_ONLY_THE_SSE2_PARTS
 +#include "SincResampler.cpp"
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp	2016-02-25 00:47:15.237722978 +0100
-@@ -26,6 +26,9 @@
- 
- #if ENABLE(WEB_AUDIO)
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.cpp	2016-07-17 18:06:40.282812967 +0200
+@@ -22,6 +22,9 @@
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
  
 +// include this first to get it before the CPU() function-like macro
 +#include "base/cpu.h"
@@ -2271,7 +2304,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  #include "platform/audio/VectorMath.h"
  #include "wtf/Assertions.h"
  #include "wtf/CPU.h"
-@@ -35,10 +38,14 @@
+@@ -32,10 +35,14 @@
  #include <Accelerate/Accelerate.h>
  #endif
  
@@ -2287,7 +2320,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  #if HAVE(ARM_NEON_INTRINSICS)
  #include <arm_neon.h>
  #endif
-@@ -121,11 +128,25 @@
+@@ -118,11 +125,25 @@
  }
  #else
  
@@ -2314,7 +2347,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      if ((sourceStride == 1) && (destStride == 1)) {
          float k = *scale;
  
-@@ -196,9 +217,15 @@
+@@ -193,9 +214,15 @@
  
  void vsmul(const float* sourceP, int sourceStride, const float* scale, float* destP, int destStride, size_t framesToProcess)
  {
@@ -2331,7 +2364,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      if ((sourceStride == 1) && (destStride == 1)) {
          float k = *scale;
  
-@@ -269,16 +296,22 @@
+@@ -266,16 +293,22 @@
          sourceP += sourceStride;
          destP += destStride;
      }
@@ -2356,7 +2389,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      if ((sourceStride1 ==1) && (sourceStride2 == 1) && (destStride == 1)) {
          // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
          while ((reinterpret_cast<size_t>(source1P) & 0x0F) && n) {
-@@ -381,17 +414,23 @@
+@@ -378,17 +411,23 @@
          source2P += sourceStride2;
          destP += destStride;
      }
@@ -2382,7 +2415,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      if ((sourceStride1 == 1) && (sourceStride2 == 1) && (destStride == 1)) {
          // If the source1P address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
          while ((reinterpret_cast<uintptr_t>(source1P) & 0x0F) && n) {
-@@ -463,8 +502,14 @@
+@@ -460,8 +499,14 @@
  
  void zvmul(const float* real1P, const float* imag1P, const float* real2P, const float* imag2P, float* realDestP, float* imagDestP, size_t framesToProcess)
  {
@@ -2398,7 +2431,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      // Only use the SSE optimization in the very common case that all addresses are 16-byte aligned.
      // Otherwise, fall through to the scalar code below.
      if (!(reinterpret_cast<uintptr_t>(real1P) & 0x0F)
-@@ -519,10 +564,16 @@
+@@ -516,10 +561,16 @@
  
  void vsvesq(const float* sourceP, int sourceStride, float* sumP, size_t framesToProcess)
  {
@@ -2416,7 +2449,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      if (sourceStride == 1) {
          // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
          while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
-@@ -584,10 +635,16 @@
+@@ -581,10 +632,16 @@
  
  void vmaxmgv(const float* sourceP, int sourceStride, float* maxP, size_t framesToProcess)
  {
@@ -2434,7 +2467,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      if (sourceStride == 1) {
          // If the sourceP address is not 16-byte aligned, the first several frames (at most three) should be processed separately.
          while ((reinterpret_cast<uintptr_t>(sourceP) & 0x0F) && n) {
-@@ -651,6 +708,8 @@
+@@ -648,6 +705,8 @@
      *maxP = max;
  }
  
@@ -2443,7 +2476,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, const float* highThresholdP, float* destP, int destStride, size_t framesToProcess)
  {
      int n = framesToProcess;
-@@ -681,6 +740,12 @@
+@@ -678,6 +737,12 @@
      }
  }
  
@@ -2456,18 +2489,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  #endif // OS(MACOSX)
  
  } // namespace VectorMath
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h	2016-02-25 00:47:15.253723064 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMath.h	2016-07-17 20:23:13.405325950 +0200
 @@ -26,6 +26,7 @@
  #define VectorMath_h
  
  #include "platform/PlatformExport.h"
 +#include "wtf/CPU.h"
+ #include "wtf/build_config.h"
+ #include <cstddef>
  
- // Defines the interface for several vector math functions whose implementation will ideally be optimized.
- 
-@@ -53,6 +54,28 @@
+@@ -55,6 +56,28 @@
  // Copies elements while clipping values to the threshold inputs.
  PLATFORM_EXPORT void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, const float* highThresholdP, float* destP, int destStride, size_t framesToProcess);
  
@@ -2496,16 +2529,16 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  } // namespace VectorMath
  } // namespace blink
  
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp	2016-02-25 00:47:15.255723075 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/VectorMathSSE2.cpp	2016-07-17 18:06:40.283812973 +0200
 @@ -0,0 +1,2 @@
 +#define BUILD_ONLY_THE_SSE2_PARTS
 +#include "VectorMath.cpp"
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp	2016-02-25 00:47:15.279723203 +0100
-@@ -419,6 +419,11 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/blink_platform.gyp	2016-07-17 23:45:35.669652872 +0200
+@@ -379,6 +379,11 @@
            '<(DEPTH)/third_party/openmax_dl/dl/dl.gyp:openmax_dl',
          ],
        }],
@@ -2517,7 +2550,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
        ['target_arch=="arm"', {
          'dependencies': [
            'blink_arm_neon',
-@@ -434,6 +439,37 @@
+@@ -394,6 +399,36 @@
        }],
      ],
    },
@@ -2532,7 +2565,6 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
 +          '../wtf/wtf.gyp:wtf',
 +          'blink_common',
 +          'blink_heap_asm_stubs',
-+          'blink_prerequisites',
 +        ],
 +        'defines': [
 +          'BLINK_PLATFORM_IMPLEMENTATION=1',
@@ -2555,9 +2587,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
    # The *NEON.cpp files fail to compile when -mthumb is passed. Force
    # them to build in ARM mode.
    # See https://bugs.webkit.org/show_bug.cgi?id=62916.
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2016-02-25 00:47:15.279723203 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/cpu/x86/WebGLImageConversionSSE.h	2016-07-17 18:06:40.284812978 +0200
 @@ -5,7 +5,7 @@
  #ifndef WebGLImageConversionSSE_h
  #define WebGLImageConversionSSE_h
@@ -2567,9 +2599,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
  
  #include <emmintrin.h>
  
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp	2016-02-25 00:47:15.280723209 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/graphics/gpu/WebGLImageConversion.cpp	2016-07-18 22:28:24.771187623 +0200
 @@ -422,7 +422,7 @@
      const uint32_t* source32 = reinterpret_cast_ptr<const uint32_t*>(source);
      uint32_t* destination32 = reinterpret_cast_ptr<uint32_t*>(destination);
@@ -2579,7 +2611,25 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      SIMD::unpackOneRowOfBGRA8LittleToRGBA8(source32, destination32, pixelsPerRow);
  #endif
      for (unsigned i = 0; i < pixelsPerRow; ++i) {
-@@ -623,7 +623,7 @@
+@@ -441,7 +441,7 @@
+ 
+ template<> void unpack<WebGLImageConversion::DataFormatRGBA5551, uint16_t, uint8_t>(const uint16_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+     SIMD::unpackOneRowOfRGBA5551LittleToRGBA8(source, destination, pixelsPerRow);
+ #endif
+ #if HAVE(ARM_NEON_INTRINSICS)
+@@ -463,7 +463,7 @@
+ 
+ template<> void unpack<WebGLImageConversion::DataFormatRGBA4444, uint16_t, uint8_t>(const uint16_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+     SIMD::unpackOneRowOfRGBA4444LittleToRGBA8(source, destination, pixelsPerRow);
+ #endif
+ #if HAVE(ARM_NEON_INTRINSICS)
+@@ -629,7 +629,7 @@
  // FIXME: this routine is lossy and must be removed.
  template<> void pack<WebGLImageConversion::DataFormatR8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
  {
@@ -2588,7 +2638,16 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      SIMD::packOneRowOfRGBA8LittleToR8(source, destination, pixelsPerRow);
  #endif
      for (unsigned i = 0; i < pixelsPerRow; ++i) {
-@@ -731,7 +731,7 @@
+@@ -666,7 +666,7 @@
+ // FIXME: this routine is lossy and must be removed.
+ template<> void pack<WebGLImageConversion::DataFormatRA8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
+ {
+-#if CPU(X86) || CPU(X86_64)
++#if (CPU(X86) && defined(__SSE2__)) || CPU(X86_64)
+     SIMD::packOneRowOfRGBA8LittleToRA8(source, destination, pixelsPerRow);
+ #endif
+     for (unsigned i = 0; i < pixelsPerRow; ++i) {
+@@ -740,7 +740,7 @@
  // FIXME: this routine is lossy and must be removed.
  template<> void pack<WebGLImageConversion::DataFormatRGBA8, WebGLImageConversion::AlphaDoUnmultiply, uint8_t, uint8_t>(const uint8_t* source, uint8_t* destination, unsigned pixelsPerRow)
  {
@@ -2597,14 +2656,14 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/Web
      SIMD::packOneRowOfRGBA8LittleToRGBA8(source, destination, pixelsPerRow);
  #else
      for (unsigned i = 0; i < pixelsPerRow; ++i) {
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc	2016-02-25 00:47:15.316723402 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/third_party/webrtc/common_audio/real_fourier.cc	2016-07-18 19:27:29.285890664 +0200
 @@ -14,6 +14,7 @@
  #include "webrtc/common_audio/real_fourier_ooura.h"
  #include "webrtc/common_audio/real_fourier_openmax.h"
  #include "webrtc/common_audio/signal_processing/include/spl_inl.h"
-+#include "webrtc/system_wrappers/interface/cpu_features_wrapper.h"
++#include "webrtc/system_wrappers/include/cpu_features_wrapper.h"
  
  namespace webrtc {
  
@@ -2624,10 +2683,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/third_party/web
  #else
    return rtc::scoped_ptr<RealFourier>(new RealFourierOoura(fft_order));
  #endif
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py	2016-02-25 00:47:15.345723558 +0100
-@@ -1282,6 +1282,8 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/tools/gyp/pylib/gyp/generator/ninja.py	2016-07-17 18:06:40.306813098 +0200
+@@ -1302,6 +1302,8 @@
        # Make sure that we have relative paths to our out/(Release|Debug), where we generate our .pri file, and then prepend $$PWD to them.
        prefixed_objects = ['$$PWD/' + o for o in toAbsPaths(objects)]
        prefixed_archives = ['$$PWD/' + o for o in toAbsPaths(libs)]
@@ -2636,7 +2695,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/tools/gyp/pylib
  
        pri_file.write("QMAKE_LFLAGS += %s\n" % qmakeLiteral(' '.join(prefixed_lflags)))
        pri_file.write("OBJECTS += %s\n" % qmakeLiteral(' '.join(prefixed_objects)))
-@@ -1290,6 +1292,8 @@
+@@ -1310,6 +1312,8 @@
          pri_file.write("LIBS_PRIVATE += -Wl,--start-group %s -Wl,--end-group\n" % qmakeLiteral(' '.join(prefixed_archives)))
        else:
          pri_file.write("LIBS_PRIVATE += %s\n" % qmakeLiteral(' '.join(prefixed_archives)))
@@ -2645,22 +2704,22 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/tools/gyp/pylib
        # External libs have to come after objects/archives, the linker resolve them in order.
        pri_file.write("LIBS_PRIVATE += %s\n" % qmakeLiteral(' '.join(prefixed_library_dirs + prefixed_libraries)))
        # Make sure that if ninja modifies one of the inputs, qmake/make will link again.
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/build/standalone.gypi qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/build/standalone.gypi
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/build/standalone.gypi	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/build/standalone.gypi	2016-02-25 00:47:15.361723643 +0100
-@@ -94,6 +94,9 @@
-       'use_goma%': 0,
-       'gomadir%': '',
-       'conditions': [
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/build/standalone.gypi qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/build/standalone.gypi
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/build/standalone.gypi	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/build/standalone.gypi	2016-07-17 20:29:04.969207948 +0200
+@@ -117,6 +117,9 @@
+         }, {
+           'gomadir': '<!(/bin/echo -n ${HOME}/goma)',
+         }],
 +        ['target_arch=="ia32"', {
 +          'v8_target_arch%': 'x87',
 +        }],
-         # Set default gomadir.
-         ['OS=="win"', {
-           'gomadir': 'c:\\goma\\goma-win',
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/build/toolchain.gypi qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/build/toolchain.gypi
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/build/toolchain.gypi	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/build/toolchain.gypi	2016-02-25 00:47:15.364723659 +0100
+         ['host_arch!="ppc" and host_arch!="ppc64" and host_arch!="ppc64le" and host_arch!="s390" and host_arch!="s390x" and \
+           coverage==0', {
+           'host_clang%': 1,
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/build/toolchain.gypi qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/build/toolchain.gypi
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/build/toolchain.gypi	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/build/toolchain.gypi	2016-07-17 18:06:40.325813202 +0200
 @@ -93,6 +93,9 @@
      'binutils_dir%': '',
  
@@ -2671,13 +2730,25 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/build/toolch
        ['OS=="linux" and host_arch=="x64"', {
          'binutils_dir%': 'third_party/binutils/Linux_x64/Release/bin',
        }],
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/BUILD.gn	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2016-02-25 00:47:15.377723729 +0100
-@@ -1135,41 +1135,41 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/BUILD.gn	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2016-07-17 20:30:58.750817046 +0200
+@@ -1339,41 +1339,41 @@
  
    if (v8_target_arch == "x86") {
      sources += [
+-      "src/crankshaft/ia32/lithium-codegen-ia32.cc",
+-      "src/crankshaft/ia32/lithium-codegen-ia32.h",
+-      "src/crankshaft/ia32/lithium-gap-resolver-ia32.cc",
+-      "src/crankshaft/ia32/lithium-gap-resolver-ia32.h",
+-      "src/crankshaft/ia32/lithium-ia32.cc",
+-      "src/crankshaft/ia32/lithium-ia32.h",
+-      "src/compiler/ia32/code-generator-ia32.cc",
+-      "src/compiler/ia32/instruction-codes-ia32.h",
+-      "src/compiler/ia32/instruction-scheduler-ia32.cc",
+-      "src/compiler/ia32/instruction-selector-ia32.cc",
+-      "src/debug/ia32/debug-ia32.cc",
+-      "src/full-codegen/ia32/full-codegen-ia32.cc",
 -      "src/ia32/assembler-ia32-inl.h",
 -      "src/ia32/assembler-ia32.cc",
 -      "src/ia32/assembler-ia32.h",
@@ -2687,32 +2758,32 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/BUILD.gn qtw
 -      "src/ia32/codegen-ia32.cc",
 -      "src/ia32/codegen-ia32.h",
 -      "src/ia32/cpu-ia32.cc",
--      "src/ia32/debug-ia32.cc",
 -      "src/ia32/deoptimizer-ia32.cc",
 -      "src/ia32/disasm-ia32.cc",
 -      "src/ia32/frames-ia32.cc",
 -      "src/ia32/frames-ia32.h",
--      "src/ia32/full-codegen-ia32.cc",
 -      "src/ia32/interface-descriptors-ia32.cc",
--      "src/ia32/lithium-codegen-ia32.cc",
--      "src/ia32/lithium-codegen-ia32.h",
--      "src/ia32/lithium-gap-resolver-ia32.cc",
--      "src/ia32/lithium-gap-resolver-ia32.h",
--      "src/ia32/lithium-ia32.cc",
--      "src/ia32/lithium-ia32.h",
 -      "src/ia32/macro-assembler-ia32.cc",
 -      "src/ia32/macro-assembler-ia32.h",
--      "src/ia32/regexp-macro-assembler-ia32.cc",
--      "src/ia32/regexp-macro-assembler-ia32.h",
--      "src/compiler/ia32/code-generator-ia32.cc",
--      "src/compiler/ia32/instruction-codes-ia32.h",
--      "src/compiler/ia32/instruction-selector-ia32.cc",
--      "src/compiler/ia32/linkage-ia32.cc",
 -      "src/ic/ia32/access-compiler-ia32.cc",
 -      "src/ic/ia32/handler-compiler-ia32.cc",
 -      "src/ic/ia32/ic-ia32.cc",
 -      "src/ic/ia32/ic-compiler-ia32.cc",
 -      "src/ic/ia32/stub-cache-ia32.cc",
+-      "src/regexp/ia32/regexp-macro-assembler-ia32.cc",
+-      "src/regexp/ia32/regexp-macro-assembler-ia32.h",
++      "src/crankshaft/x87/lithium-codegen-x87.cc",
++      "src/crankshaft/x87/lithium-codegen-x87.h",
++      "src/crankshaft/x87/lithium-gap-resolver-x87.cc",
++      "src/crankshaft/x87/lithium-gap-resolver-x87.h",
++      "src/crankshaft/x87/lithium-x87.cc",
++      "src/crankshaft/x87/lithium-x87.h",
++      "src/compiler/x87/code-generator-x87.cc",
++      "src/compiler/x87/instruction-codes-x87.h",
++      "src/compiler/x87/instruction-scheduler-x87.cc",
++      "src/compiler/x87/instruction-selector-x87.cc",
++      "src/debug/x87/debug-x87.cc",
++      "src/full-codegen/x87/full-codegen-x87.cc",
 +      "src/x87/assembler-x87-inl.h",
 +      "src/x87/assembler-x87.cc",
 +      "src/x87/assembler-x87.h",
@@ -2722,38 +2793,26 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/BUILD.gn qtw
 +      "src/x87/codegen-x87.cc",
 +      "src/x87/codegen-x87.h",
 +      "src/x87/cpu-x87.cc",
-+      "src/x87/debug-x87.cc",
 +      "src/x87/deoptimizer-x87.cc",
 +      "src/x87/disasm-x87.cc",
 +      "src/x87/frames-x87.cc",
 +      "src/x87/frames-x87.h",
-+      "src/x87/full-codegen-x87.cc",
 +      "src/x87/interface-descriptors-x87.cc",
-+      "src/x87/lithium-codegen-x87.cc",
-+      "src/x87/lithium-codegen-x87.h",
-+      "src/x87/lithium-gap-resolver-x87.cc",
-+      "src/x87/lithium-gap-resolver-x87.h",
-+      "src/x87/lithium-x87.cc",
-+      "src/x87/lithium-x87.h",
 +      "src/x87/macro-assembler-x87.cc",
 +      "src/x87/macro-assembler-x87.h",
-+      "src/x87/regexp-macro-assembler-x87.cc",
-+      "src/x87/regexp-macro-assembler-x87.h",
-+      "src/compiler/x87/code-generator-x87.cc",
-+      "src/compiler/x87/instruction-codes-x87.h",
-+      "src/compiler/x87/instruction-selector-x87.cc",
-+      "src/compiler/x87/linkage-x87.cc",
 +      "src/ic/x87/access-compiler-x87.cc",
 +      "src/ic/x87/handler-compiler-x87.cc",
 +      "src/ic/x87/ic-x87.cc",
 +      "src/ic/x87/ic-compiler-x87.cc",
 +      "src/ic/x87/stub-cache-x87.cc",
++      "src/regexp/x87/regexp-macro-assembler-x87.cc",
++      "src/regexp/x87/regexp-macro-assembler-x87.h",
      ]
    } else if (v8_target_arch == "x64") {
      sources += [
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh	2016-02-25 00:47:15.377723729 +0100
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/tools/gyp/make-v8-sse2-gyp.sh	2016-07-17 18:06:40.347813322 +0200
 @@ -0,0 +1,56 @@
 +#!/bin/sh
 +# This script renames the v8 targets to _sse2 names so that they do not conflict
@@ -2811,11 +2870,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/ma
 +    -e "s/\.bin/_sse2.bin/g" \
 +    -e "s#^\( *\)\('target_name': 'v8_sse2',\)#\1\2\n\1'product_name': 'v8',\n\1'product_dir': '<(PRODUCT_DIR)/lib/sse2',#g" \
 +    v8.gyp >>v8_sse2.gyp
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8.gyp	2016-02-10 11:20:27.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8.gyp	2016-02-25 00:47:15.395723826 +0100
-@@ -34,6 +34,14 @@
-     'v8_extra_library_files%': [],
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/tools/gyp/v8.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/tools/gyp/v8.gyp	2016-05-26 15:53:47.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8.gyp	2016-07-17 18:06:40.366813425 +0200
+@@ -36,6 +36,14 @@
+     'v8_experimental_extra_library_files%': [],
      'mksnapshot_exec': '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)mksnapshot<(EXECUTABLE_SUFFIX)',
      'remove_v8base_debug_symbols%': 0,
 +    'conditions': [
@@ -2829,7 +2888,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
    },
    'includes': ['../../build/toolchain.gypi', '../../build/features.gypi'],
    'targets': [
-@@ -47,8 +55,8 @@
+@@ -49,8 +57,8 @@
          }, {
            'toolsets': ['target'],
          }],
@@ -2840,7 +2899,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
            'sources': [
              # Note: on non-Windows we still build this file so that gyp
              # has some sources to link into the component.
-@@ -159,7 +167,7 @@
+@@ -161,7 +169,7 @@
              'js2c',
            ],
          }],
@@ -2849,7 +2908,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
            'defines': [
              'V8_SHARED',
              'BUILDING_V8_SHARED',
-@@ -237,7 +245,7 @@
+@@ -244,7 +252,7 @@
            'toolsets': ['target'],
            'dependencies': ['js2c'],
          }],
@@ -2858,7 +2917,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
            'defines': [
              'BUILDING_V8_SHARED',
              'V8_SHARED',
-@@ -265,7 +273,7 @@
+@@ -272,7 +280,7 @@
                  'natives_blob',
                ],
              }],
@@ -2867,7 +2926,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
                'defines': [
                  'V8_SHARED',
                  'BUILDING_V8_SHARED',
-@@ -1340,7 +1348,7 @@
+@@ -1481,7 +1489,7 @@
            # See http://crbug.com/485155.
            'msvs_shard': 4,
          }],
@@ -2876,10 +2935,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
            'defines': [
              'BUILDING_V8_SHARED',
              'V8_SHARED',
-diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp
---- qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp	2016-02-25 00:47:15.396723831 +0100
-@@ -0,0 +1,1952 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp
+--- qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp	1970-01-01 01:00:00.000000000 +0100
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/3rdparty/chromium/v8/tools/gyp/v8_sse2.gyp	2016-07-17 20:34:22.753909119 +0200
+@@ -0,0 +1,2151 @@
 +# Generated from v8.gyp by make-v8-sse2-gyp.sh
 +# Copyright 2012 the V8 project authors. All rights reserved.
 +# Redistribution and use in source and binary forms, with or without
@@ -2914,8 +2973,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +    'icu_use_data_file_flag%': 0,
 +    'v8_code': 1,
 +    'v8_random_seed%': 314159265,
++    'v8_vector_stores%': 0,
 +    'embed_script%': "",
 +    'v8_extra_library_files%': [],
++    'v8_experimental_extra_library_files%': [],
 +    'mksnapshot_exec': '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)mksnapshot_sse2<(EXECUTABLE_SUFFIX)',
 +    'remove_v8base_debug_symbols%': 0,
 +    'conditions': [
@@ -3076,6 +3137,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.cc',
 +        '<(SHARED_INTERMEDIATE_DIR)/experimental-libraries_sse2.cc',
 +        '<(SHARED_INTERMEDIATE_DIR)/extras-libraries_sse2.cc',
++        '<(SHARED_INTERMEDIATE_DIR)/experimental-extras-libraries_sse2.cc',
 +        '<(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +      ],
 +      'actions': [
@@ -3097,12 +3159,15 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +              ['v8_random_seed!=0', {
 +                'mksnapshot_flags': ['--random-seed', '<(v8_random_seed)'],
 +              }],
++              ['v8_vector_stores!=0', {
++                'mksnapshot_flags': ['--vector-stores'],
++              }],
 +            ],
 +          },
 +          'action': [
 +            '<(mksnapshot_exec)',
 +            '<@(mksnapshot_flags)',
-+            '<@(INTERMEDIATE_DIR)/snapshot_sse2.cc',
++            '--startup_src', '<@(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +            '<(embed_script)',
 +          ],
 +        },
@@ -3121,6 +3186,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.cc',
 +        '<(SHARED_INTERMEDIATE_DIR)/experimental-libraries_sse2.cc',
 +        '<(SHARED_INTERMEDIATE_DIR)/extras-libraries_sse2.cc',
++        '<(SHARED_INTERMEDIATE_DIR)/experimental-extras-libraries_sse2.cc',
 +        '../../src/snapshot/snapshot-empty.cc',
 +      ],
 +      'conditions': [
@@ -3197,6 +3263,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +                  ['v8_random_seed!=0', {
 +                    'mksnapshot_flags': ['--random-seed', '<(v8_random_seed)'],
 +                  }],
++                  ['v8_vector_stores!=0', {
++                    'mksnapshot_flags': ['--vector-stores'],
++                  }],
 +                ],
 +              },
 +              'conditions': [
@@ -3204,25 +3273,21 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +                  'target_conditions': [
 +                    ['_toolset=="host"', {
 +                      'outputs': [
-+                        '<(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +                        '<(PRODUCT_DIR)/snapshot_blob_host_sse2.bin',
 +                      ],
 +                      'action': [
 +                        '<(mksnapshot_exec)',
 +                        '<@(mksnapshot_flags)',
-+                        '<@(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +                        '--startup_blob', '<(PRODUCT_DIR)/snapshot_blob_host_sse2.bin',
 +                        '<(embed_script)',
 +                      ],
 +                    }, {
 +                      'outputs': [
-+                        '<(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +                        '<(PRODUCT_DIR)/snapshot_blob_sse2.bin',
 +                      ],
 +                      'action': [
 +                        '<(mksnapshot_exec)',
 +                        '<@(mksnapshot_flags)',
-+                        '<@(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +                        '--startup_blob', '<(PRODUCT_DIR)/snapshot_blob_sse2.bin',
 +                        '<(embed_script)',
 +                      ],
@@ -3230,13 +3295,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +                  ],
 +                }, {
 +                  'outputs': [
-+                    '<(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +                    '<(PRODUCT_DIR)/snapshot_blob_sse2.bin',
 +                  ],
 +                  'action': [
 +                    '<(mksnapshot_exec)',
 +                    '<@(mksnapshot_flags)',
-+                    '<@(INTERMEDIATE_DIR)/snapshot_sse2.cc',
 +                    '--startup_blob', '<(PRODUCT_DIR)/snapshot_blob_sse2.bin',
 +                    '<(embed_script)',
 +                  ],
@@ -3258,6 +3321,8 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +      },
 +      'include_dirs+': [
 +        '../..',
++        # To be able to find base/trace_event/common/trace_event_common.h
++        '../../..',
 +      ],
 +      'defines': [
 +        # TODO(jochen): Remove again after this is globally turned on.
@@ -3265,6 +3330,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +      ],
 +      'sources': [  ### gcmole(all) ###
 +        '../../include/v8-debug.h',
++        '../../include/v8-experimental.h',
 +        '../../include/v8-platform.h',
 +        '../../include/v8-profiler.h',
 +        '../../include/v8-testing.h',
@@ -3274,12 +3340,14 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../include/v8config.h',
 +        '../../src/accessors.cc',
 +        '../../src/accessors.h',
++        '../../src/address-map.cc',
++        '../../src/address-map.h',
 +        '../../src/allocation.cc',
 +        '../../src/allocation.h',
 +        '../../src/allocation-site-scopes.cc',
 +        '../../src/allocation-site-scopes.h',
-+        '../../src/allocation-tracker.cc',
-+        '../../src/allocation-tracker.h',
++        '../../src/api-experimental.cc',
++        '../../src/api-experimental.h',
 +        '../../src/api.cc',
 +        '../../src/api.h',
 +        '../../src/api-natives.cc',
@@ -3290,14 +3358,29 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/assembler.h',
 +        '../../src/assert-scope.h',
 +        '../../src/assert-scope.cc',
-+        '../../src/ast-value-factory.cc',
-+        '../../src/ast-value-factory.h',
-+        '../../src/ast-literal-reindexer.cc',
-+        '../../src/ast-literal-reindexer.h',
-+        '../../src/ast-numbering.cc',
-+        '../../src/ast-numbering.h',
-+        '../../src/ast.cc',
-+        '../../src/ast.h',
++        '../../src/ast/ast-expression-rewriter.cc',
++        '../../src/ast/ast-expression-rewriter.h',
++        '../../src/ast/ast-expression-visitor.cc',
++        '../../src/ast/ast-expression-visitor.h',
++        '../../src/ast/ast-literal-reindexer.cc',
++        '../../src/ast/ast-literal-reindexer.h',
++        '../../src/ast/ast-numbering.cc',
++        '../../src/ast/ast-numbering.h',
++        '../../src/ast/ast-value-factory.cc',
++        '../../src/ast/ast-value-factory.h',
++        '../../src/ast/ast.cc',
++        '../../src/ast/ast.h',
++        '../../src/ast/modules.cc',
++        '../../src/ast/modules.h',
++        '../../src/ast/prettyprinter.cc',
++        '../../src/ast/prettyprinter.h',
++        '../../src/ast/scopeinfo.cc',
++        '../../src/ast/scopeinfo.h',
++        '../../src/ast/scopes.cc',
++        '../../src/ast/scopes.h',
++        '../../src/ast/variables.cc',
++        '../../src/ast/variables.h',
++        '../../src/atomic-utils.h',
 +        '../../src/background-parsing-task.cc',
 +        '../../src/background-parsing-task.h',
 +        '../../src/bailout-reason.cc',
@@ -3314,22 +3397,19 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/bootstrapper.h',
 +        '../../src/builtins.cc',
 +        '../../src/builtins.h',
-+        '../../src/bytecodes-irregexp.h',
 +        '../../src/cached-powers.cc',
 +        '../../src/cached-powers.h',
++        '../../src/cancelable-task.cc',
++        '../../src/cancelable-task.h',
 +        '../../src/char-predicates.cc',
 +        '../../src/char-predicates-inl.h',
 +        '../../src/char-predicates.h',
-+        '../../src/checks.cc',
 +        '../../src/checks.h',
-+        '../../src/circular-queue-inl.h',
-+        '../../src/circular-queue.h',
 +        '../../src/code-factory.cc',
 +        '../../src/code-factory.h',
 +        '../../src/code-stubs.cc',
 +        '../../src/code-stubs.h',
 +        '../../src/code-stubs-hydrogen.cc',
-+        '../../src/code.h',
 +        '../../src/codegen.cc',
 +        '../../src/codegen.h',
 +        '../../src/compilation-cache.cc',
@@ -3340,6 +3420,8 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compilation-statistics.h',
 +        '../../src/compiler/access-builder.cc',
 +        '../../src/compiler/access-builder.h',
++        '../../src/compiler/access-info.cc',
++        '../../src/compiler/access-info.h',
 +        '../../src/compiler/all-nodes.cc',
 +        '../../src/compiler/all-nodes.h',
 +        '../../src/compiler/ast-graph-builder.cc',
@@ -3348,13 +3430,22 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compiler/ast-loop-assignment-analyzer.h',
 +        '../../src/compiler/basic-block-instrumentor.cc',
 +        '../../src/compiler/basic-block-instrumentor.h',
++        '../../src/compiler/branch-elimination.cc',
++        '../../src/compiler/branch-elimination.h',
++        '../../src/compiler/bytecode-branch-analysis.cc',
++        '../../src/compiler/bytecode-branch-analysis.h',
++        '../../src/compiler/bytecode-graph-builder.cc',
++        '../../src/compiler/bytecode-graph-builder.h',
 +        '../../src/compiler/change-lowering.cc',
 +        '../../src/compiler/change-lowering.h',
++        '../../src/compiler/c-linkage.cc',
 +        '../../src/compiler/coalesced-live-ranges.cc',
 +        '../../src/compiler/coalesced-live-ranges.h',
 +        '../../src/compiler/code-generator-impl.h',
 +        '../../src/compiler/code-generator.cc',
 +        '../../src/compiler/code-generator.h',
++        '../../src/compiler/code-stub-assembler.cc',
++        '../../src/compiler/code-stub-assembler.h',
 +        '../../src/compiler/common-node-cache.cc',
 +        '../../src/compiler/common-node-cache.h',
 +        '../../src/compiler/common-operator-reducer.cc',
@@ -3370,6 +3461,13 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compiler/dead-code-elimination.cc',
 +        '../../src/compiler/dead-code-elimination.h',
 +        '../../src/compiler/diamond.h',
++        '../../src/compiler/escape-analysis.cc',
++        '../../src/compiler/escape-analysis.h',
++        "../../src/compiler/escape-analysis-reducer.cc",
++        "../../src/compiler/escape-analysis-reducer.h",
++        '../../src/compiler/fast-accessor-assembler.cc',
++        '../../src/compiler/fast-accessor-assembler.h',
++        '../../src/compiler/frame.cc',
 +        '../../src/compiler/frame.h',
 +        '../../src/compiler/frame-elider.cc',
 +        '../../src/compiler/frame-elider.h',
@@ -3377,7 +3475,6 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        "../../src/compiler/frame-states.h",
 +        '../../src/compiler/gap-resolver.cc',
 +        '../../src/compiler/gap-resolver.h',
-+        '../../src/compiler/graph-builder.h',
 +        '../../src/compiler/graph-reducer.cc',
 +        '../../src/compiler/graph-reducer.h',
 +        '../../src/compiler/graph-replay.cc',
@@ -3394,35 +3491,48 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compiler/instruction-selector-impl.h',
 +        '../../src/compiler/instruction-selector.cc',
 +        '../../src/compiler/instruction-selector.h',
++        '../../src/compiler/instruction-scheduler.cc',
++        '../../src/compiler/instruction-scheduler.h',
 +        '../../src/compiler/instruction.cc',
 +        '../../src/compiler/instruction.h',
++        '../../src/compiler/interpreter-assembler.cc',
++        '../../src/compiler/interpreter-assembler.h',
 +        '../../src/compiler/js-builtin-reducer.cc',
 +        '../../src/compiler/js-builtin-reducer.h',
++        '../../src/compiler/js-call-reducer.cc',
++        '../../src/compiler/js-call-reducer.h',
++        '../../src/compiler/js-context-relaxation.cc',
++        '../../src/compiler/js-context-relaxation.h',
 +        '../../src/compiler/js-context-specialization.cc',
 +        '../../src/compiler/js-context-specialization.h',
 +        '../../src/compiler/js-frame-specialization.cc',
 +        '../../src/compiler/js-frame-specialization.h',
 +        '../../src/compiler/js-generic-lowering.cc',
 +        '../../src/compiler/js-generic-lowering.h',
++        '../../src/compiler/js-global-object-specialization.cc',
++        '../../src/compiler/js-global-object-specialization.h',
 +        '../../src/compiler/js-graph.cc',
 +        '../../src/compiler/js-graph.h',
 +        '../../src/compiler/js-inlining.cc',
 +        '../../src/compiler/js-inlining.h',
++        '../../src/compiler/js-inlining-heuristic.cc',
++        '../../src/compiler/js-inlining-heuristic.h',
 +        '../../src/compiler/js-intrinsic-lowering.cc',
 +        '../../src/compiler/js-intrinsic-lowering.h',
++        '../../src/compiler/js-native-context-specialization.cc',
++        '../../src/compiler/js-native-context-specialization.h',
 +        '../../src/compiler/js-operator.cc',
 +        '../../src/compiler/js-operator.h',
-+        '../../src/compiler/js-type-feedback.cc',
-+        '../../src/compiler/js-type-feedback.h',
 +        '../../src/compiler/js-typed-lowering.cc',
 +        '../../src/compiler/js-typed-lowering.h',
 +        '../../src/compiler/jump-threading.cc',
 +        '../../src/compiler/jump-threading.h',
-+        '../../src/compiler/linkage-impl.h',
 +        '../../src/compiler/linkage.cc',
 +        '../../src/compiler/linkage.h',
 +        '../../src/compiler/liveness-analyzer.cc',
 +        '../../src/compiler/liveness-analyzer.h',
++        '../../src/compiler/live-range-separator.cc',
++        '../../src/compiler/live-range-separator.h',
 +        '../../src/compiler/load-elimination.cc',
 +        '../../src/compiler/load-elimination.h',
 +        '../../src/compiler/loop-analysis.cc',
@@ -3433,8 +3543,6 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compiler/machine-operator-reducer.h',
 +        '../../src/compiler/machine-operator.cc',
 +        '../../src/compiler/machine-operator.h',
-+        '../../src/compiler/machine-type.cc',
-+        '../../src/compiler/machine-type.h',
 +        '../../src/compiler/move-optimizer.cc',
 +        '../../src/compiler/move-optimizer.h',
 +        '../../src/compiler/node-aux-data.h',
@@ -3466,8 +3574,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compiler/register-allocator.h',
 +        '../../src/compiler/register-allocator-verifier.cc',
 +        '../../src/compiler/register-allocator-verifier.h',
-+        '../../src/compiler/register-configuration.cc',
-+        '../../src/compiler/register-configuration.h',
++        '../../src/compiler/representation-change.cc',
 +        '../../src/compiler/representation-change.h',
 +        '../../src/compiler/schedule.cc',
 +        '../../src/compiler/schedule.h',
@@ -3487,16 +3594,26 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/compiler/state-values-utils.h',
 +        '../../src/compiler/tail-call-optimization.cc',
 +        '../../src/compiler/tail-call-optimization.h',
++        '../../src/compiler/type-hint-analyzer.cc',
++        '../../src/compiler/type-hint-analyzer.h',
++        '../../src/compiler/type-hints.cc',
++        '../../src/compiler/type-hints.h',
 +        '../../src/compiler/typer.cc',
 +        '../../src/compiler/typer.h',
 +        '../../src/compiler/value-numbering-reducer.cc',
 +        '../../src/compiler/value-numbering-reducer.h',
 +        '../../src/compiler/verifier.cc',
 +        '../../src/compiler/verifier.h',
++        '../../src/compiler/wasm-compiler.cc',
++        '../../src/compiler/wasm-compiler.h',
++        '../../src/compiler/wasm-linkage.cc',
 +        '../../src/compiler/zone-pool.cc',
 +        '../../src/compiler/zone-pool.h',
 +        '../../src/compiler.cc',
 +        '../../src/compiler.h',
++        '../../src/context-measure.cc',
++        '../../src/context-measure.h',
++        '../../src/contexts-inl.h',
 +        '../../src/contexts.cc',
 +        '../../src/contexts.h',
 +        '../../src/conversions-inl.h',
@@ -3504,16 +3621,84 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/conversions.h',
 +        '../../src/counters.cc',
 +        '../../src/counters.h',
-+        '../../src/cpu-profiler-inl.h',
-+        '../../src/cpu-profiler.cc',
-+        '../../src/cpu-profiler.h',
++        '../../src/crankshaft/hydrogen-alias-analysis.h',
++        '../../src/crankshaft/hydrogen-bce.cc',
++        '../../src/crankshaft/hydrogen-bce.h',
++        '../../src/crankshaft/hydrogen-bch.cc',
++        '../../src/crankshaft/hydrogen-bch.h',
++        '../../src/crankshaft/hydrogen-canonicalize.cc',
++        '../../src/crankshaft/hydrogen-canonicalize.h',
++        '../../src/crankshaft/hydrogen-check-elimination.cc',
++        '../../src/crankshaft/hydrogen-check-elimination.h',
++        '../../src/crankshaft/hydrogen-dce.cc',
++        '../../src/crankshaft/hydrogen-dce.h',
++        '../../src/crankshaft/hydrogen-dehoist.cc',
++        '../../src/crankshaft/hydrogen-dehoist.h',
++        '../../src/crankshaft/hydrogen-environment-liveness.cc',
++        '../../src/crankshaft/hydrogen-environment-liveness.h',
++        '../../src/crankshaft/hydrogen-escape-analysis.cc',
++        '../../src/crankshaft/hydrogen-escape-analysis.h',
++        '../../src/crankshaft/hydrogen-flow-engine.h',
++        '../../src/crankshaft/hydrogen-gvn.cc',
++        '../../src/crankshaft/hydrogen-gvn.h',
++        '../../src/crankshaft/hydrogen-infer-representation.cc',
++        '../../src/crankshaft/hydrogen-infer-representation.h',
++        '../../src/crankshaft/hydrogen-infer-types.cc',
++        '../../src/crankshaft/hydrogen-infer-types.h',
++        '../../src/crankshaft/hydrogen-instructions.cc',
++        '../../src/crankshaft/hydrogen-instructions.h',
++        '../../src/crankshaft/hydrogen-load-elimination.cc',
++        '../../src/crankshaft/hydrogen-load-elimination.h',
++        '../../src/crankshaft/hydrogen-mark-deoptimize.cc',
++        '../../src/crankshaft/hydrogen-mark-deoptimize.h',
++        '../../src/crankshaft/hydrogen-mark-unreachable.cc',
++        '../../src/crankshaft/hydrogen-mark-unreachable.h',
++        '../../src/crankshaft/hydrogen-osr.cc',
++        '../../src/crankshaft/hydrogen-osr.h',
++        '../../src/crankshaft/hydrogen-range-analysis.cc',
++        '../../src/crankshaft/hydrogen-range-analysis.h',
++        '../../src/crankshaft/hydrogen-redundant-phi.cc',
++        '../../src/crankshaft/hydrogen-redundant-phi.h',
++        '../../src/crankshaft/hydrogen-removable-simulates.cc',
++        '../../src/crankshaft/hydrogen-removable-simulates.h',
++        '../../src/crankshaft/hydrogen-representation-changes.cc',
++        '../../src/crankshaft/hydrogen-representation-changes.h',
++        '../../src/crankshaft/hydrogen-sce.cc',
++        '../../src/crankshaft/hydrogen-sce.h',
++        '../../src/crankshaft/hydrogen-store-elimination.cc',
++        '../../src/crankshaft/hydrogen-store-elimination.h',
++        '../../src/crankshaft/hydrogen-types.cc',
++        '../../src/crankshaft/hydrogen-types.h',
++        '../../src/crankshaft/hydrogen-uint32-analysis.cc',
++        '../../src/crankshaft/hydrogen-uint32-analysis.h',
++        '../../src/crankshaft/hydrogen.cc',
++        '../../src/crankshaft/hydrogen.h',
++        '../../src/crankshaft/lithium-allocator-inl.h',
++        '../../src/crankshaft/lithium-allocator.cc',
++        '../../src/crankshaft/lithium-allocator.h',
++        '../../src/crankshaft/lithium-codegen.cc',
++        '../../src/crankshaft/lithium-codegen.h',
++        '../../src/crankshaft/lithium.cc',
++        '../../src/crankshaft/lithium.h',
++        '../../src/crankshaft/lithium-inl.h',
++        '../../src/crankshaft/typing.cc',
++        '../../src/crankshaft/typing.h',
++        '../../src/crankshaft/unique.h',
 +        '../../src/date.cc',
 +        '../../src/date.h',
 +        '../../src/dateparser-inl.h',
 +        '../../src/dateparser.cc',
 +        '../../src/dateparser.h',
-+        '../../src/debug.cc',
-+        '../../src/debug.h',
++        '../../src/debug/debug-evaluate.cc',
++        '../../src/debug/debug-evaluate.h',
++        '../../src/debug/debug-frames.cc',
++        '../../src/debug/debug-frames.h',
++        '../../src/debug/debug-scopes.cc',
++        '../../src/debug/debug-scopes.h',
++        '../../src/debug/debug.cc',
++        '../../src/debug/debug.h',
++        '../../src/debug/liveedit.cc',
++        '../../src/debug/liveedit.h',
 +        '../../src/deoptimizer.cc',
 +        '../../src/deoptimizer.h',
 +        '../../src/disasm.h',
@@ -3531,7 +3716,6 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/elements.h',
 +        '../../src/execution.cc',
 +        '../../src/execution.h',
-+        '../../src/expression-classifier.h',
 +        '../../src/extensions/externalize-string-extension.cc',
 +        '../../src/extensions/externalize-string-extension.h',
 +        '../../src/extensions/free-buffer-extension.cc',
@@ -3556,10 +3740,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/frames-inl.h',
 +        '../../src/frames.cc',
 +        '../../src/frames.h',
-+        '../../src/full-codegen.cc',
-+        '../../src/full-codegen.h',
-+        '../../src/func-name-inferrer.cc',
-+        '../../src/func-name-inferrer.h',
++        '../../src/full-codegen/full-codegen.cc',
++        '../../src/full-codegen/full-codegen.h',
++        '../../src/futex-emulation.cc',
++        '../../src/futex-emulation.h',
 +        '../../src/gdb-jit.cc',
 +        '../../src/gdb-jit.h',
 +        '../../src/global-handles.cc',
@@ -3569,11 +3753,8 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/handles.cc',
 +        '../../src/handles.h',
 +        '../../src/hashmap.h',
-+        '../../src/heap-profiler.cc',
-+        '../../src/heap-profiler.h',
-+        '../../src/heap-snapshot-generator-inl.h',
-+        '../../src/heap-snapshot-generator.cc',
-+        '../../src/heap-snapshot-generator.h',
++        '../../src/heap/array-buffer-tracker.cc',
++        '../../src/heap/array-buffer-tracker.h',
 +        '../../src/heap/memory-reducer.cc',
 +        '../../src/heap/memory-reducer.h',
 +        '../../src/heap/gc-idle-time-handler.cc',
@@ -3583,75 +3764,32 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/heap/heap-inl.h',
 +        '../../src/heap/heap.cc',
 +        '../../src/heap/heap.h',
-+        '../../src/heap/identity-map.cc',
-+        '../../src/heap/identity-map.h',
 +        '../../src/heap/incremental-marking-inl.h',
++        '../../src/heap/incremental-marking-job.cc',
++        '../../src/heap/incremental-marking-job.h',
 +        '../../src/heap/incremental-marking.cc',
 +        '../../src/heap/incremental-marking.h',
 +        '../../src/heap/mark-compact-inl.h',
 +        '../../src/heap/mark-compact.cc',
 +        '../../src/heap/mark-compact.h',
++        '../../src/heap/object-stats.cc',
++        '../../src/heap/object-stats.h',
 +        '../../src/heap/objects-visiting-inl.h',
 +        '../../src/heap/objects-visiting.cc',
 +        '../../src/heap/objects-visiting.h',
++        '../../src/heap/scavenge-job.h',
++        '../../src/heap/scavenge-job.cc',
++        '../../src/heap/scavenger-inl.h',
++        '../../src/heap/scavenger.cc',
++        '../../src/heap/scavenger.h',
++        '../../src/heap/slots-buffer.cc',
++        '../../src/heap/slots-buffer.h',
 +        '../../src/heap/spaces-inl.h',
 +        '../../src/heap/spaces.cc',
 +        '../../src/heap/spaces.h',
 +        '../../src/heap/store-buffer-inl.h',
 +        '../../src/heap/store-buffer.cc',
 +        '../../src/heap/store-buffer.h',
-+        '../../src/hydrogen-alias-analysis.h',
-+        '../../src/hydrogen-bce.cc',
-+        '../../src/hydrogen-bce.h',
-+        '../../src/hydrogen-bch.cc',
-+        '../../src/hydrogen-bch.h',
-+        '../../src/hydrogen-canonicalize.cc',
-+        '../../src/hydrogen-canonicalize.h',
-+        '../../src/hydrogen-check-elimination.cc',
-+        '../../src/hydrogen-check-elimination.h',
-+        '../../src/hydrogen-dce.cc',
-+        '../../src/hydrogen-dce.h',
-+        '../../src/hydrogen-dehoist.cc',
-+        '../../src/hydrogen-dehoist.h',
-+        '../../src/hydrogen-environment-liveness.cc',
-+        '../../src/hydrogen-environment-liveness.h',
-+        '../../src/hydrogen-escape-analysis.cc',
-+        '../../src/hydrogen-escape-analysis.h',
-+        '../../src/hydrogen-flow-engine.h',
-+        '../../src/hydrogen-instructions.cc',
-+        '../../src/hydrogen-instructions.h',
-+        '../../src/hydrogen.cc',
-+        '../../src/hydrogen.h',
-+        '../../src/hydrogen-gvn.cc',
-+        '../../src/hydrogen-gvn.h',
-+        '../../src/hydrogen-infer-representation.cc',
-+        '../../src/hydrogen-infer-representation.h',
-+        '../../src/hydrogen-infer-types.cc',
-+        '../../src/hydrogen-infer-types.h',
-+        '../../src/hydrogen-load-elimination.cc',
-+        '../../src/hydrogen-load-elimination.h',
-+        '../../src/hydrogen-mark-deoptimize.cc',
-+        '../../src/hydrogen-mark-deoptimize.h',
-+        '../../src/hydrogen-mark-unreachable.cc',
-+        '../../src/hydrogen-mark-unreachable.h',
-+        '../../src/hydrogen-osr.cc',
-+        '../../src/hydrogen-osr.h',
-+        '../../src/hydrogen-range-analysis.cc',
-+        '../../src/hydrogen-range-analysis.h',
-+        '../../src/hydrogen-redundant-phi.cc',
-+        '../../src/hydrogen-redundant-phi.h',
-+        '../../src/hydrogen-removable-simulates.cc',
-+        '../../src/hydrogen-removable-simulates.h',
-+        '../../src/hydrogen-representation-changes.cc',
-+        '../../src/hydrogen-representation-changes.h',
-+        '../../src/hydrogen-sce.cc',
-+        '../../src/hydrogen-sce.h',
-+        '../../src/hydrogen-store-elimination.cc',
-+        '../../src/hydrogen-store-elimination.h',
-+        '../../src/hydrogen-types.cc',
-+        '../../src/hydrogen-types.h',
-+        '../../src/hydrogen-uint32-analysis.cc',
-+        '../../src/hydrogen-uint32-analysis.h',
 +        '../../src/i18n.cc',
 +        '../../src/i18n.h',
 +        '../../src/icu_util.cc',
@@ -3669,46 +3807,55 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/ic/ic.h',
 +        '../../src/ic/ic-compiler.cc',
 +        '../../src/ic/ic-compiler.h',
++        '../../src/identity-map.cc',
++        '../../src/identity-map.h',
 +        '../../src/interface-descriptors.cc',
 +        '../../src/interface-descriptors.h',
-+        '../../src/interpreter-irregexp.cc',
-+        '../../src/interpreter-irregexp.h',
++        '../../src/interpreter/bytecodes.cc',
++        '../../src/interpreter/bytecodes.h',
++        '../../src/interpreter/bytecode-array-builder.cc',
++        '../../src/interpreter/bytecode-array-builder.h',
++        '../../src/interpreter/bytecode-array-iterator.cc',
++        '../../src/interpreter/bytecode-array-iterator.h',
++        '../../src/interpreter/bytecode-register-allocator.cc',
++        '../../src/interpreter/bytecode-register-allocator.h',
++        '../../src/interpreter/bytecode-generator.cc',
++        '../../src/interpreter/bytecode-generator.h',
++        '../../src/interpreter/bytecode-traits.h',
++        '../../src/interpreter/constant-array-builder.cc',
++        '../../src/interpreter/constant-array-builder.h',
++        '../../src/interpreter/control-flow-builders.cc',
++        '../../src/interpreter/control-flow-builders.h',
++        '../../src/interpreter/interpreter.cc',
++        '../../src/interpreter/interpreter.h',
++        '../../src/isolate-inl.h',
 +        '../../src/isolate.cc',
 +        '../../src/isolate.h',
-+        '../../src/json-parser.h',
 +        '../../src/json-stringifier.h',
-+        '../../src/jsregexp-inl.h',
-+        '../../src/jsregexp.cc',
-+        '../../src/jsregexp.h',
++        '../../src/key-accumulator.h',
++        '../../src/key-accumulator.cc',
 +        '../../src/layout-descriptor-inl.h',
 +        '../../src/layout-descriptor.cc',
 +        '../../src/layout-descriptor.h',
 +        '../../src/list-inl.h',
 +        '../../src/list.h',
-+        '../../src/lithium-allocator-inl.h',
-+        '../../src/lithium-allocator.cc',
-+        '../../src/lithium-allocator.h',
-+        '../../src/lithium-codegen.cc',
-+        '../../src/lithium-codegen.h',
-+        '../../src/lithium.cc',
-+        '../../src/lithium.h',
-+        '../../src/lithium-inl.h',
-+        '../../src/liveedit.cc',
-+        '../../src/liveedit.h',
++        '../../src/locked-queue-inl.h',
++        '../../src/locked-queue.h',
 +        '../../src/log-inl.h',
 +        '../../src/log-utils.cc',
 +        '../../src/log-utils.h',
 +        '../../src/log.cc',
 +        '../../src/log.h',
-+        '../../src/lookup-inl.h',
 +        '../../src/lookup.cc',
 +        '../../src/lookup.h',
 +        '../../src/macro-assembler.h',
++        '../../src/machine-type.cc',
++        '../../src/machine-type.h',
 +        '../../src/messages.cc',
 +        '../../src/messages.h',
-+        '../../src/modules.cc',
-+        '../../src/modules.h',
 +        '../../src/msan.h',
++        '../../src/objects-body-descriptors-inl.h',
++        '../../src/objects-body-descriptors.h',
 +        '../../src/objects-debug.cc',
 +        '../../src/objects-inl.h',
 +        '../../src/objects-printer.cc',
@@ -3718,36 +3865,79 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/optimizing-compile-dispatcher.h',
 +        '../../src/ostreams.cc',
 +        '../../src/ostreams.h',
-+        '../../src/pattern-rewriter.cc',
-+        '../../src/parser.cc',
-+        '../../src/parser.h',
++        '../../src/parsing/expression-classifier.h',
++        '../../src/parsing/func-name-inferrer.cc',
++        '../../src/parsing/func-name-inferrer.h',
++        '../../src/parsing/json-parser.h',
++        '../../src/parsing/parameter-initializer-rewriter.cc',
++        '../../src/parsing/parameter-initializer-rewriter.h',
++        '../../src/parsing/parser-base.h',
++        '../../src/parsing/parser.cc',
++        '../../src/parsing/parser.h',
++        '../../src/parsing/pattern-rewriter.cc',
++        '../../src/parsing/preparse-data-format.h',
++        '../../src/parsing/preparse-data.cc',
++        '../../src/parsing/preparse-data.h',
++        '../../src/parsing/preparser.cc',
++        '../../src/parsing/preparser.h',
++        '../../src/parsing/rewriter.cc',
++        '../../src/parsing/rewriter.h',
++        '../../src/parsing/scanner-character-streams.cc',
++        '../../src/parsing/scanner-character-streams.h',
++        '../../src/parsing/scanner.cc',
++        '../../src/parsing/scanner.h',
++        '../../src/parsing/token.cc',
++        '../../src/parsing/token.h',
 +        '../../src/pending-compilation-error-handler.cc',
 +        '../../src/pending-compilation-error-handler.h',
-+        '../../src/preparse-data-format.h',
-+        '../../src/preparse-data.cc',
-+        '../../src/preparse-data.h',
-+        '../../src/preparser.cc',
-+        '../../src/preparser.h',
-+        '../../src/prettyprinter.cc',
-+        '../../src/prettyprinter.h',
-+        '../../src/profile-generator-inl.h',
-+        '../../src/profile-generator.cc',
-+        '../../src/profile-generator.h',
++        '../../src/profiler/allocation-tracker.cc',
++        '../../src/profiler/allocation-tracker.h',
++        '../../src/profiler/circular-queue-inl.h',
++        '../../src/profiler/circular-queue.h',
++        '../../src/profiler/cpu-profiler-inl.h',
++        '../../src/profiler/cpu-profiler.cc',
++        '../../src/profiler/cpu-profiler.h',
++        '../../src/profiler/heap-profiler.cc',
++        '../../src/profiler/heap-profiler.h',
++        '../../src/profiler/heap-snapshot-generator-inl.h',
++        '../../src/profiler/heap-snapshot-generator.cc',
++        '../../src/profiler/heap-snapshot-generator.h',
++        '../../src/profiler/profile-generator-inl.h',
++        '../../src/profiler/profile-generator.cc',
++        '../../src/profiler/profile-generator.h',
++        '../../src/profiler/sampler.cc',
++        '../../src/profiler/sampler.h',
++        '../../src/profiler/strings-storage.cc',
++        '../../src/profiler/strings-storage.h',
++        '../../src/profiler/unbound-queue-inl.h',
++        '../../src/profiler/unbound-queue.h',
++        '../../src/property-descriptor.cc',
++        '../../src/property-descriptor.h',
 +        '../../src/property-details.h',
 +        '../../src/property.cc',
 +        '../../src/property.h',
 +        '../../src/prototype.h',
-+        '../../src/regexp-macro-assembler-irregexp-inl.h',
-+        '../../src/regexp-macro-assembler-irregexp.cc',
-+        '../../src/regexp-macro-assembler-irregexp.h',
-+        '../../src/regexp-macro-assembler-tracer.cc',
-+        '../../src/regexp-macro-assembler-tracer.h',
-+        '../../src/regexp-macro-assembler.cc',
-+        '../../src/regexp-macro-assembler.h',
-+        '../../src/regexp-stack.cc',
-+        '../../src/regexp-stack.h',
-+        '../../src/rewriter.cc',
-+        '../../src/rewriter.h',
++        '../../src/regexp/bytecodes-irregexp.h',
++        '../../src/regexp/interpreter-irregexp.cc',
++        '../../src/regexp/interpreter-irregexp.h',
++        '../../src/regexp/jsregexp-inl.h',
++        '../../src/regexp/jsregexp.cc',
++        '../../src/regexp/jsregexp.h',
++        '../../src/regexp/regexp-ast.cc',
++        '../../src/regexp/regexp-ast.h',
++        '../../src/regexp/regexp-macro-assembler-irregexp-inl.h',
++        '../../src/regexp/regexp-macro-assembler-irregexp.cc',
++        '../../src/regexp/regexp-macro-assembler-irregexp.h',
++        '../../src/regexp/regexp-macro-assembler-tracer.cc',
++        '../../src/regexp/regexp-macro-assembler-tracer.h',
++        '../../src/regexp/regexp-macro-assembler.cc',
++        '../../src/regexp/regexp-macro-assembler.h',
++        '../../src/regexp/regexp-parser.cc',
++        '../../src/regexp/regexp-parser.h',
++        '../../src/regexp/regexp-stack.cc',
++        '../../src/regexp/regexp-stack.h',
++        '../../src/register-configuration.cc',
++        '../../src/register-configuration.h',
 +        '../../src/runtime-profiler.cc',
 +        '../../src/runtime-profiler.h',
 +        '../../src/runtime/runtime-array.cc',
@@ -3759,9 +3949,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/runtime/runtime-debug.cc',
 +        '../../src/runtime/runtime-forin.cc',
 +        '../../src/runtime/runtime-function.cc',
++        '../../src/runtime/runtime-futex.cc',
 +        '../../src/runtime/runtime-generator.cc',
 +        '../../src/runtime/runtime-i18n.cc',
 +        '../../src/runtime/runtime-internal.cc',
++        '../../src/runtime/runtime-interpreter.cc',
 +        '../../src/runtime/runtime-json.cc',
 +        '../../src/runtime/runtime-literals.cc',
 +        '../../src/runtime/runtime-liveedit.cc',
@@ -3769,9 +3961,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/runtime/runtime-numbers.cc',
 +        '../../src/runtime/runtime-object.cc',
 +        '../../src/runtime/runtime-observe.cc',
++        '../../src/runtime/runtime-operators.cc',
 +        '../../src/runtime/runtime-proxy.cc',
 +        '../../src/runtime/runtime-regexp.cc',
 +        '../../src/runtime/runtime-scopes.cc',
++        '../../src/runtime/runtime-simd.cc',
 +        '../../src/runtime/runtime-strings.cc',
 +        '../../src/runtime/runtime-symbol.cc',
 +        '../../src/runtime/runtime-test.cc',
@@ -3782,21 +3976,11 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/runtime/runtime.h',
 +        '../../src/safepoint-table.cc',
 +        '../../src/safepoint-table.h',
-+        '../../src/sampler.cc',
-+        '../../src/sampler.h',
-+        '../../src/scanner-character-streams.cc',
-+        '../../src/scanner-character-streams.h',
-+        '../../src/scanner.cc',
-+        '../../src/scanner.h',
-+        '../../src/scopeinfo.cc',
-+        '../../src/scopeinfo.h',
-+        '../../src/scopes.cc',
-+        '../../src/scopes.h',
 +        '../../src/signature.h',
 +        '../../src/simulator.h',
 +        '../../src/small-pointer-list.h',
-+        '../../src/smart-pointers.h',
 +        '../../src/snapshot/natives.h',
++        '../../src/snapshot/natives-common.cc',
 +        '../../src/snapshot/serialize.cc',
 +        '../../src/snapshot/serialize.h',
 +        '../../src/snapshot/snapshot.h',
@@ -3809,21 +3993,20 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/startup-data-util.h',
 +        '../../src/string-builder.cc',
 +        '../../src/string-builder.h',
-+        '../../src/string-search.cc',
 +        '../../src/string-search.h',
 +        '../../src/string-stream.cc',
 +        '../../src/string-stream.h',
-+        '../../src/strings-storage.cc',
-+        '../../src/strings-storage.h',
 +        '../../src/strtod.cc',
 +        '../../src/strtod.h',
 +        '../../src/ic/stub-cache.cc',
 +        '../../src/ic/stub-cache.h',
-+        '../../src/token.cc',
-+        '../../src/token.h',
++        '../../src/tracing/trace-event.cc',
++        '../../src/tracing/trace-event.h',
 +        '../../src/transitions-inl.h',
 +        '../../src/transitions.cc',
 +        '../../src/transitions.h',
++        '../../src/type-cache.cc',
++        '../../src/type-cache.h',
 +        '../../src/type-feedback-vector-inl.h',
 +        '../../src/type-feedback-vector.cc',
 +        '../../src/type-feedback-vector.h',
@@ -3832,16 +4015,17 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/types-inl.h',
 +        '../../src/types.cc',
 +        '../../src/types.h',
-+        '../../src/typing.cc',
-+        '../../src/typing.h',
-+        '../../src/unbound-queue-inl.h',
-+        '../../src/unbound-queue.h',
++        '../../src/typing-asm.cc',
++        '../../src/typing-asm.h',
++        '../../src/typing-reset.cc',
++        '../../src/typing-reset.h',
 +        '../../src/unicode-inl.h',
 +        '../../src/unicode.cc',
 +        '../../src/unicode.h',
++        '../../src/unicode-cache-inl.h',
++        '../../src/unicode-cache.h',
 +        '../../src/unicode-decoder.cc',
 +        '../../src/unicode-decoder.h',
-+        '../../src/unique.h',
 +        '../../src/utils.cc',
 +        '../../src/utils.h',
 +        '../../src/v8.cc',
@@ -3849,13 +4033,29 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/v8memory.h',
 +        '../../src/v8threads.cc',
 +        '../../src/v8threads.h',
-+        '../../src/variables.cc',
-+        '../../src/variables.h',
 +        '../../src/vector.h',
 +        '../../src/version.cc',
 +        '../../src/version.h',
 +        '../../src/vm-state-inl.h',
 +        '../../src/vm-state.h',
++        '../../src/wasm/asm-wasm-builder.cc',
++        '../../src/wasm/asm-wasm-builder.h',
++        '../../src/wasm/ast-decoder.cc',
++        '../../src/wasm/ast-decoder.h',
++        '../../src/wasm/decoder.h',
++        '../../src/wasm/encoder.cc',
++        '../../src/wasm/encoder.h',
++        '../../src/wasm/module-decoder.cc',
++        '../../src/wasm/module-decoder.h',
++        '../../src/wasm/wasm-js.cc',
++        '../../src/wasm/wasm-js.h',
++        '../../src/wasm/wasm-macro-gen.h',
++        '../../src/wasm/wasm-module.cc',
++        '../../src/wasm/wasm-module.h',
++        '../../src/wasm/wasm-opcodes.cc',
++        '../../src/wasm/wasm-opcodes.h',
++        '../../src/wasm/wasm-result.cc',
++        '../../src/wasm/wasm-result.h',
 +        '../../src/zone.cc',
 +        '../../src/zone.h',
 +        '../../src/zone-allocator.h',
@@ -3885,35 +4085,35 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/arm/constants-arm.h',
 +            '../../src/arm/constants-arm.cc',
 +            '../../src/arm/cpu-arm.cc',
-+            '../../src/arm/debug-arm.cc',
 +            '../../src/arm/deoptimizer-arm.cc',
 +            '../../src/arm/disasm-arm.cc',
 +            '../../src/arm/frames-arm.cc',
 +            '../../src/arm/frames-arm.h',
-+            '../../src/arm/full-codegen-arm.cc',
 +            '../../src/arm/interface-descriptors-arm.cc',
 +            '../../src/arm/interface-descriptors-arm.h',
-+            '../../src/arm/lithium-arm.cc',
-+            '../../src/arm/lithium-arm.h',
-+            '../../src/arm/lithium-codegen-arm.cc',
-+            '../../src/arm/lithium-codegen-arm.h',
-+            '../../src/arm/lithium-gap-resolver-arm.cc',
-+            '../../src/arm/lithium-gap-resolver-arm.h',
 +            '../../src/arm/macro-assembler-arm.cc',
 +            '../../src/arm/macro-assembler-arm.h',
-+            '../../src/arm/regexp-macro-assembler-arm.cc',
-+            '../../src/arm/regexp-macro-assembler-arm.h',
 +            '../../src/arm/simulator-arm.cc',
 +            '../../src/arm/simulator-arm.h',
 +            '../../src/compiler/arm/code-generator-arm.cc',
 +            '../../src/compiler/arm/instruction-codes-arm.h',
++            '../../src/compiler/arm/instruction-scheduler-arm.cc',
 +            '../../src/compiler/arm/instruction-selector-arm.cc',
-+            '../../src/compiler/arm/linkage-arm.cc',
++            '../../src/crankshaft/arm/lithium-arm.cc',
++            '../../src/crankshaft/arm/lithium-arm.h',
++            '../../src/crankshaft/arm/lithium-codegen-arm.cc',
++            '../../src/crankshaft/arm/lithium-codegen-arm.h',
++            '../../src/crankshaft/arm/lithium-gap-resolver-arm.cc',
++            '../../src/crankshaft/arm/lithium-gap-resolver-arm.h',
++            '../../src/debug/arm/debug-arm.cc',
++            '../../src/full-codegen/arm/full-codegen-arm.cc',
 +            '../../src/ic/arm/access-compiler-arm.cc',
 +            '../../src/ic/arm/handler-compiler-arm.cc',
 +            '../../src/ic/arm/ic-arm.cc',
 +            '../../src/ic/arm/ic-compiler-arm.cc',
 +            '../../src/ic/arm/stub-cache-arm.cc',
++            '../../src/regexp/arm/regexp-macro-assembler-arm.cc',
++            '../../src/regexp/arm/regexp-macro-assembler-arm.h',
 +          ],
 +        }],
 +        ['v8_target_arch=="arm64"', {
@@ -3928,49 +4128,49 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/arm64/code-stubs-arm64.h',
 +            '../../src/arm64/constants-arm64.h',
 +            '../../src/arm64/cpu-arm64.cc',
-+            '../../src/arm64/debug-arm64.cc',
 +            '../../src/arm64/decoder-arm64.cc',
 +            '../../src/arm64/decoder-arm64.h',
 +            '../../src/arm64/decoder-arm64-inl.h',
-+            '../../src/arm64/delayed-masm-arm64.cc',
-+            '../../src/arm64/delayed-masm-arm64.h',
-+            '../../src/arm64/delayed-masm-arm64-inl.h',
 +            '../../src/arm64/deoptimizer-arm64.cc',
 +            '../../src/arm64/disasm-arm64.cc',
 +            '../../src/arm64/disasm-arm64.h',
 +            '../../src/arm64/frames-arm64.cc',
 +            '../../src/arm64/frames-arm64.h',
-+            '../../src/arm64/full-codegen-arm64.cc',
 +            '../../src/arm64/instructions-arm64.cc',
 +            '../../src/arm64/instructions-arm64.h',
 +            '../../src/arm64/instrument-arm64.cc',
 +            '../../src/arm64/instrument-arm64.h',
 +            '../../src/arm64/interface-descriptors-arm64.cc',
 +            '../../src/arm64/interface-descriptors-arm64.h',
-+            '../../src/arm64/lithium-arm64.cc',
-+            '../../src/arm64/lithium-arm64.h',
-+            '../../src/arm64/lithium-codegen-arm64.cc',
-+            '../../src/arm64/lithium-codegen-arm64.h',
-+            '../../src/arm64/lithium-gap-resolver-arm64.cc',
-+            '../../src/arm64/lithium-gap-resolver-arm64.h',
 +            '../../src/arm64/macro-assembler-arm64.cc',
 +            '../../src/arm64/macro-assembler-arm64.h',
 +            '../../src/arm64/macro-assembler-arm64-inl.h',
-+            '../../src/arm64/regexp-macro-assembler-arm64.cc',
-+            '../../src/arm64/regexp-macro-assembler-arm64.h',
 +            '../../src/arm64/simulator-arm64.cc',
 +            '../../src/arm64/simulator-arm64.h',
 +            '../../src/arm64/utils-arm64.cc',
 +            '../../src/arm64/utils-arm64.h',
 +            '../../src/compiler/arm64/code-generator-arm64.cc',
 +            '../../src/compiler/arm64/instruction-codes-arm64.h',
++            '../../src/compiler/arm64/instruction-scheduler-arm64.cc',
 +            '../../src/compiler/arm64/instruction-selector-arm64.cc',
-+            '../../src/compiler/arm64/linkage-arm64.cc',
++            '../../src/crankshaft/arm64/delayed-masm-arm64.cc',
++            '../../src/crankshaft/arm64/delayed-masm-arm64.h',
++            '../../src/crankshaft/arm64/delayed-masm-arm64-inl.h',
++            '../../src/crankshaft/arm64/lithium-arm64.cc',
++            '../../src/crankshaft/arm64/lithium-arm64.h',
++            '../../src/crankshaft/arm64/lithium-codegen-arm64.cc',
++            '../../src/crankshaft/arm64/lithium-codegen-arm64.h',
++            '../../src/crankshaft/arm64/lithium-gap-resolver-arm64.cc',
++            '../../src/crankshaft/arm64/lithium-gap-resolver-arm64.h',
++            '../../src/debug/arm64/debug-arm64.cc',
++            '../../src/full-codegen/arm64/full-codegen-arm64.cc',
 +            '../../src/ic/arm64/access-compiler-arm64.cc',
 +            '../../src/ic/arm64/handler-compiler-arm64.cc',
 +            '../../src/ic/arm64/ic-arm64.cc',
 +            '../../src/ic/arm64/ic-compiler-arm64.cc',
 +            '../../src/ic/arm64/stub-cache-arm64.cc',
++            '../../src/regexp/arm64/regexp-macro-assembler-arm64.cc',
++            '../../src/regexp/arm64/regexp-macro-assembler-arm64.h',
 +          ],
 +        }],
 +        ['v8_target_arch=="ia32"', {
@@ -3984,32 +4184,32 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/ia32/codegen-ia32.cc',
 +            '../../src/ia32/codegen-ia32.h',
 +            '../../src/ia32/cpu-ia32.cc',
-+            '../../src/ia32/debug-ia32.cc',
 +            '../../src/ia32/deoptimizer-ia32.cc',
 +            '../../src/ia32/disasm-ia32.cc',
 +            '../../src/ia32/frames-ia32.cc',
 +            '../../src/ia32/frames-ia32.h',
-+            '../../src/ia32/full-codegen-ia32.cc',
 +            '../../src/ia32/interface-descriptors-ia32.cc',
-+            '../../src/ia32/lithium-codegen-ia32.cc',
-+            '../../src/ia32/lithium-codegen-ia32.h',
-+            '../../src/ia32/lithium-gap-resolver-ia32.cc',
-+            '../../src/ia32/lithium-gap-resolver-ia32.h',
-+            '../../src/ia32/lithium-ia32.cc',
-+            '../../src/ia32/lithium-ia32.h',
 +            '../../src/ia32/macro-assembler-ia32.cc',
 +            '../../src/ia32/macro-assembler-ia32.h',
-+            '../../src/ia32/regexp-macro-assembler-ia32.cc',
-+            '../../src/ia32/regexp-macro-assembler-ia32.h',
 +            '../../src/compiler/ia32/code-generator-ia32.cc',
 +            '../../src/compiler/ia32/instruction-codes-ia32.h',
++            '../../src/compiler/ia32/instruction-scheduler-ia32.cc',
 +            '../../src/compiler/ia32/instruction-selector-ia32.cc',
-+            '../../src/compiler/ia32/linkage-ia32.cc',
++            '../../src/crankshaft/ia32/lithium-codegen-ia32.cc',
++            '../../src/crankshaft/ia32/lithium-codegen-ia32.h',
++            '../../src/crankshaft/ia32/lithium-gap-resolver-ia32.cc',
++            '../../src/crankshaft/ia32/lithium-gap-resolver-ia32.h',
++            '../../src/crankshaft/ia32/lithium-ia32.cc',
++            '../../src/crankshaft/ia32/lithium-ia32.h',
++            '../../src/debug/ia32/debug-ia32.cc',
++            '../../src/full-codegen/ia32/full-codegen-ia32.cc',
 +            '../../src/ic/ia32/access-compiler-ia32.cc',
 +            '../../src/ic/ia32/handler-compiler-ia32.cc',
 +            '../../src/ic/ia32/ic-ia32.cc',
 +            '../../src/ic/ia32/ic-compiler-ia32.cc',
 +            '../../src/ic/ia32/stub-cache-ia32.cc',
++            '../../src/regexp/ia32/regexp-macro-assembler-ia32.cc',
++            '../../src/regexp/ia32/regexp-macro-assembler-ia32.h',
 +          ],
 +        }],
 +        ['v8_target_arch=="x87"', {
@@ -4023,32 +4223,32 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/x87/codegen-x87.cc',
 +            '../../src/x87/codegen-x87.h',
 +            '../../src/x87/cpu-x87.cc',
-+            '../../src/x87/debug-x87.cc',
 +            '../../src/x87/deoptimizer-x87.cc',
 +            '../../src/x87/disasm-x87.cc',
 +            '../../src/x87/frames-x87.cc',
 +            '../../src/x87/frames-x87.h',
-+            '../../src/x87/full-codegen-x87.cc',
 +            '../../src/x87/interface-descriptors-x87.cc',
-+            '../../src/x87/lithium-codegen-x87.cc',
-+            '../../src/x87/lithium-codegen-x87.h',
-+            '../../src/x87/lithium-gap-resolver-x87.cc',
-+            '../../src/x87/lithium-gap-resolver-x87.h',
-+            '../../src/x87/lithium-x87.cc',
-+            '../../src/x87/lithium-x87.h',
 +            '../../src/x87/macro-assembler-x87.cc',
 +            '../../src/x87/macro-assembler-x87.h',
-+            '../../src/x87/regexp-macro-assembler-x87.cc',
-+            '../../src/x87/regexp-macro-assembler-x87.h',
 +            '../../src/compiler/x87/code-generator-x87.cc',
 +            '../../src/compiler/x87/instruction-codes-x87.h',
++            '../../src/compiler/x87/instruction-scheduler-x87.cc',
 +            '../../src/compiler/x87/instruction-selector-x87.cc',
-+            '../../src/compiler/x87/linkage-x87.cc',
++            '../../src/crankshaft/x87/lithium-codegen-x87.cc',
++            '../../src/crankshaft/x87/lithium-codegen-x87.h',
++            '../../src/crankshaft/x87/lithium-gap-resolver-x87.cc',
++            '../../src/crankshaft/x87/lithium-gap-resolver-x87.h',
++            '../../src/crankshaft/x87/lithium-x87.cc',
++            '../../src/crankshaft/x87/lithium-x87.h',
++            '../../src/debug/x87/debug-x87.cc',
++            '../../src/full-codegen/x87/full-codegen-x87.cc',
 +            '../../src/ic/x87/access-compiler-x87.cc',
 +            '../../src/ic/x87/handler-compiler-x87.cc',
 +            '../../src/ic/x87/ic-x87.cc',
 +            '../../src/ic/x87/ic-compiler-x87.cc',
 +            '../../src/ic/x87/stub-cache-x87.cc',
++            '../../src/regexp/x87/regexp-macro-assembler-x87.cc',
++            '../../src/regexp/x87/regexp-macro-assembler-x87.h',
 +          ],
 +        }],
 +        ['v8_target_arch=="mips" or v8_target_arch=="mipsel"', {
@@ -4064,37 +4264,37 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/mips/constants-mips.cc',
 +            '../../src/mips/constants-mips.h',
 +            '../../src/mips/cpu-mips.cc',
-+            '../../src/mips/debug-mips.cc',
 +            '../../src/mips/deoptimizer-mips.cc',
 +            '../../src/mips/disasm-mips.cc',
 +            '../../src/mips/frames-mips.cc',
 +            '../../src/mips/frames-mips.h',
-+            '../../src/mips/full-codegen-mips.cc',
 +            '../../src/mips/interface-descriptors-mips.cc',
-+            '../../src/mips/lithium-codegen-mips.cc',
-+            '../../src/mips/lithium-codegen-mips.h',
-+            '../../src/mips/lithium-gap-resolver-mips.cc',
-+            '../../src/mips/lithium-gap-resolver-mips.h',
-+            '../../src/mips/lithium-mips.cc',
-+            '../../src/mips/lithium-mips.h',
 +            '../../src/mips/macro-assembler-mips.cc',
 +            '../../src/mips/macro-assembler-mips.h',
-+            '../../src/mips/regexp-macro-assembler-mips.cc',
-+            '../../src/mips/regexp-macro-assembler-mips.h',
 +            '../../src/mips/simulator-mips.cc',
 +            '../../src/mips/simulator-mips.h',
 +            '../../src/compiler/mips/code-generator-mips.cc',
 +            '../../src/compiler/mips/instruction-codes-mips.h',
++            '../../src/compiler/mips/instruction-scheduler-mips.cc',
 +            '../../src/compiler/mips/instruction-selector-mips.cc',
-+            '../../src/compiler/mips/linkage-mips.cc',
++            '../../src/crankshaft/mips/lithium-codegen-mips.cc',
++            '../../src/crankshaft/mips/lithium-codegen-mips.h',
++            '../../src/crankshaft/mips/lithium-gap-resolver-mips.cc',
++            '../../src/crankshaft/mips/lithium-gap-resolver-mips.h',
++            '../../src/crankshaft/mips/lithium-mips.cc',
++            '../../src/crankshaft/mips/lithium-mips.h',
++            '../../src/full-codegen/mips/full-codegen-mips.cc',
++            '../../src/debug/mips/debug-mips.cc',
 +            '../../src/ic/mips/access-compiler-mips.cc',
 +            '../../src/ic/mips/handler-compiler-mips.cc',
 +            '../../src/ic/mips/ic-mips.cc',
 +            '../../src/ic/mips/ic-compiler-mips.cc',
 +            '../../src/ic/mips/stub-cache-mips.cc',
++            '../../src/regexp/mips/regexp-macro-assembler-mips.cc',
++            '../../src/regexp/mips/regexp-macro-assembler-mips.h',
 +          ],
 +        }],
-+        ['v8_target_arch=="mips64el"', {
++        ['v8_target_arch=="mips64" or v8_target_arch=="mips64el"', {
 +          'sources': [  ### gcmole(arch:mips64el) ###
 +            '../../src/mips64/assembler-mips64.cc',
 +            '../../src/mips64/assembler-mips64.h',
@@ -4107,38 +4307,44 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/mips64/constants-mips64.cc',
 +            '../../src/mips64/constants-mips64.h',
 +            '../../src/mips64/cpu-mips64.cc',
-+            '../../src/mips64/debug-mips64.cc',
 +            '../../src/mips64/deoptimizer-mips64.cc',
 +            '../../src/mips64/disasm-mips64.cc',
 +            '../../src/mips64/frames-mips64.cc',
 +            '../../src/mips64/frames-mips64.h',
-+            '../../src/mips64/full-codegen-mips64.cc',
 +            '../../src/mips64/interface-descriptors-mips64.cc',
-+            '../../src/mips64/lithium-codegen-mips64.cc',
-+            '../../src/mips64/lithium-codegen-mips64.h',
-+            '../../src/mips64/lithium-gap-resolver-mips64.cc',
-+            '../../src/mips64/lithium-gap-resolver-mips64.h',
-+            '../../src/mips64/lithium-mips64.cc',
-+            '../../src/mips64/lithium-mips64.h',
 +            '../../src/mips64/macro-assembler-mips64.cc',
 +            '../../src/mips64/macro-assembler-mips64.h',
-+            '../../src/mips64/regexp-macro-assembler-mips64.cc',
-+            '../../src/mips64/regexp-macro-assembler-mips64.h',
 +            '../../src/mips64/simulator-mips64.cc',
 +            '../../src/mips64/simulator-mips64.h',
 +            '../../src/compiler/mips64/code-generator-mips64.cc',
 +            '../../src/compiler/mips64/instruction-codes-mips64.h',
++            '../../src/compiler/mips64/instruction-scheduler-mips64.cc',
 +            '../../src/compiler/mips64/instruction-selector-mips64.cc',
-+            '../../src/compiler/mips64/linkage-mips64.cc',
++            '../../src/crankshaft/mips64/lithium-codegen-mips64.cc',
++            '../../src/crankshaft/mips64/lithium-codegen-mips64.h',
++            '../../src/crankshaft/mips64/lithium-gap-resolver-mips64.cc',
++            '../../src/crankshaft/mips64/lithium-gap-resolver-mips64.h',
++            '../../src/crankshaft/mips64/lithium-mips64.cc',
++            '../../src/crankshaft/mips64/lithium-mips64.h',
++            '../../src/debug/mips64/debug-mips64.cc',
++            '../../src/full-codegen/mips64/full-codegen-mips64.cc',
 +            '../../src/ic/mips64/access-compiler-mips64.cc',
 +            '../../src/ic/mips64/handler-compiler-mips64.cc',
 +            '../../src/ic/mips64/ic-mips64.cc',
 +            '../../src/ic/mips64/ic-compiler-mips64.cc',
 +            '../../src/ic/mips64/stub-cache-mips64.cc',
++            '../../src/regexp/mips64/regexp-macro-assembler-mips64.cc',
++            '../../src/regexp/mips64/regexp-macro-assembler-mips64.h',
 +          ],
 +        }],
 +        ['v8_target_arch=="x64" or v8_target_arch=="x32"', {
 +          'sources': [  ### gcmole(arch:x64) ###
++            '../../src/crankshaft/x64/lithium-codegen-x64.cc',
++            '../../src/crankshaft/x64/lithium-codegen-x64.h',
++            '../../src/crankshaft/x64/lithium-gap-resolver-x64.cc',
++            '../../src/crankshaft/x64/lithium-gap-resolver-x64.h',
++            '../../src/crankshaft/x64/lithium-x64.cc',
++            '../../src/crankshaft/x64/lithium-x64.h',
 +            '../../src/x64/assembler-x64-inl.h',
 +            '../../src/x64/assembler-x64.cc',
 +            '../../src/x64/assembler-x64.h',
@@ -4148,40 +4354,51 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/x64/codegen-x64.cc',
 +            '../../src/x64/codegen-x64.h',
 +            '../../src/x64/cpu-x64.cc',
-+            '../../src/x64/debug-x64.cc',
 +            '../../src/x64/deoptimizer-x64.cc',
 +            '../../src/x64/disasm-x64.cc',
 +            '../../src/x64/frames-x64.cc',
 +            '../../src/x64/frames-x64.h',
-+            '../../src/x64/full-codegen-x64.cc',
 +            '../../src/x64/interface-descriptors-x64.cc',
-+            '../../src/x64/lithium-codegen-x64.cc',
-+            '../../src/x64/lithium-codegen-x64.h',
-+            '../../src/x64/lithium-gap-resolver-x64.cc',
-+            '../../src/x64/lithium-gap-resolver-x64.h',
-+            '../../src/x64/lithium-x64.cc',
-+            '../../src/x64/lithium-x64.h',
 +            '../../src/x64/macro-assembler-x64.cc',
 +            '../../src/x64/macro-assembler-x64.h',
-+            '../../src/x64/regexp-macro-assembler-x64.cc',
-+            '../../src/x64/regexp-macro-assembler-x64.h',
++            '../../src/debug/x64/debug-x64.cc',
++            '../../src/full-codegen/x64/full-codegen-x64.cc',
 +            '../../src/ic/x64/access-compiler-x64.cc',
 +            '../../src/ic/x64/handler-compiler-x64.cc',
 +            '../../src/ic/x64/ic-x64.cc',
 +            '../../src/ic/x64/ic-compiler-x64.cc',
 +            '../../src/ic/x64/stub-cache-x64.cc',
++            '../../src/regexp/x64/regexp-macro-assembler-x64.cc',
++            '../../src/regexp/x64/regexp-macro-assembler-x64.h',
 +          ],
 +        }],
 +        ['v8_target_arch=="x64"', {
 +          'sources': [
 +            '../../src/compiler/x64/code-generator-x64.cc',
 +            '../../src/compiler/x64/instruction-codes-x64.h',
++            '../../src/compiler/x64/instruction-scheduler-x64.cc',
 +            '../../src/compiler/x64/instruction-selector-x64.cc',
-+            '../../src/compiler/x64/linkage-x64.cc',
 +          ],
 +        }],
 +        ['v8_target_arch=="ppc" or v8_target_arch=="ppc64"', {
 +          'sources': [  ### gcmole(arch:ppc) ###
++            '../../src/compiler/ppc/code-generator-ppc.cc',
++            '../../src/compiler/ppc/instruction-codes-ppc.h',
++            '../../src/compiler/ppc/instruction-scheduler-ppc.cc',
++            '../../src/compiler/ppc/instruction-selector-ppc.cc',
++            '../../src/crankshaft/ppc/lithium-ppc.cc',
++            '../../src/crankshaft/ppc/lithium-ppc.h',
++            '../../src/crankshaft/ppc/lithium-codegen-ppc.cc',
++            '../../src/crankshaft/ppc/lithium-codegen-ppc.h',
++            '../../src/crankshaft/ppc/lithium-gap-resolver-ppc.cc',
++            '../../src/crankshaft/ppc/lithium-gap-resolver-ppc.h',
++            '../../src/debug/ppc/debug-ppc.cc',
++            '../../src/full-codegen/ppc/full-codegen-ppc.cc',
++            '../../src/ic/ppc/access-compiler-ppc.cc',
++            '../../src/ic/ppc/handler-compiler-ppc.cc',
++            '../../src/ic/ppc/ic-ppc.cc',
++            '../../src/ic/ppc/ic-compiler-ppc.cc',
++            '../../src/ic/ppc/stub-cache-ppc.cc',
 +            '../../src/ppc/assembler-ppc-inl.h',
 +            '../../src/ppc/assembler-ppc.cc',
 +            '../../src/ppc/assembler-ppc.h',
@@ -4193,35 +4410,18 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../src/ppc/constants-ppc.h',
 +            '../../src/ppc/constants-ppc.cc',
 +            '../../src/ppc/cpu-ppc.cc',
-+            '../../src/ppc/debug-ppc.cc',
 +            '../../src/ppc/deoptimizer-ppc.cc',
 +            '../../src/ppc/disasm-ppc.cc',
 +            '../../src/ppc/frames-ppc.cc',
 +            '../../src/ppc/frames-ppc.h',
-+            '../../src/ppc/full-codegen-ppc.cc',
 +            '../../src/ppc/interface-descriptors-ppc.cc',
 +            '../../src/ppc/interface-descriptors-ppc.h',
-+            '../../src/ppc/lithium-ppc.cc',
-+            '../../src/ppc/lithium-ppc.h',
-+            '../../src/ppc/lithium-codegen-ppc.cc',
-+            '../../src/ppc/lithium-codegen-ppc.h',
-+            '../../src/ppc/lithium-gap-resolver-ppc.cc',
-+            '../../src/ppc/lithium-gap-resolver-ppc.h',
 +            '../../src/ppc/macro-assembler-ppc.cc',
 +            '../../src/ppc/macro-assembler-ppc.h',
-+            '../../src/ppc/regexp-macro-assembler-ppc.cc',
-+            '../../src/ppc/regexp-macro-assembler-ppc.h',
 +            '../../src/ppc/simulator-ppc.cc',
 +            '../../src/ppc/simulator-ppc.h',
-+            '../../src/compiler/ppc/code-generator-ppc.cc',
-+            '../../src/compiler/ppc/instruction-codes-ppc.h',
-+            '../../src/compiler/ppc/instruction-selector-ppc.cc',
-+            '../../src/compiler/ppc/linkage-ppc.cc',
-+            '../../src/ic/ppc/access-compiler-ppc.cc',
-+            '../../src/ic/ppc/handler-compiler-ppc.cc',
-+            '../../src/ic/ppc/ic-ppc.cc',
-+            '../../src/ic/ppc/ic-compiler-ppc.cc',
-+            '../../src/ic/ppc/stub-cache-ppc.cc',
++            '../../src/regexp/ppc/regexp-macro-assembler-ppc.cc',
++            '../../src/regexp/ppc/regexp-macro-assembler-ppc.h',
 +          ],
 +        }],
 +        ['OS=="win"', {
@@ -4330,6 +4530,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        '../../src/base/safe_conversions_impl.h',
 +        '../../src/base/safe_math.h',
 +        '../../src/base/safe_math_impl.h',
++        '../../src/base/smart-pointers.h',
 +        '../../src/base/sys-info.cc',
 +        '../../src/base/sys-info.h',
 +        '../../src/base/utils/random-number-generator.cc',
@@ -4585,6 +4786,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +              '<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.bin',
 +              '<(SHARED_INTERMEDIATE_DIR)/libraries-experimental_sse2.bin',
 +              '<(SHARED_INTERMEDIATE_DIR)/libraries-extras_sse2.bin',
++              '<(SHARED_INTERMEDIATE_DIR)/libraries-experimental-extras_sse2.bin',
 +            ],
 +            'conditions': [
 +              ['want_separate_host_toolset==1', {
@@ -4635,7 +4837,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +        ['v8_enable_i18n_support==1', {
 +          'variables': {
 +            'i18n_library_files': [
-+              '../../src/i18n.js',
++              '../../src/js/i18n.js',
 +            ],
 +          },
 +        }, {
@@ -4646,57 +4848,56 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +      ],
 +      'variables': {
 +        'library_files': [
-+          '../../src/macros.py',
++          '../../src/js/macros.py',
 +          '../../src/messages.h',
-+          '../../src/runtime.js',
-+          '../../src/prologue.js',
-+          '../../src/v8natives.js',
-+          '../../src/symbol.js',
-+          '../../src/array.js',
-+          '../../src/string.js',
-+          '../../src/uri.js',
-+          '../../src/math.js',
++          '../../src/js/prologue.js',
++          '../../src/js/runtime.js',
++          '../../src/js/v8natives.js',
++          '../../src/js/symbol.js',
++          '../../src/js/array.js',
++          '../../src/js/string.js',
++          '../../src/js/uri.js',
++          '../../src/js/math.js',
 +          '../../src/third_party/fdlibm/fdlibm.js',
-+          '../../src/date.js',
-+          '../../src/regexp.js',
-+          '../../src/arraybuffer.js',
-+          '../../src/typedarray.js',
-+          '../../src/iterator-prototype.js',
-+          '../../src/generator.js',
-+          '../../src/object-observe.js',
-+          '../../src/collection.js',
-+          '../../src/weak-collection.js',
-+          '../../src/collection-iterator.js',
-+          '../../src/promise.js',
-+          '../../src/messages.js',
-+          '../../src/json.js',
-+          '../../src/array-iterator.js',
-+          '../../src/string-iterator.js',
-+          '../../src/debug-debugger.js',
-+          '../../src/mirror-debugger.js',
-+          '../../src/liveedit-debugger.js',
-+          '../../src/templates.js',
-+          '../../src/harmony-array.js',
-+          '../../src/harmony-typedarray.js',
++          '../../src/js/regexp.js',
++          '../../src/js/arraybuffer.js',
++          '../../src/js/typedarray.js',
++          '../../src/js/iterator-prototype.js',
++          '../../src/js/generator.js',
++          '../../src/js/object-observe.js',
++          '../../src/js/collection.js',
++          '../../src/js/weak-collection.js',
++          '../../src/js/collection-iterator.js',
++          '../../src/js/promise.js',
++          '../../src/js/messages.js',
++          '../../src/js/json.js',
++          '../../src/js/array-iterator.js',
++          '../../src/js/string-iterator.js',
++          '../../src/js/templates.js',
++          '../../src/js/spread.js',
++          '../../src/debug/mirrors.js',
++          '../../src/debug/debug.js',
++          '../../src/debug/liveedit.js',
 +        ],
 +        'experimental_library_files': [
-+          '../../src/macros.py',
++          '../../src/js/macros.py',
 +          '../../src/messages.h',
-+          '../../src/proxy.js',
-+          '../../src/generator.js',
-+          '../../src/harmony-atomics.js',
-+          '../../src/harmony-array-includes.js',
-+          '../../src/harmony-concat-spreadable.js',
-+          '../../src/harmony-tostring.js',
-+          '../../src/harmony-regexp.js',
-+          '../../src/harmony-reflect.js',
-+          '../../src/harmony-spread.js',
-+          '../../src/harmony-object.js',
-+          '../../src/harmony-sharedarraybuffer.js',
++          '../../src/js/proxy.js',
++          '../../src/js/generator.js',
++          '../../src/js/harmony-atomics.js',
++          '../../src/js/harmony-regexp.js',
++          '../../src/js/harmony-reflect.js',
++          '../../src/js/harmony-object-observe.js',
++          '../../src/js/harmony-sharedarraybuffer.js',
++          '../../src/js/harmony-simd.js',
++          '../../src/js/harmony-species.js',
++          '../../src/js/harmony-unicode-regexps.js',
++          '../../src/js/promise-extra.js',
 +        ],
 +        'libraries_bin_file': '<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.bin',
 +        'libraries_experimental_bin_file': '<(SHARED_INTERMEDIATE_DIR)/libraries-experimental_sse2.bin',
 +        'libraries_extras_bin_file': '<(SHARED_INTERMEDIATE_DIR)/libraries-extras_sse2.bin',
++        'libraries_experimental_extras_bin_file': '<(SHARED_INTERMEDIATE_DIR)/libraries-experimental-extras_sse2.bin',
 +      },
 +      'actions': [
 +        {
@@ -4706,9 +4907,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '<@(library_files)',
 +            '<@(i18n_library_files)'
 +          ],
-+          'outputs': [
-+            '<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.cc',
-+          ],
++          'outputs': ['<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.cc'],
 +          'action': [
 +            'python',
 +            '../../tools/js2c.py',
@@ -4717,13 +4916,24 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '<@(library_files)',
 +            '<@(i18n_library_files)'
 +          ],
-+          'conditions': [
-+            [ 'v8_use_external_startup_data==1', {
-+              'outputs': ['<@(libraries_bin_file)'],
-+              'action': [
-+                '--startup_blob', '<@(libraries_bin_file)',
-+              ],
-+            }],
++        },
++        {
++          'action_name': 'v8_sse2_js2c_bin',
++          'inputs': [
++            '../../tools/js2c.py',
++            '<@(library_files)',
++            '<@(i18n_library_files)'
++          ],
++          'outputs': ['<@(libraries_bin_file)'],
++          'action': [
++            'python',
++            '../../tools/js2c.py',
++            '<(SHARED_INTERMEDIATE_DIR)/libraries_sse2.cc',
++            'CORE',
++            '<@(library_files)',
++            '<@(i18n_library_files)',
++            '--startup_blob', '<@(libraries_bin_file)',
++            '--nojs',
 +          ],
 +        },
 +        {
@@ -4732,9 +4942,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../tools/js2c.py',
 +            '<@(experimental_library_files)',
 +          ],
-+          'outputs': [
-+            '<(SHARED_INTERMEDIATE_DIR)/experimental-libraries_sse2.cc',
-+          ],
++          'outputs': ['<(SHARED_INTERMEDIATE_DIR)/experimental-libraries_sse2.cc'],
 +          'action': [
 +            'python',
 +            '../../tools/js2c.py',
@@ -4742,13 +4950,22 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            'EXPERIMENTAL',
 +            '<@(experimental_library_files)'
 +          ],
-+          'conditions': [
-+            [ 'v8_use_external_startup_data==1', {
-+              'outputs': ['<@(libraries_experimental_bin_file)'],
-+              'action': [
-+                '--startup_blob', '<@(libraries_experimental_bin_file)'
-+              ],
-+            }],
++        },
++        {
++          'action_name': 'v8_sse2_js2c_experimental_bin',
++          'inputs': [
++            '../../tools/js2c.py',
++            '<@(experimental_library_files)',
++          ],
++          'outputs': ['<@(libraries_experimental_bin_file)'],
++          'action': [
++            'python',
++            '../../tools/js2c.py',
++            '<(SHARED_INTERMEDIATE_DIR)/experimental-libraries_sse2.cc',
++            'EXPERIMENTAL',
++            '<@(experimental_library_files)',
++            '--startup_blob', '<@(libraries_experimental_bin_file)',
++            '--nojs',
 +          ],
 +        },
 +        {
@@ -4757,9 +4974,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            '../../tools/js2c.py',
 +            '<@(v8_extra_library_files)',
 +          ],
-+          'outputs': [
-+            '<(SHARED_INTERMEDIATE_DIR)/extras-libraries_sse2.cc',
-+          ],
++          'outputs': ['<(SHARED_INTERMEDIATE_DIR)/extras-libraries_sse2.cc'],
 +          'action': [
 +            'python',
 +            '../../tools/js2c.py',
@@ -4767,13 +4982,56 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +            'EXTRAS',
 +            '<@(v8_extra_library_files)',
 +          ],
-+          'conditions': [
-+            [ 'v8_use_external_startup_data==1', {
-+              'outputs': ['<@(libraries_extras_bin_file)'],
-+              'action': [
-+                '--startup_blob', '<@(libraries_extras_bin_file)',
-+              ],
-+            }],
++        },
++        {
++          'action_name': 'v8_sse2_js2c_extras_bin',
++          'inputs': [
++            '../../tools/js2c.py',
++            '<@(v8_extra_library_files)',
++          ],
++          'outputs': ['<@(libraries_extras_bin_file)'],
++          'action': [
++            'python',
++            '../../tools/js2c.py',
++            '<(SHARED_INTERMEDIATE_DIR)/extras-libraries_sse2.cc',
++            'EXTRAS',
++            '<@(v8_extra_library_files)',
++            '--startup_blob', '<@(libraries_extras_bin_file)',
++            '--nojs',
++          ],
++        },
++        {
++          'action_name': 'v8_sse2_js2c_experimental_extras',
++          'inputs': [
++            '../../tools/js2c.py',
++            '<@(v8_experimental_extra_library_files)',
++          ],
++          'outputs': [
++            '<(SHARED_INTERMEDIATE_DIR)/experimental-extras-libraries_sse2.cc',
++          ],
++          'action': [
++            'python',
++            '../../tools/js2c.py',
++            '<(SHARED_INTERMEDIATE_DIR)/experimental-extras-libraries_sse2.cc',
++            'EXPERIMENTAL_EXTRAS',
++            '<@(v8_experimental_extra_library_files)',
++          ],
++        },
++        {
++          'action_name': 'v8_sse2_js2c_experimental_extras_bin',
++          'inputs': [
++            '../../tools/js2c.py',
++            '<@(v8_experimental_extra_library_files)',
++          ],
++          'outputs': ['<@(libraries_experimental_extras_bin_file)'],
++          'action': [
++            'python',
++            '../../tools/js2c.py',
++            '<(SHARED_INTERMEDIATE_DIR)/experimental-extras-libraries_sse2.cc',
++            'EXPERIMENTAL_EXTRAS',
++            '<@(v8_experimental_extra_library_files)',
++            '--startup_blob', '<@(libraries_experimental_extras_bin_file)',
++            '--nojs',
 +          ],
 +        },
 +      ],
@@ -4832,9 +5090,9 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/3rdparty/chromium/v8/tools/gyp/v8
 +    },
 +  ],
 +}
-diff -Nur qtwebengine-opensource-src-5.6.1/src/core/core_module.pro qtwebengine-opensource-src-5.6.1-no-sse2/src/core/core_module.pro
---- qtwebengine-opensource-src-5.6.1/src/core/core_module.pro 2016-05-26 20:01:25.000000000 +0200
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/core/core_module.pro 2016-06-11 01:25:56.463419047 +0200
+diff -Nur qtwebengine-opensource-src-5.7.0/src/core/core_module.pro qtwebengine-opensource-src-5.7.0-no-sse2/src/core/core_module.pro
+--- qtwebengine-opensource-src-5.7.0/src/core/core_module.pro	2016-06-07 06:20:06.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/core/core_module.pro	2016-07-17 18:06:40.383813518 +0200
 @@ -9,6 +9,29 @@
      error("Could not find the linking information that gyp should have generated.")
  }
@@ -4865,7 +5123,7 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/core/core_module.pro qtwebengine-
  load(qt_module)
  
  api_library_name = qtwebenginecoreapi$$qtPlatformTargetSuffix()
-@@ -71,7 +94,12 @@
+@@ -72,7 +95,12 @@
          locales.path = $$[QT_INSTALL_TRANSLATIONS]/qtwebengine_locales
          resources.CONFIG += no_check_exist
          resources.path = $$[QT_INSTALL_DATA]/resources
@@ -4879,10 +5137,10 @@ diff -Nur qtwebengine-opensource-src-5.6.1/src/core/core_module.pro qtwebengine-
  
          !use?(system_icu) {
              icu.CONFIG += no_check_exist
-diff -Nur qtwebengine-opensource-src-5.6.1/src/core/qtwebengine.gypi qtwebengine-opensource-src-5.6.1-no-sse2/src/core/qtwebengine.gypi
---- qtwebengine-opensource-src-5.6.1/src/core/qtwebengine.gypi	2016-02-15 16:18:46.000000000 +0100
-+++ qtwebengine-opensource-src-5.6.1-no-sse2/src/core/qtwebengine.gypi	2016-02-25 00:47:15.416723938 +0100
-@@ -58,6 +58,11 @@
+diff -Nur qtwebengine-opensource-src-5.7.0/src/core/qtwebengine.gypi qtwebengine-opensource-src-5.7.0-no-sse2/src/core/qtwebengine.gypi
+--- qtwebengine-opensource-src-5.7.0/src/core/qtwebengine.gypi	2016-06-07 06:20:06.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-no-sse2/src/core/qtwebengine.gypi	2016-07-17 18:06:40.391813562 +0200
+@@ -60,6 +60,11 @@
        },
      },
      'conditions': [

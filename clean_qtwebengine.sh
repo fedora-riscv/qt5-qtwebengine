@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2015 Kevin Kofler <Kevin@tigcc.ticalc.org>
+# Copyright 2015-2016 Kevin Kofler <Kevin@tigcc.ticalc.org>
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
 # "Software"), to deal in the Software without restriction, including
@@ -21,7 +21,7 @@
 
 if [ -z "$1" ] ; then
   echo "usage: ./clean_qtwebengine.sh VERSION"
-  echo "e.g.: ./clean_qtwebengine.sh 5.6.0"
+  echo "e.g.: ./clean_qtwebengine.sh 5.7.0"
   exit 1
 fi
 
@@ -55,7 +55,10 @@ else
 fi
 
 echo "running clean_ffmpeg.sh"
-./clean_ffmpeg.sh "$DIRNAME/src/3rdparty/chromium/third_party/ffmpeg" || exit $?
+./clean_ffmpeg.sh "$DIRNAME/src/3rdparty/chromium" || exit $?
+
+echo "ripping out openh264 sources"
+rm -rf "$DIRNAME/src/3rdparty/chromium/third_party/openh264/src" || exit $?
 
 echo "repacking as $DIRNAME-clean.tar.xz"
 XZ_OPT="-9 -f" tar cJf "$DIRNAME-clean.tar.xz" "$DIRNAME" || exit $?

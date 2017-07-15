@@ -22,12 +22,12 @@
 
 where=`pwd`
 
-generated_files=`./process_ffmpeg_gyp.py $1`
+generated_files=`./get_free_ffmpeg_source_files.py $1 0`
 generated_files_headers="${generated_files//.c/.h}"
 generated_files_headers="${generated_files_headers//.S/.h}"
 generated_files_headers="${generated_files_headers//.asm/.h}"
 
-cd $1
+cd $1/third_party/ffmpeg
 
 header_files="  libavutil/x86/asm.h \
                 libavutil/x86/bswap.h \
@@ -38,6 +38,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/x86/timer.h \
                 libavutil/aarch64/asm.S \
                 libavutil/aarch64/bswap.h \
+                libavutil/aarch64/timer.h \
                 libavutil/arm/asm.S \
                 libavutil/arm/bswap.h \
                 libavutil/arm/cpu.h \
@@ -45,6 +46,8 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/arm/intmath.h \
                 libavutil/arm/intreadwrite.h \
                 libavutil/arm/timer.h \
+                libavutil/aes_internal.h \
+                libavutil/atomic.h \
                 libavutil/atomic_gcc.h \
                 libavutil/attributes.h \
                 libavutil/audio_fifo.h \
@@ -64,8 +67,10 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/lls.h \
                 libavutil/lzo.h \
                 libavutil/macros.h \
+                libavutil/mem_internal.h \
                 libavutil/old_pix_fmts.h \
                 libavutil/pixfmt.h \
+                libavutil/qsort.h \
                 libavutil/replaygain.h \
                 libavutil/softfloat_tables.h \
                 libavutil/thread.h \
@@ -194,6 +199,7 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/hpel_template.c \
                 libavcodec/hpeldsp_template.c \
                 libavcodec/mdct_template.c \
+                libavcodec/pel_template.c \
                 libavcodec/videodsp_template.c \
                 libavcodec/h264pred.c \
                 libavcodec/hpeldsp.c \
@@ -208,14 +214,18 @@ manual_files="  libavutil/x86/x86inc.asm \
                 chromium/ffmpeg_stub_headers.fragment \
                 chromium/ffmpegsumo.sigs"
 
-other_files="   Changelog \
+other_files="   BUILD.gn \
+                Changelog \
                 COPYING.GPLv2 \
                 COPYING.GPLv3 \
                 COPYING.LGPLv2.1 \
                 COPYING.LGPLv3 \
                 CREDITS \
-                ffmpeg_generated.gypi \
+                CREDITS.chromium \
                 ffmpeg.gyp \
+                ffmpeg_generated.gypi \
+                ffmpeg_generated.gni \
+                ffmpeg_options.gni \
                 ffmpegsumo.ver \
                 INSTALL \
                 LICENSE \

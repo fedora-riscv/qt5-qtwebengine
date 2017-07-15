@@ -1,15 +1,13 @@
-diff -ur qtwebengine-opensource-src-5.6.1/src/core/config/linux.pri qtwebengine-opensource-src-5.6.1-linux-pri/src/core/config/linux.pri
---- qtwebengine-opensource-src-5.6.1/src/core/config/linux.pri	2016-05-26 20:01:25.000000000 +0200
-+++ qtwebengine-opensource-src-5.6.1-linux-pri/src/core/config/linux.pri	2016-06-11 01:17:26.494650774 +0200
-@@ -46,3 +46,25 @@
+diff -ur qtwebengine-opensource-src-5.7.0/src/core/config/linux.pri qtwebengine-opensource-src-5.7.0-linux-pri/src/core/config/linux.pri
+--- qtwebengine-opensource-src-5.7.0/src/core/config/linux.pri	2016-06-07 06:20:06.000000000 +0200
++++ qtwebengine-opensource-src-5.7.0-linux-pri/src/core/config/linux.pri	2016-07-17 22:18:17.312471202 +0200
+@@ -46,3 +46,22 @@
  use?(system_icu):      GYP_CONFIG += use_system_icu=1 icu_use_data_file_flag=0
  use?(system_ffmpeg):   GYP_CONFIG += use_system_ffmpeg=1
- 
+ use?(system_protobuf): GYP_CONFIG += use_system_protobuf=1
++ 
 +# some more system packages, that are not checked for for some reason
-+GYP_CONFIG += \
-+    use_system_expat=1 \
-+    use_system_re2=1 \
-+    use_system_protobuf=1
++GYP_CONFIG += use_system_re2=1
 +
 +# yasm is only used on x86, and passing use_system_yasm makes the build fail on
 +# other architectures (e.g., ARM), so make it conditional on the architecture
@@ -23,7 +21,6 @@ diff -ur qtwebengine-opensource-src-5.6.1/src/core/config/linux.pri qtwebengine-
 +# run the unbundling script Chromium provides
 +CHROMIUM_SRC_DIR = "$$QTWEBENGINE_ROOT/$$getChromiumSrcDir()"
 +R_G_F_PY = "$$CHROMIUM_SRC_DIR/build/linux/unbundle/replace_gyp_files.py"
-+R_G_F_PY_ARGS =
-+for (config, GYP_CONFIG): R_G_F_PY_ARGS += "-D $$config"
++R_G_F_PY_ARGS = "-D use_system_re2=1"
 +log("Running python $$R_G_F_PY $$R_G_F_PY_ARGS$${EOL}")
 +!system("python $$R_G_F_PY $$R_G_F_PY_ARGS"): error("-- unbundling failed")
