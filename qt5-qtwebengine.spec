@@ -569,6 +569,8 @@ done
 %changelog
 * Tue Oct 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-1
 - 5.9.2
+- Rebase linux-pri patch
+- Drop qt57 and qtbug-61521 patches (fixed upstream)
 
 * Mon Oct 09 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.1-5
 - rebuild (qt5)
