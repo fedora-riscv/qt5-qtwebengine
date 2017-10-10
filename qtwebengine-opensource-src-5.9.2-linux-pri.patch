@@ -1,11 +1,10 @@
-diff -ur qtwebengine-opensource-src-5.9.0/src/core/config/linux.pri qtwebengine-opensource-src-5.9.0-linux-pri/src/core/config/linux.pri
---- qtwebengine-opensource-src-5.9.0/src/core/config/linux.pri	2017-05-19 06:22:04.000000000 +0200
-+++ qtwebengine-opensource-src-5.9.0-linux-pri/src/core/config/linux.pri	2017-06-08 00:20:53.688419747 +0200
-@@ -148,3 +148,22 @@
-     use?(system_ffmpeg):   gn_args += use_system_ffmpeg=true
+diff -up qtwebengine-opensource-src-5.9.2/src/core/config/linux.pri.linux-pri qtwebengine-opensource-src-5.9.2/src/core/config/linux.pri
+--- qtwebengine-opensource-src-5.9.2/src/core/config/linux.pri.linux-pri	2017-10-09 15:08:43.206663093 -0500
++++ qtwebengine-opensource-src-5.9.2/src/core/config/linux.pri	2017-10-09 15:09:52.248208321 -0500
+@@ -153,3 +153,21 @@ host_build {
+     use?(system_re2):      gn_args += use_system_re2=true
      #use?(system_protobuf): gn_args += use_system_protobuf=true
  }
-+
 +# some more system packages, that are not checked for for some reason
 +gn_args += use_system_re2=true
 +

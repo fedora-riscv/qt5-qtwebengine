@@ -55,8 +55,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.9.1
-Release: 5%{?dist}
+Version: 5.9.2
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -74,7 +74,7 @@ Source3: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
 # some tweaks to linux.pri (system libs, link libpci, run unbundling script)
-Patch0:  qtwebengine-opensource-src-5.9.0-linux-pri.patch
+Patch0:  qtwebengine-opensource-src-5.9.2-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
 # resulting warnings - not upstreamable as is because it removes the fallback
 # mechanism for the ICU data directory (which is not used in our builds because
@@ -111,15 +111,10 @@ Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 Patch11: qtwebengine-opensource-src-5.9.0-skia-neon.patch
 # webrtc: enable the CPU feature detection for ARM Linux also for Chromium
 Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
-# FTBFS using qt < 5.8
-Patch20: qtwebengine-opensource-src-5.8.0-qt57.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
 # Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
 Patch22: qtwebengine-opensource-src-5.9.0-system-re2.patch
-# Fix broken binary compatibility for C memory management functions (incomplete
-# upstream fix for QTBUG-60565) (QTBUG-61521)
-Patch23: qtwebengine-opensource-src-5.9.1-qtbug-61521.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -139,6 +134,8 @@ BuildRequires: qt5-qtlocation-devel
 BuildRequires: qt5-qtsensors-devel
 BuildRequires: qt5-qtwebchannel-devel
 BuildRequires: qt5-qttools-static
+# for examples?
+BuildRequires: qt5-qtquickcontrols2-devel
 BuildRequires: ninja-build
 BuildRequires: cmake
 BuildRequires: bison
@@ -362,10 +359,8 @@ BuildArch: noarch
 %patch10 -p1 -b .openmax-dl-neon
 %patch11 -p1 -b .skia-neon
 %patch12 -p1 -b .webrtc-neon-detect
-%patch20 -p1 -b .qt57
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .system-re2
-%patch23 -p1 -b .qtbug-61521
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -572,6 +567,9 @@ done
 
 
 %changelog
+* Tue Oct 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-1
+- 5.9.2
+
 * Mon Oct 09 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.1-5
 - rebuild (qt5)
 
