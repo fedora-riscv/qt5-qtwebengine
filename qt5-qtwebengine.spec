@@ -102,7 +102,7 @@ Patch5:  qtwebengine-opensource-src-5.9.0-system-icu-utf.patch
 # also build V8 shared and twice on i686 (once for x87, once for SSE2)
 Patch6:  qtwebengine-opensource-src-5.9.1-no-sse2.patch
 # fix missing ARM -mfpu setting
-Patch9:  qtwebengine-opensource-src-5.9.0-arm-fpu-fix.patch
+Patch9:  qtwebengine-opensource-src-5.9.2-arm-fpu-fix.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
 Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 # restore NEON runtime detection in Skia: revert upstream review 1952953004,
@@ -575,6 +575,7 @@ done
 - Add BuildRequires: qt5-qtquickcontrols2-devel for the examples
 - Rebase linux-pri patch
 - Drop qt57 and qtbug-61521 patches, fixed upstream
+- arm-fpu-fix patch: Drop the host tools hunk added in 5.9.0-2, fixed upstream
 
 * Mon Oct 09 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.1-5
 - rebuild (qt5)
