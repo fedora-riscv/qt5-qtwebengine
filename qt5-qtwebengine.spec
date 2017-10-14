@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -73,7 +73,7 @@ Source2: clean_ffmpeg.sh
 Source3: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
-# some tweaks to linux.pri (system libs, link libpci, run unbundling script)
+# some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
 Patch0:  qtwebengine-opensource-src-5.9.2-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
 # resulting warnings - not upstreamable as is because it removes the fallback
@@ -113,8 +113,6 @@ Patch11: qtwebengine-opensource-src-5.9.0-skia-neon.patch
 Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
-# Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
-Patch22: qtwebengine-opensource-src-5.9.0-system-re2.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -567,10 +565,16 @@ done
 
 
 %changelog
+* Sat Oct 14 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.2-2
+- Do not call the Chromium unbundling script on re2, QtWebEngine now
+  auto-detects and uses the system re2 out of the box
+- Drop system-re2 patch (patching the no longer used unbundle/re2.gn), the
+  QtWebEngine re2/BUILD.gn is already correct
+
 * Tue Oct 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-1
 - 5.9.2
 - Rebase linux-pri patch
-- Drop qt57 and qtbug-61521 patches (fixed upstream)
+- Drop qt57 and qtbug-61521 patches, fixed upstream
 
 * Mon Oct 09 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.1-5
 - rebuild (qt5)
