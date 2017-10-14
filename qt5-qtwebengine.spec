@@ -358,7 +358,6 @@ BuildArch: noarch
 %patch11 -p1 -b .skia-neon
 %patch12 -p1 -b .webrtc-neon-detect
 %patch21 -p1 -b .gn-bootstrap-verbose
-%patch22 -p1 -b .system-re2
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
