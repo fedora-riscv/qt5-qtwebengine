@@ -571,7 +571,7 @@ done
   QtWebEngine re2/BUILD.gn is already correct
 
 * Tue Oct 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-1
-- 5.9.2
+- Update to 5.9.2
 - Add BuildRequires: qt5-qtquickcontrols2-devel for the examples
 - Rebase linux-pri patch
 - Drop qt57 and qtbug-61521 patches, fixed upstream
