@@ -565,8 +565,8 @@ done
 
 %changelog
 * Sat Oct 14 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.2-2
-- Do not call the Chromium unbundling script on re2, QtWebEngine now
-  auto-detects and uses the system re2 out of the box
+- linux-pri patch: Do not call the Chromium unbundling script on re2,
+  QtWebEngine now auto-detects and uses the system re2 out of the box
 - Drop system-re2 patch (patching the no longer used unbundle/re2.gn), the
   QtWebEngine re2/BUILD.gn is already correct
 
