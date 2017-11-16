@@ -113,6 +113,8 @@ Patch11: qtwebengine-opensource-src-5.9.0-skia-neon.patch
 Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
+# Fix FTBFS with Qt 5.7
+Patch22: qtwebengine-opensource-src-5.9.2-qt57.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -358,6 +360,7 @@ BuildArch: noarch
 %patch11 -p1 -b .skia-neon
 %patch12 -p1 -b .webrtc-neon-detect
 %patch21 -p1 -b .gn-bootstrap-verbose
+%patch22 -p1 -b .qt57
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -570,6 +573,7 @@ done
 - Drop system-re2 patch (patching the no longer used unbundle/re2.gn), the
   QtWebEngine re2/BUILD.gn is already correct
 - Explicitly force use_system_re2, the autodetection does not work on F25
+- Fix FTBFS with Qt 5.7
 
 * Tue Oct 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-1
 - Update to 5.9.2
