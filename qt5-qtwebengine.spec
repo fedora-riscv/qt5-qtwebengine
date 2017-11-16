@@ -407,7 +407,7 @@ mkdir %{_target_platform}
 pushd %{_target_platform}
 
 %{qmake_qt5} CONFIG+="%{debug_config}" \
-  WEBENGINE_CONFIG+="use_system_icu use_spellchecker" ..
+  WEBENGINE_CONFIG+="use_system_icu use_system_re2 use_spellchecker" ..
 
 make %{?_smp_mflags}
 
@@ -569,6 +569,7 @@ done
   QtWebEngine now auto-detects and uses the system re2 out of the box
 - Drop system-re2 patch (patching the no longer used unbundle/re2.gn), the
   QtWebEngine re2/BUILD.gn is already correct
+- Explicitly force use_system_re2, the autodetection does not work on F25
 
 * Tue Oct 10 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-1
 - Update to 5.9.2
