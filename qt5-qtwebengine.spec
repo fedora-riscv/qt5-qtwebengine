@@ -55,8 +55,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.9.2
-Release: 3%{?dist}
+Version: 5.9.3
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -64,8 +64,8 @@ Release: 3%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.9/5.9.1/submodules/qtwebengine-opensource-src-5.9.1.tar.xz
-# ./clean_qtwebengine.sh 5.9.1
+# wget http://download.qt.io/official_releases/qt/5.9/5.9.3/submodules/qtwebengine-opensource-src-5.9.3.tar.xz
+# ./clean_qtwebengine.sh 5.9.3
 Source0: qtwebengine-opensource-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -206,9 +206,9 @@ BuildRequires: pkgconfig(vpx) >= 1.6.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
-# Some security fixes (up to version 59.0.3071.104) are backported, see:
+# Some security fixes (up to version 62.0.3202.89) are backported, see:
 # http://code.qt.io/cgit/qt/qtwebengine-chromium.git/log/?h=56-based
-# see dist/changes-5.9.1 for the version numbers (base, security fixes) and for
+# see dist/changes-5.9.3 for the version numbers (base, security fixes) and for
 # a list of CVEs fixed by the added security backports
 Provides: bundled(chromium) = 56.0.2924.122
 
@@ -567,6 +567,9 @@ done
 
 
 %changelog
+* Sun Nov 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.3-1
+- Update to 5.9.3
+
 * Sun Nov 26 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-3
 - rebuild (qt5)
 
