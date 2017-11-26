@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -567,6 +567,9 @@ done
 
 
 %changelog
+* Sun Nov 26 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-3
+- rebuild (qt5)
+
 * Sat Oct 14 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.2-2
 - linux-pri patch: Do not call the Chromium unbundling script on re2,
   QtWebEngine now auto-detects and uses the system re2 out of the box
