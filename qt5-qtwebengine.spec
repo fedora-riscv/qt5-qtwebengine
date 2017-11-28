@@ -5,8 +5,8 @@
 
 # define to build docs, need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
-# disable on f27+ or where Qt-5.9 is present (for now)
-%if 0%{?fedora} < 27
+# disable on Rawhide for now
+%if 0%{?fedora} < 28
 %global docs 1
 %endif
 
@@ -569,6 +569,7 @@ done
 %changelog
 * Sun Nov 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.3-1
 - Update to 5.9.3
+- Enable docs on F27
 
 * Sun Nov 26 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.2-3
 - rebuild (qt5)
