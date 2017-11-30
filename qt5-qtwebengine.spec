@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -567,6 +567,9 @@ done
 
 
 %changelog
+* Thu Nov 30 2017 Pete Walter <pwalter@fedoraproject.org> - 5.9.3-2
+- Rebuild for ICU 60.1
+
 * Sun Nov 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.3-1
 - Update to 5.9.3
 - Enable docs on F27
