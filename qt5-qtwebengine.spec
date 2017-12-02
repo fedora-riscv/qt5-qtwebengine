@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -115,6 +115,12 @@ Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 Patch21: qtwebengine-opensource-src-5.9.0-gn-bootstrap-verbose.patch
 # Fix FTBFS with Qt 5.7
 Patch22: qtwebengine-opensource-src-5.9.2-qt57.patch
+# drop support for obsolete Unicode "aspirational scripts" (dropped in UTS 31),
+# fixes #error with ICU >= 60 (which was a reminder to double-check the list)
+# see: http://www.unicode.org/reports/tr31/#Aspirational_Use_Scripts
+# backport of: https://chromium-review.googlesource.com/c/chromium/src/+/731871
+# For 5.10, refetch the patch instead of forward-porting the backport.
+Patch100: qtwebengine-opensource-src-5.9.3-no-aspirational-scripts.patch
 
 %if 0%{?fedora} && 0%{?fedora} < 25
 # work around missing qt5_qtwebengine_arches macro on F24
@@ -361,6 +367,7 @@ BuildArch: noarch
 %patch12 -p1 -b .webrtc-neon-detect
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .qt57
+%patch100 -p1 -b .no-aspirational-scripts
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -567,6 +574,9 @@ done
 
 
 %changelog
+* Sat Dec 02 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.3-3
+- Drop support for Unicode "aspirational scripts", fixes #error with ICU >= 60
+
 * Thu Nov 30 2017 Pete Walter <pwalter@fedoraproject.org> - 5.9.3-2
 - Rebuild for ICU 60.1
 
