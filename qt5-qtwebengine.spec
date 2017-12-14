@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.3
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -466,11 +466,9 @@ popd
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
 # adjust cmake dep(s) to allow for using the same Qt5 that was used to build it
-# only if older... (I suppose what we really want is the lesser of %%version, %%_qt5_version)
-%if 0%{?fedora} < 27
+# otherwise, it assumes Qt5 is at least %%version
 sed -i -e "s|%{version} \${_Qt5WebEngine|%{_qt5_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
-%endif
 
 
 %post -p /sbin/ldconfig
@@ -574,6 +572,9 @@ done
 
 
 %changelog
+* Thu Dec 14 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.3-4
+- adjust Qt5WebEngineCoreConfig.cmake unconditionally
+
 * Sat Dec 02 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.9.3-3
 - Drop support for Unicode "aspirational scripts", fixes #error with ICU >= 60
 
