@@ -466,8 +466,9 @@ popd
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
 # adjust cmake dep(s) to allow for using the same Qt5 that was used to build it
-# otherwise, it assumes Qt5 is at least %%version
-sed -i -e "s|%{version} \${_Qt5WebEngine|%{_qt5_version} \${_Qt5WebEngine|" \
+# using the lesser of %%version, %%_qt5_version
+%global lesser_version $(echo -e "%{version}\n%{_qt5_version}" | sort -V | head -1)
+sed -i -e "s|%{lesser_version} \${_Qt5WebEngine|%{_qt5_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
 
 
