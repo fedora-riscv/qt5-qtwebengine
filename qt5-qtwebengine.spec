@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.9.3
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -467,7 +467,7 @@ mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
 
 # adjust cmake dep(s) to allow for using the same Qt5 that was used to build it
 # using the lesser of %%version, %%_qt5_version
-%global lesser_version $(echo -e "%{version}\n%{_qt5_version}" | sort -V | head -1)
+%global lesser_version $(echo -e "%{version}\\n%{_qt5_version}" | sort -V | head -1)
 sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
   %{buildroot}%{_qt5_libdir}/cmake/Qt5WebEngine*/Qt5WebEngine*Config.cmake
 
@@ -573,6 +573,9 @@ done
 
 
 %changelog
+* Tue Dec 19 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.3-5
+- properly escape newline in lesser_version hack
+
 * Thu Dec 14 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.3-4
 - adjust Qt5WebEngineCoreConfig.cmake unconditionally
 
