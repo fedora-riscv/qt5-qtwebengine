@@ -113,6 +113,10 @@ Patch11: qtwebengine-everywhere-src-5.10.0-skia-neon.patch
 Patch12: qtwebengine-opensource-src-5.9.0-webrtc-neon-detect.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-everywhere-src-5.10.0-gn-bootstrap-verbose.patch
+# Forward-port missing parts of build fix with system ICU >= 59 from 5.9:
+# https://codereview.qt-project.org/#/c/196922/
+# see QTBUG-60886 and QTBUG-65090
+Patch22: qtwebengine-everywhere-src-5.10.0-icu59.patch
 # drop support for obsolete Unicode "aspirational scripts" (dropped in UTS 31),
 # fixes #error with ICU >= 60 (which was a reminder to double-check the list)
 # see: http://www.unicode.org/reports/tr31/#Aspirational_Use_Scripts
@@ -364,6 +368,7 @@ BuildArch: noarch
 %patch11 -p1 -b .skia-neon
 %patch12 -p1 -b .webrtc-neon-detect
 %patch21 -p1 -b .gn-bootstrap-verbose
+%patch22 -p1 -b .icu59
 %patch100 -p1 -b .no-aspirational-scripts
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
@@ -584,6 +589,7 @@ done
 - Re-backport no-aspirational-scripts from upstream (undo 5.9 backport)
 - Disable system libvpx support for now, requires unreleased libvpx (1.6.2+)
 - Add new BuildRequires: flex (required) and pkgconfig(lcms2) (unbundled)
+- Forward-port missing parts of 5.9 ICU>=59 build fix (QTBUG-60886, QTBUG-65090)
 
 * Tue Dec 19 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.3-5
 - properly escape newline in lesser_version hack
