@@ -10,8 +10,12 @@
 %global docs 1
 %endif
 
-# need libvpx >= 1.6.0
+%if 0
+# need libvpx >= 1.6.2
+# (The needed commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e was added after
+# 1.6.1, not released anywhere yet.)
 %global use_system_libvpx 1
+%endif
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
 
@@ -133,6 +137,7 @@ BuildRequires: qt5-qtquickcontrols2-devel
 BuildRequires: ninja-build
 BuildRequires: cmake
 BuildRequires: bison
+BuildRequires: flex
 BuildRequires: git-core
 BuildRequires: gperf
 BuildRequires: libicu-devel
@@ -152,7 +157,7 @@ BuildRequires: pkgconfig(egl)
 BuildRequires: pkgconfig(libpng)
 BuildRequires: pkgconfig(libudev)
 %if 0%{?use_system_libwebp}
-BuildRequires: pkgconfig(libwebp) >= 0.5.1
+BuildRequires: pkgconfig(libwebp) >= 0.6.0
 %endif
 BuildRequires: pkgconfig(harfbuzz)
 BuildRequires: pkgconfig(libdrm)
@@ -177,10 +182,11 @@ BuildRequires: pkgconfig(alsa)
 BuildRequires: pkgconfig(libpci)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
+BuildRequires: pkgconfig(lcms2)
 BuildRequires: perl-interpreter
 BuildRequires: python
 %if 0%{?use_system_libvpx}
-BuildRequires: pkgconfig(vpx) >= 1.6.0
+BuildRequires: pkgconfig(vpx) >= 1.6.2
 %endif
 
 # extra (non-upstream) functions needed, see
@@ -236,7 +242,9 @@ Provides: bundled(libjingle)
 # see src/3rdparty/chromium/third_party/libsrtp/CHANGES for the version number
 Provides: bundled(libsrtp) = 2.1.0
 %if !0%{?use_system_libvpx}
-Provides: bundled(libvpx) = 1.6.0
+# claims "Version: 1.6.0", but according to the fine print, this is actually a
+# snapshot from master from after the 1.6.1 release
+Provides: bundled(libvpx) = 1.6.1
 %endif
 %if !0%{?use_system_libwebp}
 Provides: bundled(libwebp) = 0.6.0
@@ -574,6 +582,8 @@ done
   gn-bootstrap-verbose patches
 - In particular, restore the removed V8 x87 backend in the no-sse2 patch
 - Re-backport no-aspirational-scripts from upstream (undo 5.9 backport)
+- Disable system libvpx support for now, requires unreleased libvpx (1.6.2+)
+- Add new BuildRequires: flex (required) and pkgconfig(lcms2) (unbundled)
 
 * Tue Dec 19 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.3-5
 - properly escape newline in lesser_version hack
