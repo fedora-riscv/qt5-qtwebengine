@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2015-2016 Kevin Kofler <Kevin@tigcc.ticalc.org>
+# Copyright 2015-2017 Kevin Kofler <Kevin@tigcc.ticalc.org>
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
 # "Software"), to deal in the Software without restriction, including
@@ -21,11 +21,11 @@
 
 if [ -z "$1" ] ; then
   echo "usage: ./clean_qtwebengine.sh VERSION"
-  echo "e.g.: ./clean_qtwebengine.sh 5.7.0"
+  echo "e.g.: ./clean_qtwebengine.sh 5.10.0"
   exit 1
 fi
 
-DIRNAME="qtwebengine-opensource-src-$1"
+DIRNAME="qtwebengine-everywhere-src-$1"
 
 echo "removing $DIRNAME"
 rm -rf "$DIRNAME" || exit $?
