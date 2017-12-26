@@ -239,6 +239,56 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/build/toolchai
  clang_toolchain("clang_x64") {
    # Output linker map files for binary size analysis.
    enable_linker_map = true
+diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/cc/base/math_util.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/cc/base/math_util.cc
+--- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/cc/base/math_util.cc	2017-11-28 14:06:53.000000000 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/cc/base/math_util.cc	2017-12-26 23:04:53.301868189 +0100
+@@ -7,7 +7,7 @@
+ #include <algorithm>
+ #include <cmath>
+ #include <limits>
+-#if defined(ARCH_CPU_X86_FAMILY)
++#ifdef __SSE__
+ #include <xmmintrin.h>
+ #endif
+ 
+@@ -810,7 +810,7 @@
+ }
+ 
+ ScopedSubnormalFloatDisabler::ScopedSubnormalFloatDisabler() {
+-#if defined(ARCH_CPU_X86_FAMILY)
++#ifdef __SSE__
+   // Turn on "subnormals are zero" and "flush to zero" CSR flags.
+   orig_state_ = _mm_getcsr();
+   _mm_setcsr(orig_state_ | 0x8040);
+@@ -818,7 +818,7 @@
+ }
+ 
+ ScopedSubnormalFloatDisabler::~ScopedSubnormalFloatDisabler() {
+-#if defined(ARCH_CPU_X86_FAMILY)
++#ifdef __SSE__
+   _mm_setcsr(orig_state_);
+ #endif
+ }
+diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/cc/base/math_util.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/cc/base/math_util.h
+--- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/cc/base/math_util.h	2017-11-28 14:06:53.000000000 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/cc/base/math_util.h	2017-12-26 23:04:53.301868189 +0100
+@@ -11,7 +11,6 @@
+ #include <vector>
+ 
+ #include "base/logging.h"
+-#include "build/build_config.h"
+ #include "cc/base/base_export.h"
+ #include "ui/gfx/geometry/box_f.h"
+ #include "ui/gfx/geometry/point3_f.h"
+@@ -331,7 +330,7 @@
+   ~ScopedSubnormalFloatDisabler();
+ 
+  private:
+-#if defined(ARCH_CPU_X86_FAMILY)
++#ifdef __SSE__
+   unsigned int orig_state_;
+ #endif
+   DISALLOW_COPY_AND_ASSIGN(ScopedSubnormalFloatDisabler);
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/cc/BUILD.gn qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/cc/BUILD.gn
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/cc/BUILD.gn	2017-11-28 14:06:53.000000000 +0100
 +++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/cc/BUILD.gn	2017-12-25 13:16:20.896994372 +0100
@@ -1103,13 +1153,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/media/BUILD.gn
  # TODO(watk): Refactor tests that could be made to run on Android. See
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/media/filters/wsola_internals.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/media/filters/wsola_internals.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/media/filters/wsola_internals.cc	2017-11-28 14:06:53.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/media/filters/wsola_internals.cc	2017-12-25 12:58:07.760365227 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/media/filters/wsola_internals.cc	2017-12-26 23:00:39.631753174 +0100
 @@ -15,7 +15,7 @@
  #include "base/logging.h"
  #include "media/base/audio_bus.h"
  
 -#if defined(ARCH_CPU_X86_FAMILY)
-+#if defined(ARCH_CPU_X86_FAMILY) && defined(__SSE2__)
++#if defined(ARCH_CPU_X86_FAMILY) && defined(__SSE__)
  #define USE_SIMD 1
  #include <xmmintrin.h>
  #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
@@ -1566,7 +1616,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/We
      const __m128 v_curve_points_per_frame = _mm_set_ps1(curve_points_per_frame);
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2017-11-28 14:06:53.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2017-12-25 14:40:01.051077869 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/audio/DirectConvolver.cpp	2017-12-27 00:16:35.571877993 +0100
 @@ -26,6 +26,9 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -1599,7 +1649,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/We
 +
  DirectConvolver::DirectConvolver(size_t input_block_size)
 -    : input_block_size_(input_block_size), buffer_(input_block_size * 2) {}
-+    : m_inputBlockSize(inputBlockSize), m_buffer(inputBlockSize * 2) {
++    : input_block_size_(input_block_size), buffer_(input_block_size * 2) {
 +#ifdef ARCH_CPU_X86
 +  base::CPU cpu;
 +  m_haveSSE2 = cpu.has_sse2();

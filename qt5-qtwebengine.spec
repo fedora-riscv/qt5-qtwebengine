@@ -96,9 +96,10 @@ Patch4:  qtwebengine-everywhere-src-5.10.0-system-nspr-prtime.patch
 # undoing, there were no modifications at all. Must be applied after Patch4.
 Patch5:  qtwebengine-everywhere-src-5.10.0-system-icu-utf.patch
 # do not require SSE2 on i686
-# cumulative revert of upstream reviews 187423002, 308003004, 511773002 (parts
-# relevant to QtWebEngine only), 516543004, 1152053004 and 1161853008, and V8
-# Gerrit review 575756, along with some custom fixes and improvements
+# cumulative revert of Chromium reviews 187423002, 308003004, 511773002 (parts
+# relevant to QtWebEngine only), 516543004, 1152053004 and 1161853008, Chromium
+# Gerrit review 570351 and V8 Gerrit review 575756, along with some custom fixes
+# and improvements
 # also build V8 shared and twice on i686 (once for x87, once for SSE2)
 Patch6:  qtwebengine-everywhere-src-5.10.0-no-sse2.patch
 # fix missing ARM -mfpu setting
