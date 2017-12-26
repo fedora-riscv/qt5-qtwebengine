@@ -124,6 +124,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/mathops.h \
                 libavcodec/me_cmp.h \
                 libavcodec/motion_est.h \
+                libavcodec/mpeg12data.h \
                 libavcodec/mpegpicture.h \
                 libavcodec/mpegutils.h \
                 libavcodec/mpegvideo.h \
