@@ -2098,7 +2098,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/We
 +#include "VectorMath.cpp"
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-11-28 14:06:53.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-12-25 13:05:24.025939484 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/third_party/WebKit/Source/platform/BUILD.gn	2017-12-26 01:28:56.946048732 +0100
 @@ -1693,6 +1693,10 @@
      deps += [ ":blink_x86_sse" ]
    }
@@ -2110,7 +2110,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/We
    if (use_webaudio_ffmpeg) {
      include_dirs += [ "//third_party/ffmpeg" ]
      deps += [ "//third_party/ffmpeg" ]
-@@ -2139,6 +2143,26 @@
+@@ -2139,6 +2143,23 @@
    }
  }
  
@@ -2122,9 +2122,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/We
 +      "audio/VectorMathSSE2.cpp",
 +    ]
 +    cflags = [ "-msse2", "-mfpmath=sse" ]
-+    deps = [
-+      ":blink_common",
-+    ]
 +    configs += [
 +        # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
 +        "//build/config/compiler:no_size_t_to_int_warning",
@@ -2235,7 +2232,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/third_party/we
  #endif
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/BUILD.gn qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/BUILD.gn	2017-11-28 14:06:53.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-12-25 17:42:57.199465881 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/BUILD.gn	2017-12-26 01:32:06.842303361 +0100
 @@ -116,9 +116,9 @@
    v8_experimental_extra_library_files =
        [ "//test/cctest/test-experimental-extra.js" ]
@@ -2372,7 +2369,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/BUILD.gn qt
      defines = [ "BUILDING_V8_PLATFORM_SHARED" ]
    }
  
-@@ -2676,7 +2718,22 @@
+@@ -2676,7 +2718,37 @@
    ]
  }
  
@@ -2389,6 +2386,21 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/BUILD.gn qt
 +    ]
 +
 +    configs += [ ":internal_config" ]
++
++    public_configs = [ ":external_config" ]
++  }
++
++  group("v8_for_testing") {
++    testonly = true
++
++    public_deps = [
++      ":v8_base",
++      ":v8_maybe_snapshot",
++    ]
++
++    if (v8_use_snapshot) {
++      public_deps += [ ":v8_builtins_generators" ]
++    }
 +
 +    public_configs = [ ":external_config" ]
 +  }

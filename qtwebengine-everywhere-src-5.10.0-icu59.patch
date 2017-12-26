@@ -165,6 +165,27 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/base/i18n/stri
  
    // Default to basic substring search if usearch fails. According to
    // http://icu-project.org/apiref/icu4c/usearch_8h.html, usearch_open will fail
+diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/base/i18n/unicodestring.h qtwebengine-everywhere-src-5.10.0-icu59/src/3rdparty/chromium/base/i18n/unicodestring.h
+--- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/base/i18n/unicodestring.h	2017-11-28 14:06:53.000000000 +0100
++++ qtwebengine-everywhere-src-5.10.0-icu59/src/3rdparty/chromium/base/i18n/unicodestring.h	2017-12-26 01:22:00.605067404 +0100
+@@ -9,16 +9,12 @@
+ #include "third_party/icu/source/common/unicode/unistr.h"
+ #include "third_party/icu/source/common/unicode/uvernum.h"
+ 
+-#if U_ICU_VERSION_MAJOR_NUM >= 59
+-#include "third_party/icu/source/common/unicode/char16ptr.h"
+-#endif
+-
+ namespace base {
+ namespace i18n {
+ 
+ inline string16 UnicodeStringToString16(const icu::UnicodeString& unistr) {
+ #if U_ICU_VERSION_MAJOR_NUM >= 59
+-  return base::string16(icu::toUCharPtr(unistr.getBuffer()),
++  return base::string16(reinterpret_cast<const char16*>(unistr.getBuffer()),
+                         static_cast<size_t>(unistr.length()));
+ #else
+   return base::string16(unistr.getBuffer(),
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/components/url_formatter/idn_spoof_checker.cc qtwebengine-everywhere-src-5.10.0-icu59/src/3rdparty/chromium/components/url_formatter/idn_spoof_checker.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/components/url_formatter/idn_spoof_checker.cc	2017-11-28 14:06:53.000000000 +0100
 +++ qtwebengine-everywhere-src-5.10.0-icu59/src/3rdparty/chromium/components/url_formatter/idn_spoof_checker.cc	2017-12-26 00:16:45.791461970 +0100

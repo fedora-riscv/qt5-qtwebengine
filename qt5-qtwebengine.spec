@@ -575,7 +575,7 @@ done
 
 
 %changelog
-* Mon Dec 25 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.0-1
+* Tue Dec 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.0-1
 - Update to 5.10.0
 - Update version numbers of bundled stuff
 - Drop support for Fedora < 26 (in particular, WEBENGINE_CONFIG F25 workarounds)
