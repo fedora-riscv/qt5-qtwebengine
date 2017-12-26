@@ -61,9 +61,11 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/cpu.h \
                 libavutil/dynarray.h \
                 libavutil/ffmath.h \
-                libavutil/float_dsp.h \
                 libavutil/fixed_dsp.h \
+                libavutil/float_dsp.h \
                 libavutil/hwcontext_internal.h \
+                libavutil/imgutils.h \
+                libavutil/imgutils_internal.h \
                 libavutil/internal.h \
                 libavutil/intfloat.h \
                 libavutil/intreadwrite.h \
@@ -116,6 +118,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/h264chroma.h \
                 libavcodec/h264pred.h \
                 libavcodec/hpeldsp.h \
+                libavcodec/hwaccel.h \
                 libavcodec/idctdsp.h \
                 libavcodec/internal.h \
                 libavcodec/mathops.h \
@@ -229,8 +232,9 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/vp8_parser.c \
                 libavcodec/vp8dsp.c \
                 libavutil/cpu.c \
-                libavutil/float_dsp.c \
                 libavutil/fixed_dsp.c \
+                libavutil/float_dsp.c \
+                libavutil/imgutils.c \
                 libavutil/aarch64/float_dsp_neon.S \
                 libavutil/arm/cpu.c \
                 libavutil/arm/float_dsp_neon.S \

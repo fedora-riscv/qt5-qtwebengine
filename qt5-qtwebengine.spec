@@ -581,6 +581,7 @@ done
 - Drop support for Fedora < 26 (in particular, WEBENGINE_CONFIG F25 workarounds)
 - Drop qt57 patch, support for Qt 5.7 was completely dropped upstream
 - Update get_free_ffmpeg_source_files.py from Fedora Chromium packaging
+- Update clean_ffmpeg.sh whitelist (sync from Fedora Chromium packaging)
 - clean_qtwebengine.sh: Update for the changed tarball naming scheme
 - Use QMAKE_EXTRA_ARGS instead of the removed WEBENGINE_CONFIG
 - Rebase linux-pri, system-nspr-prtime, system-icu-utf, no-sse2, skia-neon and
