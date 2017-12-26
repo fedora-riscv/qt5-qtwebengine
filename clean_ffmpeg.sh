@@ -132,6 +132,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/mpegvideoencdsp.h \
                 libavcodec/old_codec_ids.h \
                 libavcodec/options_table.h \
+                libavcodec/opus_rc.h \
                 libavcodec/pcm_tablegen.h \
                 libavcodec/pel_template.c \
                 libavcodec/pixblockdsp.h \
