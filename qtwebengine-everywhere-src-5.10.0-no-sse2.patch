@@ -2649,8 +2649,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/base/bu
  #define V8_TARGET_ARCH_STORES_RETURN_ADDRESS_ON_STACK 0
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc	2017-12-27 22:57:11.363055815 +0100
-@@ -0,0 +1,3142 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc	2017-12-28 03:52:06.933365833 +0100
+@@ -0,0 +1,3038 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -3349,8 +3349,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +
 +// static
 +void Builtins::Generate_InterpreterPushArgsThenCallImpl(
-+    MacroAssembler* masm, TailCallMode tail_call_mode,
-+    InterpreterPushArgsMode mode) {
++    MacroAssembler* masm, InterpreterPushArgsMode mode) {
 +  // ----------- S t a t e -------------
 +  //  -- eax : the number of arguments (not including the receiver)
 +  //  -- ebx : the address of the first argument to be pushed. Subsequent
@@ -3383,15 +3382,14 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +  __ Push(edx);  // Re-push return address.
 +
 +  if (mode == InterpreterPushArgsMode::kJSFunction) {
-+    __ Jump(masm->isolate()->builtins()->CallFunction(ConvertReceiverMode::kAny,
-+                                                      tail_call_mode),
-+            RelocInfo::CODE_TARGET);
++    __ Jump(
++        masm->isolate()->builtins()->CallFunction(ConvertReceiverMode::kAny),
++        RelocInfo::CODE_TARGET);
 +  } else if (mode == InterpreterPushArgsMode::kWithFinalSpread) {
 +    __ Jump(masm->isolate()->builtins()->CallWithSpread(),
 +            RelocInfo::CODE_TARGET);
 +  } else {
-+    __ Jump(masm->isolate()->builtins()->Call(ConvertReceiverMode::kAny,
-+                                              tail_call_mode),
++    __ Jump(masm->isolate()->builtins()->Call(ConvertReceiverMode::kAny),
 +            RelocInfo::CODE_TARGET);
 +  }
 +
@@ -4881,99 +4879,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +  __ Jump(code, RelocInfo::CODE_TARGET);
 +}
 +
-+namespace {
-+
-+// Drops top JavaScript frame and an arguments adaptor frame below it (if
-+// present) preserving all the arguments prepared for current call.
-+// Does nothing if debugger is currently active.
-+// ES6 14.6.3. PrepareForTailCall
-+//
-+// Stack structure for the function g() tail calling f():
-+//
-+// ------- Caller frame: -------
-+// |  ...
-+// |  g()'s arg M
-+// |  ...
-+// |  g()'s arg 1
-+// |  g()'s receiver arg
-+// |  g()'s caller pc
-+// ------- g()'s frame: -------
-+// |  g()'s caller fp      <- fp
-+// |  g()'s context
-+// |  function pointer: g
-+// |  -------------------------
-+// |  ...
-+// |  ...
-+// |  f()'s arg N
-+// |  ...
-+// |  f()'s arg 1
-+// |  f()'s receiver arg
-+// |  f()'s caller pc      <- sp
-+// ----------------------
-+//
-+void PrepareForTailCall(MacroAssembler* masm, Register args_reg,
-+                        Register scratch1, Register scratch2,
-+                        Register scratch3) {
-+  DCHECK(!AreAliased(args_reg, scratch1, scratch2, scratch3));
-+  Comment cmnt(masm, "[ PrepareForTailCall");
-+
-+  // Prepare for tail call only if ES2015 tail call elimination is enabled.
-+  Label done;
-+  ExternalReference is_tail_call_elimination_enabled =
-+      ExternalReference::is_tail_call_elimination_enabled_address(
-+          masm->isolate());
-+  __ movzx_b(scratch1,
-+             Operand::StaticVariable(is_tail_call_elimination_enabled));
-+  __ cmp(scratch1, Immediate(0));
-+  __ j(equal, &done, Label::kNear);
-+
-+  // Drop possible interpreter handler/stub frame.
-+  {
-+    Label no_interpreter_frame;
-+    __ cmp(Operand(ebp, CommonFrameConstants::kContextOrFrameTypeOffset),
-+           Immediate(Smi::FromInt(StackFrame::STUB)));
-+    __ j(not_equal, &no_interpreter_frame, Label::kNear);
-+    __ mov(ebp, Operand(ebp, StandardFrameConstants::kCallerFPOffset));
-+    __ bind(&no_interpreter_frame);
-+  }
-+
-+  // Check if next frame is an arguments adaptor frame.
-+  Register caller_args_count_reg = scratch1;
-+  Label no_arguments_adaptor, formal_parameter_count_loaded;
-+  __ mov(scratch2, Operand(ebp, StandardFrameConstants::kCallerFPOffset));
-+  __ cmp(Operand(scratch2, CommonFrameConstants::kContextOrFrameTypeOffset),
-+         Immediate(Smi::FromInt(StackFrame::ARGUMENTS_ADAPTOR)));
-+  __ j(not_equal, &no_arguments_adaptor, Label::kNear);
-+
-+  // Drop current frame and load arguments count from arguments adaptor frame.
-+  __ mov(ebp, scratch2);
-+  __ mov(caller_args_count_reg,
-+         Operand(ebp, ArgumentsAdaptorFrameConstants::kLengthOffset));
-+  __ SmiUntag(caller_args_count_reg);
-+  __ jmp(&formal_parameter_count_loaded, Label::kNear);
-+
-+  __ bind(&no_arguments_adaptor);
-+  // Load caller's formal parameter count
-+  __ mov(scratch1, Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
-+  __ mov(scratch1,
-+         FieldOperand(scratch1, JSFunction::kSharedFunctionInfoOffset));
-+  __ mov(
-+      caller_args_count_reg,
-+      FieldOperand(scratch1, SharedFunctionInfo::kFormalParameterCountOffset));
-+
-+  __ bind(&formal_parameter_count_loaded);
-+
-+  ParameterCount callee_args_count(args_reg);
-+  __ PrepareForTailCall(callee_args_count, caller_args_count_reg, scratch2,
-+                        scratch3, ReturnAddressState::kOnStack, 0);
-+  __ bind(&done);
-+}
-+}  // namespace
-+
 +// static
 +void Builtins::Generate_CallFunction(MacroAssembler* masm,
-+                                     ConvertReceiverMode mode,
-+                                     TailCallMode tail_call_mode) {
++                                     ConvertReceiverMode mode) {
 +  // ----------- S t a t e -------------
 +  //  -- eax : the number of arguments (not including the receiver)
 +  //  -- edi : the function to call (checked to be a JSFunction)
@@ -5061,12 +4969,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +  //  -- edi : the function to call (checked to be a JSFunction)
 +  //  -- esi : the function context.
 +  // -----------------------------------
-+
-+  if (tail_call_mode == TailCallMode::kAllow) {
-+    PrepareForTailCall(masm, eax, ebx, ecx, edx);
-+    // Reload shared function info.
-+    __ mov(edx, FieldOperand(edi, JSFunction::kSharedFunctionInfoOffset));
-+  }
 +
 +  __ mov(ebx,
 +         FieldOperand(edx, SharedFunctionInfo::kFormalParameterCountOffset));
@@ -5170,17 +5072,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +}  // namespace
 +
 +// static
-+void Builtins::Generate_CallBoundFunctionImpl(MacroAssembler* masm,
-+                                              TailCallMode tail_call_mode) {
++void Builtins::Generate_CallBoundFunctionImpl(MacroAssembler* masm) {
 +  // ----------- S t a t e -------------
 +  //  -- eax : the number of arguments (not including the receiver)
 +  //  -- edi : the function to call (checked to be a JSBoundFunction)
 +  // -----------------------------------
 +  __ AssertBoundFunction(edi);
-+
-+  if (tail_call_mode == TailCallMode::kAllow) {
-+    PrepareForTailCall(masm, eax, ebx, ecx, edx);
-+  }
 +
 +  // Patch the receiver to [[BoundThis]].
 +  __ mov(ebx, FieldOperand(edi, JSBoundFunction::kBoundThisOffset));
@@ -5198,8 +5095,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +}
 +
 +// static
-+void Builtins::Generate_Call(MacroAssembler* masm, ConvertReceiverMode mode,
-+                             TailCallMode tail_call_mode) {
++void Builtins::Generate_Call(MacroAssembler* masm, ConvertReceiverMode mode) {
 +  // ----------- S t a t e -------------
 +  //  -- eax : the number of arguments (not including the receiver)
 +  //  -- edi : the target to call (can be any Object).
@@ -5209,10 +5105,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +  __ JumpIfSmi(edi, &non_callable);
 +  __ bind(&non_smi);
 +  __ CmpObjectType(edi, JS_FUNCTION_TYPE, ecx);
-+  __ j(equal, masm->isolate()->builtins()->CallFunction(mode, tail_call_mode),
++  __ j(equal, masm->isolate()->builtins()->CallFunction(mode),
 +       RelocInfo::CODE_TARGET);
 +  __ CmpInstanceType(ecx, JS_BOUND_FUNCTION_TYPE);
-+  __ j(equal, masm->isolate()->builtins()->CallBoundFunction(tail_call_mode),
++  __ j(equal, masm->isolate()->builtins()->CallBoundFunction(),
 +       RelocInfo::CODE_TARGET);
 +
 +  // Check if target has a [[Call]] internal method.
@@ -5237,7 +5133,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +  // Let the "call_as_function_delegate" take care of the rest.
 +  __ LoadGlobalFunction(Context::CALL_AS_FUNCTION_DELEGATE_INDEX, edi);
 +  __ Jump(masm->isolate()->builtins()->CallFunction(
-+              ConvertReceiverMode::kNotNullOrUndefined, tail_call_mode),
++              ConvertReceiverMode::kNotNullOrUndefined),
 +          RelocInfo::CODE_TARGET);
 +
 +  // 3. Call to something that is not callable.
@@ -5880,8 +5776,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
  // == arm ====================================================================
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc	2017-12-28 02:12:51.768596072 +0100
-@@ -0,0 +1,2800 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc	2017-12-28 03:58:53.829141647 +0100
+@@ -0,0 +1,2878 @@
 +// Copyright 2013 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -6309,6 +6205,18 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +    __ lea(esp, Operand(esp, kDoubleSize));                             \
 +  } while (false)
 +
++#define ASSEMBLE_ATOMIC_BINOP(bin_inst, mov_inst, cmpxchg_inst) \
++  do {                                                          \
++    Label binop;                                                \
++    __ bind(&binop);                                            \
++    __ mov_inst(eax, i.MemoryOperand(1));                       \
++    __ Move(i.TempRegister(0), eax);                            \
++    __ bin_inst(i.TempRegister(0), i.InputRegister(0));         \
++    __ lock();                                                  \
++    __ cmpxchg_inst(i.MemoryOperand(1), i.TempRegister(0));     \
++    __ j(not_equal, &binop);                                    \
++  } while (false)
++
 +void CodeGenerator::AssembleDeconstructFrame() {
 +  __ mov(esp, ebp);
 +  __ pop(ebp);
@@ -6646,7 +6554,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      if (!instr->InputAt(0)->IsFPRegister()) {
 +        __ fld_d(i.InputOperand(0));
 +      }
-+      __ TruncateX87TOSToI(i.OutputRegister());
++      __ TruncateX87TOSToI(zone(), i.OutputRegister());
 +      if (!instr->InputAt(0)->IsFPRegister()) {
 +        __ fstp(0);
 +      }
@@ -7445,7 +7353,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      if (!instr->InputAt(0)->IsFPRegister()) {
 +        __ fld_s(i.InputOperand(0));
 +      }
-+      __ TruncateX87TOSToI(i.OutputRegister(0));
++      __ TruncateX87TOSToI(zone(), i.OutputRegister(0));
 +      if (!instr->InputAt(0)->IsFPRegister()) {
 +        __ fstp(0);
 +      }
@@ -7456,7 +7364,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +        __ fld_s(i.InputOperand(0));
 +      }
 +      Label success;
-+      __ TruncateX87TOSToI(i.OutputRegister(0));
++      __ TruncateX87TOSToI(zone(), i.OutputRegister(0));
 +      __ test(i.OutputRegister(0), i.OutputRegister(0));
 +      __ j(positive, &success);
 +      // Need to reserve the input float32 data.
@@ -7465,7 +7373,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      __ fild_s(Operand(esp, 0));
 +      __ lea(esp, Operand(esp, kPointerSize));
 +      __ faddp();
-+      __ TruncateX87TOSToI(i.OutputRegister(0));
++      __ TruncateX87TOSToI(zone(), i.OutputRegister(0));
 +      __ or_(i.OutputRegister(0), Immediate(0x80000000));
 +      // Only keep input float32 data in x87 stack when return.
 +      __ fstp(0);
@@ -7479,7 +7387,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      if (!instr->InputAt(0)->IsFPRegister()) {
 +        __ fld_d(i.InputOperand(0));
 +      }
-+      __ TruncateX87TOSToI(i.OutputRegister(0));
++      __ TruncateX87TOSToI(zone(), i.OutputRegister(0));
 +      if (!instr->InputAt(0)->IsFPRegister()) {
 +        __ fstp(0);
 +      }
@@ -7514,7 +7422,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      __ fild_s(Operand(esp, 0));
 +      __ fld(1);
 +      __ faddp();
-+      __ TruncateX87TOSToI(i.OutputRegister(0));
++      __ TruncateX87TOSToI(zone(), i.OutputRegister(0));
 +      __ add(esp, Immediate(kInt32Size));
 +      __ add(i.OutputRegister(), Immediate(0x80000000));
 +      __ fstp(0);
@@ -7811,24 +7719,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      }
 +      break;
 +    }
-+    case kX87Xchgb: {
-+      size_t index = 0;
-+      Operand operand = i.MemoryOperand(&index);
-+      __ xchg_b(i.InputRegister(index), operand);
-+      break;
-+    }
-+    case kX87Xchgw: {
-+      size_t index = 0;
-+      Operand operand = i.MemoryOperand(&index);
-+      __ xchg_w(i.InputRegister(index), operand);
-+      break;
-+    }
-+    case kX87Xchgl: {
-+      size_t index = 0;
-+      Operand operand = i.MemoryOperand(&index);
-+      __ xchg(i.InputRegister(index), operand);
-+      break;
-+    }
 +    case kX87PushFloat32:
 +      __ lea(esp, Operand(esp, -kFloatSize));
 +      if (instr->InputAt(0)->IsFPStackSlot()) {
@@ -7897,6 +7787,90 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +    case kCheckedStoreWord64:
 +      UNREACHABLE();  // currently unsupported checked int64 load/store.
 +      break;
++    case kAtomicExchangeInt8: {
++      __ xchg_b(i.InputRegister(0), i.MemoryOperand(1));
++      __ movsx_b(i.InputRegister(0), i.InputRegister(0));
++      break;
++    }
++    case kAtomicExchangeUint8: {
++      __ xchg_b(i.InputRegister(0), i.MemoryOperand(1));
++      __ movzx_b(i.InputRegister(0), i.InputRegister(0));
++      break;
++    }
++    case kAtomicExchangeInt16: {
++      __ xchg_w(i.InputRegister(0), i.MemoryOperand(1));
++      __ movsx_w(i.InputRegister(0), i.InputRegister(0));
++      break;
++    }
++    case kAtomicExchangeUint16: {
++      __ xchg_w(i.InputRegister(0), i.MemoryOperand(1));
++      __ movzx_w(i.InputRegister(0), i.InputRegister(0));
++      break;
++    }
++    case kAtomicExchangeWord32: {
++      __ xchg(i.InputRegister(0), i.MemoryOperand(1));
++      break;
++    }
++    case kAtomicCompareExchangeInt8: {
++      __ lock();
++      __ cmpxchg_b(i.MemoryOperand(2), i.InputRegister(1));
++      __ movsx_b(eax, eax);
++      break;
++    }
++    case kAtomicCompareExchangeUint8: {
++      __ lock();
++      __ cmpxchg_b(i.MemoryOperand(2), i.InputRegister(1));
++      __ movzx_b(eax, eax);
++      break;
++    }
++    case kAtomicCompareExchangeInt16: {
++      __ lock();
++      __ cmpxchg_w(i.MemoryOperand(2), i.InputRegister(1));
++      __ movsx_w(eax, eax);
++      break;
++    }
++    case kAtomicCompareExchangeUint16: {
++      __ lock();
++      __ cmpxchg_w(i.MemoryOperand(2), i.InputRegister(1));
++      __ movzx_w(eax, eax);
++      break;
++    }
++    case kAtomicCompareExchangeWord32: {
++      __ lock();
++      __ cmpxchg(i.MemoryOperand(2), i.InputRegister(1));
++      break;
++    }
++#define ATOMIC_BINOP_CASE(op, inst)                \
++  case kAtomic##op##Int8: {                        \
++    ASSEMBLE_ATOMIC_BINOP(inst, mov_b, cmpxchg_b); \
++    __ movsx_b(eax, eax);                          \
++    break;                                         \
++  }                                                \
++  case kAtomic##op##Uint8: {                       \
++    ASSEMBLE_ATOMIC_BINOP(inst, mov_b, cmpxchg_b); \
++    __ movzx_b(eax, eax);                          \
++    break;                                         \
++  }                                                \
++  case kAtomic##op##Int16: {                       \
++    ASSEMBLE_ATOMIC_BINOP(inst, mov_w, cmpxchg_w); \
++    __ movsx_w(eax, eax);                          \
++    break;                                         \
++  }                                                \
++  case kAtomic##op##Uint16: {                      \
++    ASSEMBLE_ATOMIC_BINOP(inst, mov_w, cmpxchg_w); \
++    __ movzx_w(eax, eax);                          \
++    break;                                         \
++  }                                                \
++  case kAtomic##op##Word32: {                      \
++    ASSEMBLE_ATOMIC_BINOP(inst, mov, cmpxchg);     \
++    break;                                         \
++  }
++      ATOMIC_BINOP_CASE(Add, add)
++      ATOMIC_BINOP_CASE(Sub, sub)
++      ATOMIC_BINOP_CASE(And, and_)
++      ATOMIC_BINOP_CASE(Or, or_)
++      ATOMIC_BINOP_CASE(Xor, xor_)
++#undef ATOMIC_BINOP_CASE
 +    case kAtomicLoadInt8:
 +    case kAtomicLoadUint8:
 +    case kAtomicLoadInt16:
@@ -8042,7 +8016,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +    }
 +
 +   private:
-+    void GenerateCallToTrap(Runtime::FunctionId trap_id) {
++    void GenerateCallToTrap(Builtins::Name trap_id) {
 +      if (trap_id == Builtins::builtin_count) {
 +        // We cannot test calls to the runtime in cctest/test-run-wasm.
 +        // Therefore we emit a call to C here instead of a call to the runtime.
@@ -8684,8 +8658,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +}  // namespace v8
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/instruction-codes-x87.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/instruction-codes-x87.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/instruction-codes-x87.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/instruction-codes-x87.h	2017-12-25 17:42:57.208465749 +0100
-@@ -0,0 +1,144 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/instruction-codes-x87.h	2017-12-28 04:01:21.688880592 +0100
+@@ -0,0 +1,141 @@
 +// Copyright 2014 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -8787,10 +8761,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +  V(X87PushFloat64)                \
 +  V(X87PushFloat32)                \
 +  V(X87Poke)                       \
-+  V(X87StackCheck)                 \
-+  V(X87Xchgb)                      \
-+  V(X87Xchgw)                      \
-+  V(X87Xchgl)
++  V(X87StackCheck)
 +
 +// Addressing modes represent the "shape" of inputs to an instruction.
 +// Many instructions support multiple addressing modes. Addressing modes
@@ -8862,8 +8833,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +}  // namespace v8
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/instruction-selector-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/instruction-selector-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/instruction-selector-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/instruction-selector-x87.cc	2017-12-25 17:42:57.210465720 +0100
-@@ -0,0 +1,1871 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/instruction-selector-x87.cc	2017-12-28 04:08:42.202144307 +0100
+@@ -0,0 +1,2031 @@
 +// Copyright 2014 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -10669,13 +10640,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +  ArchOpcode opcode = kArchNop;
 +  switch (rep) {
 +    case MachineRepresentation::kWord8:
-+      opcode = kX87Xchgb;
++      opcode = kAtomicExchangeInt8;
 +      break;
 +    case MachineRepresentation::kWord16:
-+      opcode = kX87Xchgw;
++      opcode = kAtomicExchangeInt16;
 +      break;
 +    case MachineRepresentation::kWord32:
-+      opcode = kX87Xchgl;
++      opcode = kAtomicExchangeWord32;
 +      break;
 +    default:
 +      UNREACHABLE();
@@ -10684,6 +10655,11 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +  AddressingMode addressing_mode;
 +  InstructionOperand inputs[4];
 +  size_t input_count = 0;
++  if (rep == MachineRepresentation::kWord8) {
++    inputs[input_count++] = g.UseByteRegister(value);
++  } else {
++    inputs[input_count++] = g.UseUniqueRegister(value);
++  }
 +  inputs[input_count++] = g.UseUniqueRegister(base);
 +  if (g.CanBeImmediate(index)) {
 +    inputs[input_count++] = g.UseImmediate(index);
@@ -10692,10 +10668,165 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +    inputs[input_count++] = g.UseUniqueRegister(index);
 +    addressing_mode = kMode_MR1;
 +  }
-+  inputs[input_count++] = g.UseUniqueRegister(value);
 +  InstructionCode code = opcode | AddressingModeField::encode(addressing_mode);
 +  Emit(code, 0, nullptr, input_count, inputs);
 +}
++
++void InstructionSelector::VisitAtomicExchange(Node* node) {
++  X87OperandGenerator g(this);
++  Node* base = node->InputAt(0);
++  Node* index = node->InputAt(1);
++  Node* value = node->InputAt(2);
++
++  MachineType type = AtomicOpRepresentationOf(node->op());
++  ArchOpcode opcode = kArchNop;
++  if (type == MachineType::Int8()) {
++    opcode = kAtomicExchangeInt8;
++  } else if (type == MachineType::Uint8()) {
++    opcode = kAtomicExchangeUint8;
++  } else if (type == MachineType::Int16()) {
++    opcode = kAtomicExchangeInt16;
++  } else if (type == MachineType::Uint16()) {
++    opcode = kAtomicExchangeUint16;
++  } else if (type == MachineType::Int32() || type == MachineType::Uint32()) {
++    opcode = kAtomicExchangeWord32;
++  } else {
++    UNREACHABLE();
++    return;
++  }
++  InstructionOperand outputs[1];
++  AddressingMode addressing_mode;
++  InstructionOperand inputs[3];
++  size_t input_count = 0;
++  if (type == MachineType::Int8() || type == MachineType::Uint8()) {
++    inputs[input_count++] = g.UseFixed(value, edx);
++  } else {
++    inputs[input_count++] = g.UseUniqueRegister(value);
++  }
++  inputs[input_count++] = g.UseUniqueRegister(base);
++  if (g.CanBeImmediate(index)) {
++    inputs[input_count++] = g.UseImmediate(index);
++    addressing_mode = kMode_MRI;
++  } else {
++    inputs[input_count++] = g.UseUniqueRegister(index);
++    addressing_mode = kMode_MR1;
++  }
++  if (type == MachineType::Int8() || type == MachineType::Uint8()) {
++    // Using DefineSameAsFirst requires the register to be unallocated.
++    outputs[0] = g.DefineAsFixed(node, edx);
++  } else {
++    outputs[0] = g.DefineSameAsFirst(node);
++  }
++  InstructionCode code = opcode | AddressingModeField::encode(addressing_mode);
++  Emit(code, 1, outputs, input_count, inputs);
++}
++
++void InstructionSelector::VisitAtomicCompareExchange(Node* node) {
++  X87OperandGenerator g(this);
++  Node* base = node->InputAt(0);
++  Node* index = node->InputAt(1);
++  Node* old_value = node->InputAt(2);
++  Node* new_value = node->InputAt(3);
++
++  MachineType type = AtomicOpRepresentationOf(node->op());
++  ArchOpcode opcode = kArchNop;
++  if (type == MachineType::Int8()) {
++    opcode = kAtomicCompareExchangeInt8;
++  } else if (type == MachineType::Uint8()) {
++    opcode = kAtomicCompareExchangeUint8;
++  } else if (type == MachineType::Int16()) {
++    opcode = kAtomicCompareExchangeInt16;
++  } else if (type == MachineType::Uint16()) {
++    opcode = kAtomicCompareExchangeUint16;
++  } else if (type == MachineType::Int32() || type == MachineType::Uint32()) {
++    opcode = kAtomicCompareExchangeWord32;
++  } else {
++    UNREACHABLE();
++    return;
++  }
++  InstructionOperand outputs[1];
++  AddressingMode addressing_mode;
++  InstructionOperand inputs[4];
++  size_t input_count = 0;
++  inputs[input_count++] = g.UseFixed(old_value, eax);
++  if (type == MachineType::Int8() || type == MachineType::Uint8()) {
++    inputs[input_count++] = g.UseByteRegister(new_value);
++  } else {
++    inputs[input_count++] = g.UseUniqueRegister(new_value);
++  }
++  inputs[input_count++] = g.UseUniqueRegister(base);
++  if (g.CanBeImmediate(index)) {
++    inputs[input_count++] = g.UseImmediate(index);
++    addressing_mode = kMode_MRI;
++  } else {
++    inputs[input_count++] = g.UseUniqueRegister(index);
++    addressing_mode = kMode_MR1;
++  }
++  outputs[0] = g.DefineAsFixed(node, eax);
++  InstructionCode code = opcode | AddressingModeField::encode(addressing_mode);
++  Emit(code, 1, outputs, input_count, inputs);
++}
++
++void InstructionSelector::VisitAtomicBinaryOperation(
++    Node* node, ArchOpcode int8_op, ArchOpcode uint8_op, ArchOpcode int16_op,
++    ArchOpcode uint16_op, ArchOpcode word32_op) {
++  X87OperandGenerator g(this);
++  Node* base = node->InputAt(0);
++  Node* index = node->InputAt(1);
++  Node* value = node->InputAt(2);
++
++  MachineType type = AtomicOpRepresentationOf(node->op());
++  ArchOpcode opcode = kArchNop;
++  if (type == MachineType::Int8()) {
++    opcode = int8_op;
++  } else if (type == MachineType::Uint8()) {
++    opcode = uint8_op;
++  } else if (type == MachineType::Int16()) {
++    opcode = int16_op;
++  } else if (type == MachineType::Uint16()) {
++    opcode = uint16_op;
++  } else if (type == MachineType::Int32() || type == MachineType::Uint32()) {
++    opcode = word32_op;
++  } else {
++    UNREACHABLE();
++    return;
++  }
++  InstructionOperand outputs[1];
++  AddressingMode addressing_mode;
++  InstructionOperand inputs[3];
++  size_t input_count = 0;
++  inputs[input_count++] = g.UseUniqueRegister(value);
++  inputs[input_count++] = g.UseUniqueRegister(base);
++  if (g.CanBeImmediate(index)) {
++    inputs[input_count++] = g.UseImmediate(index);
++    addressing_mode = kMode_MRI;
++  } else {
++    inputs[input_count++] = g.UseUniqueRegister(index);
++    addressing_mode = kMode_MR1;
++  }
++  outputs[0] = g.DefineAsFixed(node, eax);
++  InstructionOperand temp[1];
++  if (type == MachineType::Int8() || type == MachineType::Uint8()) {
++    temp[0] = g.UseByteRegister(node);
++  } else {
++    temp[0] = g.TempRegister();
++  }
++  InstructionCode code = opcode | AddressingModeField::encode(addressing_mode);
++  Emit(code, 1, outputs, input_count, inputs, 1, temp);
++}
++
++#define VISIT_ATOMIC_BINOP(op)                                              \
++  void InstructionSelector::VisitAtomic##op(Node* node) {                   \
++    VisitAtomicBinaryOperation(node, kAtomic##op##Int8, kAtomic##op##Uint8, \
++                               kAtomic##op##Int16, kAtomic##op##Uint16,     \
++                               kAtomic##op##Word32);                        \
++  }
++VISIT_ATOMIC_BINOP(Add)
++VISIT_ATOMIC_BINOP(Sub)
++VISIT_ATOMIC_BINOP(And)
++VISIT_ATOMIC_BINOP(Or)
++VISIT_ATOMIC_BINOP(Xor)
++#undef VISIT_ATOMIC_BINOP
 +
 +void InstructionSelector::VisitInt32AbsWithOverflow(Node* node) {
 +  UNREACHABLE();
@@ -10743,8 +10874,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +chunyang.dai@intel.com
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/debug/x87/debug-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/debug/x87/debug-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/debug/x87/debug-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/debug/x87/debug-x87.cc	2017-12-25 17:42:57.210465720 +0100
-@@ -0,0 +1,157 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/debug/x87/debug-x87.cc	2017-12-28 03:21:22.149118881 +0100
+@@ -0,0 +1,141 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -10811,12 +10942,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/debug/x
 +  {
 +    FrameScope scope(masm, StackFrame::INTERNAL);
 +
-+    // Load padding words on stack.
-+    for (int i = 0; i < LiveEdit::kFramePaddingInitialSize; i++) {
-+      __ push(Immediate(Smi::FromInt(LiveEdit::kFramePaddingValue)));
-+    }
-+    __ push(Immediate(Smi::FromInt(LiveEdit::kFramePaddingInitialSize)));
-+
 +    // Push arguments for DebugBreak call.
 +    if (mode == SAVE_RESULT_REGISTER) {
 +      // Break on return.
@@ -10844,53 +10969,43 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/debug/x
 +      }
 +    }
 +
-+    __ pop(ebx);
-+    // We divide stored value by 2 (untagging) and multiply it by word's size.
-+    STATIC_ASSERT(kSmiTagSize == 1 && kSmiShiftSize == 0);
-+    __ lea(esp, Operand(esp, ebx, times_half_pointer_size, 0));
-+
 +    // Get rid of the internal frame.
 +  }
 +
-+  // This call did not replace a call , so there will be an unwanted
-+  // return address left on the stack. Here we get rid of that.
-+  __ add(esp, Immediate(kPointerSize));
++  __ MaybeDropFrames();
 +
-+  // Now that the break point has been handled, resume normal execution by
-+  // jumping to the target address intended by the caller and that was
-+  // overwritten by the address of DebugBreakXXX.
-+  ExternalReference after_break_target =
-+      ExternalReference::debug_after_break_target_address(masm->isolate());
-+  __ jmp(Operand::StaticVariable(after_break_target));
++  // Return to caller.
++  __ ret(0);
 +}
 +
++void DebugCodegen::GenerateHandleDebuggerStatement(MacroAssembler* masm) {
++  {
++    FrameScope scope(masm, StackFrame::INTERNAL);
++    __ CallRuntime(Runtime::kHandleDebuggerStatement, 0);
++  }
++  __ MaybeDropFrames();
 +
-+void DebugCodegen::GenerateFrameDropperLiveEdit(MacroAssembler* masm) {
-+  // We do not know our frame height, but set esp based on ebp.
-+  __ lea(esp, Operand(ebp, FrameDropperFrameConstants::kFunctionOffset));
-+  __ pop(edi);  // Function.
-+  __ add(esp, Immediate(-FrameDropperFrameConstants::kCodeOffset));  // INTERNAL
-+                                                                     // frame
-+                                                                     // marker
-+                                                                     // and code
-+  __ pop(ebp);
++  // Return to caller.
++  __ ret(0);
++}
 +
-+  ParameterCount dummy(0);
-+  __ CheckDebugHook(edi, no_reg, dummy, dummy);
++void DebugCodegen::GenerateFrameDropperTrampoline(MacroAssembler* masm) {
++  // Frame is being dropped:
++  // - Drop to the target frame specified by ebx.
++  // - Look up current function on the frame.
++  // - Leave the frame.
++  // - Restart the frame by calling the function.
++  __ mov(ebp, ebx);
++  __ mov(edi, Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
++  __ leave();
 +
-+  // Load context from the function.
-+  __ mov(esi, FieldOperand(edi, JSFunction::kContextOffset));
-+
-+  // Clear new.target register as a safety measure.
-+  __ mov(edx, masm->isolate()->factory()->undefined_value());
-+
-+  // Get function code.
 +  __ mov(ebx, FieldOperand(edi, JSFunction::kSharedFunctionInfoOffset));
-+  __ mov(ebx, FieldOperand(ebx, SharedFunctionInfo::kCodeOffset));
-+  __ lea(ebx, FieldOperand(ebx, Code::kHeaderSize));
++  __ mov(ebx,
++         FieldOperand(ebx, SharedFunctionInfo::kFormalParameterCountOffset));
 +
-+  // Re-run JSFunction, edi is function, esi is context.
-+  __ jmp(ebx);
++  ParameterCount dummy(ebx);
++  __ InvokeFunction(edi, dummy, dummy, JUMP_FUNCTION,
++                    CheckDebugStepCallWrapper());
 +}
 +
 +
@@ -10934,8 +11049,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
    static const int kCodeSizeMultiplier = 165;
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc	2017-12-28 02:00:30.471956182 +0100
-@@ -0,0 +1,2418 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc	2017-12-28 03:52:59.410562490 +0100
+@@ -0,0 +1,2410 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -11189,14 +11304,16 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +      __ mov(edi, Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
 +    }
 +    if (is_strict(language_mode()) || !has_simple_parameters()) {
-+      FastNewStrictArgumentsStub stub(isolate());
-+      __ CallStub(&stub);
++      __ call(isolate()->builtins()->FastNewStrictArguments(),
++              RelocInfo::CODE_TARGET);
++      RestoreContext();
 +    } else if (literal()->has_duplicate_parameters()) {
 +      __ Push(edi);
 +      __ CallRuntime(Runtime::kNewSloppyArguments_Generic);
 +    } else {
-+      FastNewSloppyArgumentsStub stub(isolate());
-+      __ CallStub(&stub);
++      __ call(isolate()->builtins()->FastNewSloppyArguments(),
++              RelocInfo::CODE_TARGET);
++      RestoreContext();
 +    }
 +
 +    SetVar(arguments, eax, ebx, edx);
@@ -12011,13 +12128,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +  // allow it.
 +  if (MustCreateObjectLiteralWithRuntime(expr)) {
 +    __ push(Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
-+    __ push(Immediate(Smi::FromInt(expr->literal_index())));
++    __ push(Immediate(SmiFromSlot(expr->literal_slot())));
 +    __ push(Immediate(constant_properties));
 +    __ push(Immediate(Smi::FromInt(flags)));
 +    __ CallRuntime(Runtime::kCreateObjectLiteral);
 +  } else {
 +    __ mov(eax, Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
-+    __ mov(ebx, Immediate(Smi::FromInt(expr->literal_index())));
++    __ mov(ebx, Immediate(SmiFromSlot(expr->literal_slot())));
 +    __ mov(ecx, Immediate(constant_properties));
 +    __ mov(edx, Immediate(Smi::FromInt(flags)));
 +    Callable callable =
@@ -12132,13 +12249,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +
 +  if (MustCreateArrayLiteralWithRuntime(expr)) {
 +    __ push(Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
-+    __ push(Immediate(Smi::FromInt(expr->literal_index())));
++    __ push(Immediate(SmiFromSlot(expr->literal_slot())));
 +    __ push(Immediate(constant_elements));
 +    __ push(Immediate(Smi::FromInt(expr->ComputeFlags())));
 +    __ CallRuntime(Runtime::kCreateArrayLiteral);
 +  } else {
 +    __ mov(eax, Operand(ebp, JavaScriptFrameConstants::kFunctionOffset));
-+    __ mov(ebx, Immediate(Smi::FromInt(expr->literal_index())));
++    __ mov(ebx, Immediate(SmiFromSlot(expr->literal_slot())));
 +    __ mov(ecx, Immediate(constant_elements));
 +    Callable callable =
 +        CodeFactory::FastCloneShallowArray(isolate(), TRACK_ALLOCATION_SITE);
@@ -12493,18 +12610,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +    VisitForStackValue(args->at(i));
 +  }
 +
-+  SetCallPosition(expr, expr->tail_call_mode());
-+  if (expr->tail_call_mode() == TailCallMode::kAllow) {
-+    if (FLAG_trace) {
-+      __ CallRuntime(Runtime::kTraceTailCall);
-+    }
-+    // Update profiling counters before the tail call since we will
-+    // not return to this function.
-+    EmitProfilingCounterHandlingForReturnSequence(true);
-+  }
-+  Handle<Code> code =
-+      CodeFactory::CallICTrampoline(isolate(), mode, expr->tail_call_mode())
-+          .code();
++  SetCallPosition(expr);
++  Handle<Code> code = CodeFactory::CallICTrampoline(isolate(), mode).code();
 +  __ Move(edx, Immediate(SmiFromSlot(expr->CallFeedbackICSlot())));
 +  __ mov(edi, Operand(esp, (arg_count + 1) * kPointerSize));
 +  __ Move(eax, Immediate(arg_count));
@@ -13513,8 +13620,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/ic/x87/
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/ic/x87/handler-compiler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/ic/x87/handler-compiler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/ic/x87/handler-compiler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/ic/x87/handler-compiler-x87.cc	2017-12-25 17:42:57.215465646 +0100
-@@ -0,0 +1,450 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/ic/x87/handler-compiler-x87.cc	2017-12-28 03:55:18.870428775 +0100
+@@ -0,0 +1,447 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -13671,10 +13778,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/ic/x87/
 +
 +  Isolate* isolate = masm->isolate();
 +  Handle<CallHandlerInfo> api_call_info = optimization.api_call_info();
-+  bool call_data_undefined = false;
 +  // Put call data in place.
 +  if (api_call_info->data()->IsUndefined(isolate)) {
-+    call_data_undefined = true;
 +    __ mov(data, Immediate(isolate->factory()->undefined_value()));
 +  } else {
 +    if (optimization.is_constant_call()) {
@@ -13692,8 +13797,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/ic/x87/
 +  __ mov(api_function_address, Immediate(function_address));
 +
 +  // Jump to stub.
-+  CallApiCallbackStub stub(isolate, is_store, call_data_undefined,
-+                           !optimization.is_constant_call());
++  CallApiCallbackStub stub(isolate, is_store, !optimization.is_constant_call());
 +  __ TailCallStub(&stub);
 +}
 +
@@ -15776,8 +15880,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/v8.gyp 
              'mips/assembler-mips.cc',
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc	2017-12-28 01:58:14.302045167 +0100
-@@ -0,0 +1,2256 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc	2017-12-28 04:12:06.797019766 +0100
+@@ -0,0 +1,2258 @@
 +// Copyright (c) 1994-2006 Sun Microsystems Inc.
 +// All Rights Reserved.
 +//
@@ -16397,6 +16501,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +void Assembler::xchg_b(Register reg, const Operand& op) {
++  DCHECK(reg.is_byte_register());
 +  EnsureSpace ensure_space(this);
 +  EMIT(0x86);
 +  emit_operand(reg, op);
@@ -16422,6 +16527,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +void Assembler::cmpxchg_b(const Operand& dst, Register src) {
++  DCHECK(src.is_byte_register());
 +  EnsureSpace ensure_space(this);
 +  EMIT(0x0F);
 +  EMIT(0xB0);
@@ -20134,8 +20240,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +#endif  // V8_X87_CODEGEN_X87_H_
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc	2017-12-28 01:57:08.188059423 +0100
-@@ -0,0 +1,3423 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc	2017-12-28 03:38:01.563307104 +0100
+@@ -0,0 +1,2873 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -22623,556 +22729,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +
 +  __ bind(&fast_elements_case);
 +  GenerateCase(masm, PACKED_ELEMENTS);
-+}
-+
-+void FastNewRestParameterStub::Generate(MacroAssembler* masm) {
-+  // ----------- S t a t e -------------
-+  //  -- edi    : function
-+  //  -- esi    : context
-+  //  -- ebp    : frame pointer
-+  //  -- esp[0] : return address
-+  // -----------------------------------
-+  __ AssertFunction(edi);
-+
-+  // Make edx point to the JavaScript frame.
-+  __ mov(edx, ebp);
-+  if (skip_stub_frame()) {
-+    // For Ignition we need to skip the handler/stub frame to reach the
-+    // JavaScript frame for the function.
-+    __ mov(edx, Operand(edx, StandardFrameConstants::kCallerFPOffset));
-+  }
-+  if (FLAG_debug_code) {
-+    Label ok;
-+    __ cmp(edi, Operand(edx, StandardFrameConstants::kFunctionOffset));
-+    __ j(equal, &ok);
-+    __ Abort(kInvalidFrameForFastNewRestArgumentsStub);
-+    __ bind(&ok);
-+  }
-+
-+  // Check if we have rest parameters (only possible if we have an
-+  // arguments adaptor frame below the function frame).
-+  Label no_rest_parameters;
-+  __ mov(ebx, Operand(edx, StandardFrameConstants::kCallerFPOffset));
-+  __ cmp(Operand(ebx, CommonFrameConstants::kContextOrFrameTypeOffset),
-+         Immediate(Smi::FromInt(StackFrame::ARGUMENTS_ADAPTOR)));
-+  __ j(not_equal, &no_rest_parameters, Label::kNear);
-+
-+  // Check if the arguments adaptor frame contains more arguments than
-+  // specified by the function's internal formal parameter count.
-+  Label rest_parameters;
-+  __ mov(ecx, FieldOperand(edi, JSFunction::kSharedFunctionInfoOffset));
-+  __ mov(eax, Operand(ebx, ArgumentsAdaptorFrameConstants::kLengthOffset));
-+  __ sub(eax,
-+         FieldOperand(ecx, SharedFunctionInfo::kFormalParameterCountOffset));
-+  __ j(greater, &rest_parameters);
-+
-+  // Return an empty rest parameter array.
-+  __ bind(&no_rest_parameters);
-+  {
-+    // ----------- S t a t e -------------
-+    //  -- esi    : context
-+    //  -- esp[0] : return address
-+    // -----------------------------------
-+
-+    // Allocate an empty rest parameter array.
-+    Label allocate, done_allocate;
-+    __ Allocate(JSArray::kSize, eax, edx, ecx, &allocate, NO_ALLOCATION_FLAGS);
-+    __ bind(&done_allocate);
-+
-+    // Setup the rest parameter array in rax.
-+    __ LoadGlobalFunction(Context::JS_ARRAY_PACKED_ELEMENTS_MAP_INDEX, ecx);
-+    __ mov(FieldOperand(eax, JSArray::kMapOffset), ecx);
-+    __ mov(ecx, isolate()->factory()->empty_fixed_array());
-+    __ mov(FieldOperand(eax, JSArray::kPropertiesOrHashOffset), ecx);
-+    __ mov(FieldOperand(eax, JSArray::kElementsOffset), ecx);
-+    __ mov(FieldOperand(eax, JSArray::kLengthOffset), Immediate(Smi::kZero));
-+    STATIC_ASSERT(JSArray::kSize == 4 * kPointerSize);
-+    __ Ret();
-+
-+    // Fall back to %AllocateInNewSpace.
-+    __ bind(&allocate);
-+    {
-+      FrameScope scope(masm, StackFrame::INTERNAL);
-+      __ Push(Smi::FromInt(JSArray::kSize));
-+      __ CallRuntime(Runtime::kAllocateInNewSpace);
-+    }
-+    __ jmp(&done_allocate);
-+  }
-+
-+  __ bind(&rest_parameters);
-+  {
-+    // Compute the pointer to the first rest parameter (skippping the receiver).
-+    __ lea(ebx,
-+           Operand(ebx, eax, times_half_pointer_size,
-+                   StandardFrameConstants::kCallerSPOffset - 1 * kPointerSize));
-+
-+    // ----------- S t a t e -------------
-+    //  -- esi    : context
-+    //  -- eax    : number of rest parameters (tagged)
-+    //  -- ebx    : pointer to first rest parameters
-+    //  -- esp[0] : return address
-+    // -----------------------------------
-+
-+    // Allocate space for the rest parameter array plus the backing store.
-+    Label allocate, done_allocate;
-+    __ lea(ecx, Operand(eax, times_half_pointer_size,
-+                        JSArray::kSize + FixedArray::kHeaderSize));
-+    __ Allocate(ecx, edx, edi, no_reg, &allocate, NO_ALLOCATION_FLAGS);
-+    __ bind(&done_allocate);
-+
-+    // Setup the elements array in edx.
-+    __ mov(FieldOperand(edx, FixedArray::kMapOffset),
-+           isolate()->factory()->fixed_array_map());
-+    __ mov(FieldOperand(edx, FixedArray::kLengthOffset), eax);
-+    {
-+      Label loop, done_loop;
-+      __ Move(ecx, Smi::kZero);
-+      __ bind(&loop);
-+      __ cmp(ecx, eax);
-+      __ j(equal, &done_loop, Label::kNear);
-+      __ mov(edi, Operand(ebx, 0 * kPointerSize));
-+      __ mov(FieldOperand(edx, ecx, times_half_pointer_size,
-+                          FixedArray::kHeaderSize),
-+             edi);
-+      __ sub(ebx, Immediate(1 * kPointerSize));
-+      __ add(ecx, Immediate(Smi::FromInt(1)));
-+      __ jmp(&loop);
-+      __ bind(&done_loop);
-+    }
-+
-+    // Setup the rest parameter array in edi.
-+    __ lea(edi,
-+           Operand(edx, eax, times_half_pointer_size, FixedArray::kHeaderSize));
-+    __ LoadGlobalFunction(Context::JS_ARRAY_PACKED_ELEMENTS_MAP_INDEX, ecx);
-+    __ mov(FieldOperand(edi, JSArray::kMapOffset), ecx);
-+    __ mov(FieldOperand(edi, JSArray::kPropertiesOrHashOffset),
-+           isolate()->factory()->empty_fixed_array());
-+    __ mov(FieldOperand(edi, JSArray::kElementsOffset), edx);
-+    __ mov(FieldOperand(edi, JSArray::kLengthOffset), eax);
-+    STATIC_ASSERT(JSArray::kSize == 4 * kPointerSize);
-+    __ mov(eax, edi);
-+    __ Ret();
-+
-+    // Fall back to %AllocateInNewSpace (if not too big).
-+    Label too_big_for_new_space;
-+    __ bind(&allocate);
-+    __ cmp(ecx, Immediate(kMaxRegularHeapObjectSize));
-+    __ j(greater, &too_big_for_new_space);
-+    {
-+      FrameScope scope(masm, StackFrame::INTERNAL);
-+      __ SmiTag(ecx);
-+      __ Push(eax);
-+      __ Push(ebx);
-+      __ Push(ecx);
-+      __ CallRuntime(Runtime::kAllocateInNewSpace);
-+      __ mov(edx, eax);
-+      __ Pop(ebx);
-+      __ Pop(eax);
-+    }
-+    __ jmp(&done_allocate);
-+
-+    // Fall back to %NewRestParameter.
-+    __ bind(&too_big_for_new_space);
-+    __ PopReturnAddressTo(ecx);
-+    // We reload the function from the caller frame due to register pressure
-+    // within this stub. This is the slow path, hence reloading is preferable.
-+    if (skip_stub_frame()) {
-+      // For Ignition we need to skip the handler/stub frame to reach the
-+      // JavaScript frame for the function.
-+      __ mov(edx, Operand(ebp, StandardFrameConstants::kCallerFPOffset));
-+      __ Push(Operand(edx, StandardFrameConstants::kFunctionOffset));
-+    } else {
-+      __ Push(Operand(ebp, StandardFrameConstants::kFunctionOffset));
-+    }
-+    __ PushReturnAddressFrom(ecx);
-+    __ TailCallRuntime(Runtime::kNewRestParameter);
-+  }
-+}
-+
-+void FastNewSloppyArgumentsStub::Generate(MacroAssembler* masm) {
-+  // ----------- S t a t e -------------
-+  //  -- edi    : function
-+  //  -- esi    : context
-+  //  -- ebp    : frame pointer
-+  //  -- esp[0] : return address
-+  // -----------------------------------
-+  __ AssertFunction(edi);
-+
-+  // Make ecx point to the JavaScript frame.
-+  __ mov(ecx, ebp);
-+  if (skip_stub_frame()) {
-+    // For Ignition we need to skip the handler/stub frame to reach the
-+    // JavaScript frame for the function.
-+    __ mov(ecx, Operand(ecx, StandardFrameConstants::kCallerFPOffset));
-+  }
-+  if (FLAG_debug_code) {
-+    Label ok;
-+    __ cmp(edi, Operand(ecx, StandardFrameConstants::kFunctionOffset));
-+    __ j(equal, &ok);
-+    __ Abort(kInvalidFrameForFastNewSloppyArgumentsStub);
-+    __ bind(&ok);
-+  }
-+
-+  // TODO(bmeurer): Cleanup to match the FastNewStrictArgumentsStub.
-+  __ mov(ebx, FieldOperand(edi, JSFunction::kSharedFunctionInfoOffset));
-+  __ mov(ebx,
-+         FieldOperand(ebx, SharedFunctionInfo::kFormalParameterCountOffset));
-+  __ lea(edx, Operand(ecx, ebx, times_half_pointer_size,
-+                      StandardFrameConstants::kCallerSPOffset));
-+
-+  // ebx : number of parameters (tagged)
-+  // edx : parameters pointer
-+  // edi : function
-+  // ecx : JavaScript frame pointer.
-+  // esp[0] : return address
-+
-+  // Check if the calling frame is an arguments adaptor frame.
-+  Label adaptor_frame, try_allocate, runtime;
-+  __ mov(eax, Operand(ecx, StandardFrameConstants::kCallerFPOffset));
-+  __ mov(eax, Operand(eax, CommonFrameConstants::kContextOrFrameTypeOffset));
-+  __ cmp(eax, Immediate(Smi::FromInt(StackFrame::ARGUMENTS_ADAPTOR)));
-+  __ j(equal, &adaptor_frame, Label::kNear);
-+
-+  // No adaptor, parameter count = argument count.
-+  __ mov(ecx, ebx);
-+  __ push(ebx);
-+  __ jmp(&try_allocate, Label::kNear);
-+
-+  // We have an adaptor frame. Patch the parameters pointer.
-+  __ bind(&adaptor_frame);
-+  __ push(ebx);
-+  __ mov(edx, Operand(ecx, StandardFrameConstants::kCallerFPOffset));
-+  __ mov(ecx, Operand(edx, ArgumentsAdaptorFrameConstants::kLengthOffset));
-+  __ lea(edx,
-+         Operand(edx, ecx, times_2, StandardFrameConstants::kCallerSPOffset));
-+
-+  // ebx = parameter count (tagged)
-+  // ecx = argument count (smi-tagged)
-+  // Compute the mapped parameter count = min(ebx, ecx) in ebx.
-+  __ cmp(ebx, ecx);
-+  __ j(less_equal, &try_allocate, Label::kNear);
-+  __ mov(ebx, ecx);
-+
-+  // Save mapped parameter count and function.
-+  __ bind(&try_allocate);
-+  __ push(edi);
-+  __ push(ebx);
-+
-+  // Compute the sizes of backing store, parameter map, and arguments object.
-+  // 1. Parameter map, has 2 extra words containing context and backing store.
-+  const int kParameterMapHeaderSize =
-+      FixedArray::kHeaderSize + 2 * kPointerSize;
-+  Label no_parameter_map;
-+  __ test(ebx, ebx);
-+  __ j(zero, &no_parameter_map, Label::kNear);
-+  __ lea(ebx, Operand(ebx, times_2, kParameterMapHeaderSize));
-+  __ bind(&no_parameter_map);
-+
-+  // 2. Backing store.
-+  __ lea(ebx, Operand(ebx, ecx, times_2, FixedArray::kHeaderSize));
-+
-+  // 3. Arguments object.
-+  __ add(ebx, Immediate(JSSloppyArgumentsObject::kSize));
-+
-+  // Do the allocation of all three objects in one go.
-+  __ Allocate(ebx, eax, edi, no_reg, &runtime, NO_ALLOCATION_FLAGS);
-+
-+  // eax = address of new object(s) (tagged)
-+  // ecx = argument count (smi-tagged)
-+  // esp[0] = mapped parameter count (tagged)
-+  // esp[4] = function
-+  // esp[8] = parameter count (tagged)
-+  // Get the arguments map from the current native context into edi.
-+  Label has_mapped_parameters, instantiate;
-+  __ mov(edi, NativeContextOperand());
-+  __ mov(ebx, Operand(esp, 0 * kPointerSize));
-+  __ test(ebx, ebx);
-+  __ j(not_zero, &has_mapped_parameters, Label::kNear);
-+  __ mov(
-+      edi,
-+      Operand(edi, Context::SlotOffset(Context::SLOPPY_ARGUMENTS_MAP_INDEX)));
-+  __ jmp(&instantiate, Label::kNear);
-+
-+  __ bind(&has_mapped_parameters);
-+  __ mov(edi, Operand(edi, Context::SlotOffset(
-+                               Context::FAST_ALIASED_ARGUMENTS_MAP_INDEX)));
-+  __ bind(&instantiate);
-+
-+  // eax = address of new object (tagged)
-+  // ebx = mapped parameter count (tagged)
-+  // ecx = argument count (smi-tagged)
-+  // edi = address of arguments map (tagged)
-+  // esp[0] = mapped parameter count (tagged)
-+  // esp[4] = function
-+  // esp[8] = parameter count (tagged)
-+  // Copy the JS object part.
-+  __ mov(FieldOperand(eax, JSObject::kMapOffset), edi);
-+  __ mov(FieldOperand(eax, JSObject::kPropertiesOrHashOffset),
-+         masm->isolate()->factory()->empty_fixed_array());
-+  __ mov(FieldOperand(eax, JSObject::kElementsOffset),
-+         masm->isolate()->factory()->empty_fixed_array());
-+
-+  // Set up the callee in-object property.
-+  STATIC_ASSERT(JSSloppyArgumentsObject::kCalleeIndex == 1);
-+  __ mov(edi, Operand(esp, 1 * kPointerSize));
-+  __ AssertNotSmi(edi);
-+  __ mov(FieldOperand(eax, JSSloppyArgumentsObject::kCalleeOffset), edi);
-+
-+  // Use the length (smi tagged) and set that as an in-object property too.
-+  __ AssertSmi(ecx);
-+  __ mov(FieldOperand(eax, JSSloppyArgumentsObject::kLengthOffset), ecx);
-+
-+  // Set up the elements pointer in the allocated arguments object.
-+  // If we allocated a parameter map, edi will point there, otherwise to the
-+  // backing store.
-+  __ lea(edi, Operand(eax, JSSloppyArgumentsObject::kSize));
-+  __ mov(FieldOperand(eax, JSObject::kElementsOffset), edi);
-+
-+  // eax = address of new object (tagged)
-+  // ebx = mapped parameter count (tagged)
-+  // ecx = argument count (tagged)
-+  // edx = address of receiver argument
-+  // edi = address of parameter map or backing store (tagged)
-+  // esp[0] = mapped parameter count (tagged)
-+  // esp[4] = function
-+  // esp[8] = parameter count (tagged)
-+  // Free two registers.
-+  __ push(edx);
-+  __ push(eax);
-+
-+  // Initialize parameter map. If there are no mapped arguments, we're done.
-+  Label skip_parameter_map;
-+  __ test(ebx, ebx);
-+  __ j(zero, &skip_parameter_map);
-+
-+  __ mov(FieldOperand(edi, FixedArray::kMapOffset),
-+         Immediate(isolate()->factory()->sloppy_arguments_elements_map()));
-+  __ lea(eax, Operand(ebx, reinterpret_cast<intptr_t>(Smi::FromInt(2))));
-+  __ mov(FieldOperand(edi, FixedArray::kLengthOffset), eax);
-+  __ mov(FieldOperand(edi, FixedArray::kHeaderSize + 0 * kPointerSize), esi);
-+  __ lea(eax, Operand(edi, ebx, times_2, kParameterMapHeaderSize));
-+  __ mov(FieldOperand(edi, FixedArray::kHeaderSize + 1 * kPointerSize), eax);
-+
-+  // Copy the parameter slots and the holes in the arguments.
-+  // We need to fill in mapped_parameter_count slots. They index the context,
-+  // where parameters are stored in reverse order, at
-+  //   MIN_CONTEXT_SLOTS .. MIN_CONTEXT_SLOTS+parameter_count-1
-+  // The mapped parameter thus need to get indices
-+  //   MIN_CONTEXT_SLOTS+parameter_count-1 ..
-+  //       MIN_CONTEXT_SLOTS+parameter_count-mapped_parameter_count
-+  // We loop from right to left.
-+  Label parameters_loop, parameters_test;
-+  __ push(ecx);
-+  __ mov(eax, Operand(esp, 3 * kPointerSize));
-+  __ mov(ebx, Immediate(Smi::FromInt(Context::MIN_CONTEXT_SLOTS)));
-+  __ add(ebx, Operand(esp, 5 * kPointerSize));
-+  __ sub(ebx, eax);
-+  __ mov(ecx, isolate()->factory()->the_hole_value());
-+  __ mov(edx, edi);
-+  __ lea(edi, Operand(edi, eax, times_2, kParameterMapHeaderSize));
-+  // eax = loop variable (tagged)
-+  // ebx = mapping index (tagged)
-+  // ecx = the hole value
-+  // edx = address of parameter map (tagged)
-+  // edi = address of backing store (tagged)
-+  // esp[0] = argument count (tagged)
-+  // esp[4] = address of new object (tagged)
-+  // esp[8] = address of receiver argument
-+  // esp[12] = mapped parameter count (tagged)
-+  // esp[16] = function
-+  // esp[20] = parameter count (tagged)
-+  __ jmp(&parameters_test, Label::kNear);
-+
-+  __ bind(&parameters_loop);
-+  __ sub(eax, Immediate(Smi::FromInt(1)));
-+  __ mov(FieldOperand(edx, eax, times_2, kParameterMapHeaderSize), ebx);
-+  __ mov(FieldOperand(edi, eax, times_2, FixedArray::kHeaderSize), ecx);
-+  __ add(ebx, Immediate(Smi::FromInt(1)));
-+  __ bind(&parameters_test);
-+  __ test(eax, eax);
-+  __ j(not_zero, &parameters_loop, Label::kNear);
-+  __ pop(ecx);
-+
-+  __ bind(&skip_parameter_map);
-+
-+  // ecx = argument count (tagged)
-+  // edi = address of backing store (tagged)
-+  // esp[0] = address of new object (tagged)
-+  // esp[4] = address of receiver argument
-+  // esp[8] = mapped parameter count (tagged)
-+  // esp[12] = function
-+  // esp[16] = parameter count (tagged)
-+  // Copy arguments header and remaining slots (if there are any).
-+  __ mov(FieldOperand(edi, FixedArray::kMapOffset),
-+         Immediate(isolate()->factory()->fixed_array_map()));
-+  __ mov(FieldOperand(edi, FixedArray::kLengthOffset), ecx);
-+
-+  Label arguments_loop, arguments_test;
-+  __ mov(ebx, Operand(esp, 2 * kPointerSize));
-+  __ mov(edx, Operand(esp, 1 * kPointerSize));
-+  __ sub(edx, ebx);  // Is there a smarter way to do negative scaling?
-+  __ sub(edx, ebx);
-+  __ jmp(&arguments_test, Label::kNear);
-+
-+  __ bind(&arguments_loop);
-+  __ sub(edx, Immediate(kPointerSize));
-+  __ mov(eax, Operand(edx, 0));
-+  __ mov(FieldOperand(edi, ebx, times_2, FixedArray::kHeaderSize), eax);
-+  __ add(ebx, Immediate(Smi::FromInt(1)));
-+
-+  __ bind(&arguments_test);
-+  __ cmp(ebx, ecx);
-+  __ j(less, &arguments_loop, Label::kNear);
-+
-+  // Restore.
-+  __ pop(eax);  // Address of arguments object.
-+  __ Drop(4);
-+
-+  // Return.
-+  __ ret(0);
-+
-+  // Do the runtime call to allocate the arguments object.
-+  __ bind(&runtime);
-+  __ pop(eax);   // Remove saved mapped parameter count.
-+  __ pop(edi);   // Pop saved function.
-+  __ pop(eax);   // Remove saved parameter count.
-+  __ pop(eax);   // Pop return address.
-+  __ push(edi);  // Push function.
-+  __ push(edx);  // Push parameters pointer.
-+  __ push(ecx);  // Push parameter count.
-+  __ push(eax);  // Push return address.
-+  __ TailCallRuntime(Runtime::kNewSloppyArguments);
-+}
-+
-+void FastNewStrictArgumentsStub::Generate(MacroAssembler* masm) {
-+  // ----------- S t a t e -------------
-+  //  -- edi    : function
-+  //  -- esi    : context
-+  //  -- ebp    : frame pointer
-+  //  -- esp[0] : return address
-+  // -----------------------------------
-+  __ AssertFunction(edi);
-+
-+  // Make edx point to the JavaScript frame.
-+  __ mov(edx, ebp);
-+  if (skip_stub_frame()) {
-+    // For Ignition we need to skip the handler/stub frame to reach the
-+    // JavaScript frame for the function.
-+    __ mov(edx, Operand(edx, StandardFrameConstants::kCallerFPOffset));
-+  }
-+  if (FLAG_debug_code) {
-+    Label ok;
-+    __ cmp(edi, Operand(edx, StandardFrameConstants::kFunctionOffset));
-+    __ j(equal, &ok);
-+    __ Abort(kInvalidFrameForFastNewStrictArgumentsStub);
-+    __ bind(&ok);
-+  }
-+
-+  // Check if we have an arguments adaptor frame below the function frame.
-+  Label arguments_adaptor, arguments_done;
-+  __ mov(ebx, Operand(edx, StandardFrameConstants::kCallerFPOffset));
-+  __ cmp(Operand(ebx, CommonFrameConstants::kContextOrFrameTypeOffset),
-+         Immediate(Smi::FromInt(StackFrame::ARGUMENTS_ADAPTOR)));
-+  __ j(equal, &arguments_adaptor, Label::kNear);
-+  {
-+    __ mov(eax, FieldOperand(edi, JSFunction::kSharedFunctionInfoOffset));
-+    __ mov(eax,
-+           FieldOperand(eax, SharedFunctionInfo::kFormalParameterCountOffset));
-+    __ lea(ebx,
-+           Operand(edx, eax, times_half_pointer_size,
-+                   StandardFrameConstants::kCallerSPOffset - 1 * kPointerSize));
-+  }
-+  __ jmp(&arguments_done, Label::kNear);
-+  __ bind(&arguments_adaptor);
-+  {
-+    __ mov(eax, Operand(ebx, ArgumentsAdaptorFrameConstants::kLengthOffset));
-+    __ lea(ebx,
-+           Operand(ebx, eax, times_half_pointer_size,
-+                   StandardFrameConstants::kCallerSPOffset - 1 * kPointerSize));
-+  }
-+  __ bind(&arguments_done);
-+
-+  // ----------- S t a t e -------------
-+  //  -- eax    : number of arguments (tagged)
-+  //  -- ebx    : pointer to the first argument
-+  //  -- esi    : context
-+  //  -- esp[0] : return address
-+  // -----------------------------------
-+
-+  // Allocate space for the strict arguments object plus the backing store.
-+  Label allocate, done_allocate;
-+  __ lea(ecx,
-+         Operand(eax, times_half_pointer_size,
-+                 JSStrictArgumentsObject::kSize + FixedArray::kHeaderSize));
-+  __ Allocate(ecx, edx, edi, no_reg, &allocate, NO_ALLOCATION_FLAGS);
-+  __ bind(&done_allocate);
-+
-+  // Setup the elements array in edx.
-+  __ mov(FieldOperand(edx, FixedArray::kMapOffset),
-+         isolate()->factory()->fixed_array_map());
-+  __ mov(FieldOperand(edx, FixedArray::kLengthOffset), eax);
-+  {
-+    Label loop, done_loop;
-+    __ Move(ecx, Smi::kZero);
-+    __ bind(&loop);
-+    __ cmp(ecx, eax);
-+    __ j(equal, &done_loop, Label::kNear);
-+    __ mov(edi, Operand(ebx, 0 * kPointerSize));
-+    __ mov(FieldOperand(edx, ecx, times_half_pointer_size,
-+                        FixedArray::kHeaderSize),
-+           edi);
-+    __ sub(ebx, Immediate(1 * kPointerSize));
-+    __ add(ecx, Immediate(Smi::FromInt(1)));
-+    __ jmp(&loop);
-+    __ bind(&done_loop);
-+  }
-+
-+  // Setup the rest parameter array in edi.
-+  __ lea(edi,
-+         Operand(edx, eax, times_half_pointer_size, FixedArray::kHeaderSize));
-+  __ LoadGlobalFunction(Context::STRICT_ARGUMENTS_MAP_INDEX, ecx);
-+  __ mov(FieldOperand(edi, JSStrictArgumentsObject::kMapOffset), ecx);
-+  __ mov(FieldOperand(edi, JSStrictArgumentsObject::kPropertiesOrHashOffset),
-+         isolate()->factory()->empty_fixed_array());
-+  __ mov(FieldOperand(edi, JSStrictArgumentsObject::kElementsOffset), edx);
-+  __ mov(FieldOperand(edi, JSStrictArgumentsObject::kLengthOffset), eax);
-+  STATIC_ASSERT(JSStrictArgumentsObject::kSize == 4 * kPointerSize);
-+  __ mov(eax, edi);
-+  __ Ret();
-+
-+  // Fall back to %AllocateInNewSpace (if not too big).
-+  Label too_big_for_new_space;
-+  __ bind(&allocate);
-+  __ cmp(ecx, Immediate(kMaxRegularHeapObjectSize));
-+  __ j(greater, &too_big_for_new_space);
-+  {
-+    FrameScope scope(masm, StackFrame::INTERNAL);
-+    __ SmiTag(ecx);
-+    __ Push(eax);
-+    __ Push(ebx);
-+    __ Push(ecx);
-+    __ CallRuntime(Runtime::kAllocateInNewSpace);
-+    __ mov(edx, eax);
-+    __ Pop(ebx);
-+    __ Pop(eax);
-+  }
-+  __ jmp(&done_allocate);
-+
-+  // Fall back to %NewStrictArguments.
-+  __ bind(&too_big_for_new_space);
-+  __ PopReturnAddressTo(ecx);
-+  // We reload the function from the caller frame due to register pressure
-+  // within this stub. This is the slow path, hence reloading is preferable.
-+  if (skip_stub_frame()) {
-+    // For Ignition we need to skip the handler/stub frame to reach the
-+    // JavaScript frame for the function.
-+    __ mov(edx, Operand(ebp, StandardFrameConstants::kCallerFPOffset));
-+    __ Push(Operand(edx, StandardFrameConstants::kFunctionOffset));
-+  } else {
-+    __ Push(Operand(ebp, StandardFrameConstants::kFunctionOffset));
-+  }
-+  __ PushReturnAddressFrom(ecx);
-+  __ TailCallRuntime(Runtime::kNewStrictArguments);
 +}
 +
 +// Generates an Operand for saving parameters after PrepareCallApiFunction.
@@ -26370,8 +25926,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/fra
 +#endif  // V8_X87_FRAMES_X87_H_
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc	2017-12-25 17:42:57.223465529 +0100
-@@ -0,0 +1,386 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc	2017-12-28 03:38:40.380712871 +0100
+@@ -0,0 +1,375 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -26443,25 +25999,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +  Register registers[] = {ebx, ecx, edx};
 +  data->InitializePlatformSpecific(arraysize(registers), registers, NULL);
 +}
-+
-+void FastNewRestParameterDescriptor::InitializePlatformSpecific(
-+    CallInterfaceDescriptorData* data) {
-+  Register registers[] = {edi};
-+  data->InitializePlatformSpecific(arraysize(registers), registers, NULL);
-+}
-+
-+void FastNewSloppyArgumentsDescriptor::InitializePlatformSpecific(
-+    CallInterfaceDescriptorData* data) {
-+  Register registers[] = {edi};
-+  data->InitializePlatformSpecific(arraysize(registers), registers, NULL);
-+}
-+
-+void FastNewStrictArgumentsDescriptor::InitializePlatformSpecific(
-+    CallInterfaceDescriptorData* data) {
-+  Register registers[] = {edi};
-+  data->InitializePlatformSpecific(arraysize(registers), registers, NULL);
-+}
-+
 +
 +// static
 +const Register TypeConversionDescriptor::ArgumentRegister() { return eax; }
@@ -26754,14 +26291,22 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +  data->InitializePlatformSpecific(arraysize(registers), registers);
 +}
 +
++void FrameDropperTrampolineDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  Register registers[] = {
++      ebx,  // loaded new FP
++  };
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
 +}  // namespace internal
 +}  // namespace v8
 +
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-28 02:06:59.546987375 +0100
-@@ -0,0 +1,2568 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-28 03:27:22.050899783 +0100
+@@ -0,0 +1,2571 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -27042,10 +26587,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::TruncateX87TOSToI(Register result_reg) {
++void TurboAssembler::TruncateX87TOSToI(Zone* zone, Register result_reg) {
 +  sub(esp, Immediate(kDoubleSize));
 +  fst_d(MemOperand(esp, 0));
-+  SlowTruncateToI(result_reg, esp, 0);
++  SlowTruncateToIDelayed(zone, result_reg, esp, 0);
 +  add(esp, Immediate(kDoubleSize));
 +}
 +
@@ -27335,12 +26880,14 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  bind(&done);
 +}
 +
-+void MacroAssembler::DebugBreak() {
-+  Move(eax, Immediate(0));
-+  mov(ebx, Immediate(ExternalReference(Runtime::kHandleDebuggerStatement,
-+                                       isolate())));
-+  CEntryStub ces(isolate(), 1);
-+  call(ces.GetCode(), RelocInfo::DEBUGGER_STATEMENT);
++void MacroAssembler::MaybeDropFrames() {
++  // Check whether we need to drop frames to restart a function on the stack.
++  ExternalReference restart_fp =
++      ExternalReference::debug_restart_fp_address(isolate());
++  mov(ebx, Operand::StaticVariable(restart_fp));
++  test(ebx, ebx);
++  j(not_zero, isolate()->builtins()->FrameDropperTrampoline(),
++    RelocInfo::CODE_TARGET);
 +}
 +
 +void TurboAssembler::ShlPair(Register high, Register low, uint8_t shift) {
@@ -27477,7 +27024,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::FCmp() {
++void TurboAssembler::FCmp() {
 +  fucompp();
 +  push(eax);
 +  fnstsw_ax();
@@ -27523,7 +27070,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +// rc=01B, round down.
 +// rc=10B, round up.
 +// rc=11B, round toward zero.
-+void MacroAssembler::X87SetRC(int rc) {
++void TurboAssembler::X87SetRC(int rc) {
 +  sub(esp, Immediate(kPointerSize));
 +  fnstcw(MemOperand(esp, 0));
 +  and_(MemOperand(esp, 0), Immediate(0xF3FF));
@@ -27533,7 +27080,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::X87SetFPUCW(int cw) {
++void TurboAssembler::X87SetFPUCW(int cw) {
 +  RecordComment("-- X87SetFPUCW start --");
 +  push(Immediate(cw));
 +  fldcw(MemOperand(esp, 0));
@@ -28413,6 +27960,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +      DCHECK(actual.reg().is(eax));
 +      DCHECK(expected.reg().is(ebx));
 +    } else {
++      definitely_matches = true;
 +      Move(eax, actual.reg());
 +    }
 +  }
@@ -29332,8 +28880,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	2017-12-28 02:05:16.624566310 +0100
-@@ -0,0 +1,921 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	2017-12-28 03:27:27.352808166 +0100
+@@ -0,0 +1,920 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -29544,10 +29092,17 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  }
 +  void LoadUint32NoSSE2(const Operand& src);
 +
++  // FCmp is similar to integer cmp, but requires unsigned
++  // jcc instructions (je, ja, jae, jb, jbe, je, and jz).
++  void FCmp();
++  void X87SetRC(int rc);
++  void X87SetFPUCW(int cw);
++
 +  void SlowTruncateToIDelayed(Zone* zone, Register result_reg,
 +                              Register input_reg,
 +                              int offset = HeapNumber::kValueOffset -
 +                                           kHeapObjectTag);
++  void TruncateX87TOSToI(Zone* zone, Register result_reg);
 +
 +  void Push(Register src) { push(src); }
 +  void Push(const Operand& src) { push(src); }
@@ -29724,10 +29279,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  void RecordWriteForMap(Register object, Handle<Map> map, Register scratch1,
 +                         Register scratch2, SaveFPRegsMode save_fp);
 +
-+  // ---------------------------------------------------------------------------
-+  // Debugger Support
-+
-+  void DebugBreak();
++  // Frame restart support
++  void MaybeDropFrames();
 +
 +  // Enter specific kind of exit frame. Expects the number of
 +  // arguments in register eax and sets up the number of arguments in
@@ -29843,14 +29396,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  Condition IsObjectStringType(Register heap_object, Register map,
 +                               Register instance_type);
 +
-+  // FCmp is similar to integer cmp, but requires unsigned
-+  // jcc instructions (je, ja, jae, jb, jbe, je, and jz).
-+  void FCmp();
 +  void FXamMinusZero();
 +  void FXamSign();
 +  void X87CheckIA();
-+  void X87SetRC(int rc);
-+  void X87SetFPUCW(int cw);
 +
 +  void ClampUint8(Register reg);
 +  void ClampTOSToUint8(Register result_reg);
@@ -29859,7 +29407,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +      int offset = HeapNumber::kValueOffset - kHeapObjectTag);
 +
 +  void TruncateHeapNumberToI(Register result_reg, Register input_reg);
-+  void TruncateX87TOSToI(Register result_reg);
 +
 +  void X87TOSToI(Register result_reg, MinusZeroMode minus_zero_mode,
 +      Label* lost_precision, Label* is_nan, Label* minus_zero,
