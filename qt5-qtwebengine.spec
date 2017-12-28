@@ -23,19 +23,15 @@
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
 %global arm_neon 1
 
-%if 0%{?fedora} > 26
 # the QMake CONFIG flags to force debugging information to be produced in
 # release builds, and for all parts of the code
-%global debug_config webcore_debug v8base_debug force_debug_info
-%else
 %ifarch %{arm}
-# the ARM builder runs out of memory on Fedora 26 during linking with the full
-# setting below, so omit debugging information for the parts upstream deems it
-# dispensable for (webcore, v8base)
+# the ARM builder runs out of memory during linking with the full setting below,
+# so omit debugging information for the parts upstream deems it dispensable for
+# (webcore, v8base)
 %global debug_config force_debug_info
 %else
 %global debug_config webcore_debug v8base_debug force_debug_info
-%endif
 %endif
 
 #global prerelease rc
@@ -576,7 +572,7 @@ done
 
 
 %changelog
-* Tue Dec 26 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.0-1
+* Thu Dec 28 2017 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.0-1
 - Update to 5.10.0
 - Update version numbers of bundled stuff
 - Drop support for Fedora < 26 (in particular, WEBENGINE_CONFIG F25 workarounds)
@@ -592,6 +588,7 @@ done
 - Disable system libvpx support for now, requires unreleased libvpx (1.6.2+)
 - Add new BuildRequires: flex (required) and pkgconfig(lcms2) (unbundled)
 - Forward-port missing parts of 5.9 ICU>=59 build fix (QTBUG-60886, QTBUG-65090)
+- Reduce debugging info on ARM also on F27+ (as on F26- since 5.9.0)
 
 * Tue Dec 19 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.9.3-5
 - properly escape newline in lesser_version hack
@@ -676,6 +673,7 @@ done
 - Backport patch to fix FTBFS with GCC on aarch64 from upstream Chromium
 - Fix src/3rdparty/chromium/build/linux/unbundle/re2.gn
 - Delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn
+- Reduce debugging info on ARM on F26-
 
 * Sat May 13 2017 Rex Dieter <rdieter@fedoraproject.org> - 5.8.0-14
 - fix rpm macros

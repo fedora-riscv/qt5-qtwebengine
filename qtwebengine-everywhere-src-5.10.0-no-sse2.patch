@@ -2649,8 +2649,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/base/bu
  #define V8_TARGET_ARCH_STORES_RETURN_ADDRESS_ON_STACK 0
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc	2017-12-25 17:42:57.204465808 +0100
-@@ -0,0 +1,3143 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/builtins/x87/builtins-x87.cc	2017-12-27 22:57:11.363055815 +0100
+@@ -0,0 +1,3142 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -3609,8 +3609,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/builtin
 +  Smi* interpreter_entry_return_pc_offset(
 +      masm->isolate()->heap()->interpreter_entry_return_pc_offset());
 +  DCHECK_NE(interpreter_entry_return_pc_offset, Smi::kZero);
-+  __ LoadHeapObject(ebx,
-+                    masm->isolate()->builtins()->InterpreterEntryTrampoline());
++  __ Move(ebx, masm->isolate()->builtins()->InterpreterEntryTrampoline());
 +  __ add(ebx, Immediate(interpreter_entry_return_pc_offset->value() +
 +                        Code::kHeaderSize - kHeapObjectTag));
 +  __ push(ebx);
@@ -5881,8 +5880,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
  // == arm ====================================================================
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc	2017-12-25 17:42:57.208465749 +0100
-@@ -0,0 +1,2768 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/compiler/x87/code-generator-x87.cc	2017-12-28 02:12:51.768596072 +0100
+@@ -0,0 +1,2800 @@
 +// Copyright 2013 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -5903,7 +5902,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +namespace internal {
 +namespace compiler {
 +
-+#define __ masm()->
++#define __ tasm()->
 +
 +
 +// Adds X87 specific methods for decoding operands.
@@ -5953,11 +5952,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      case Constant::kInt32:
 +        return Immediate(constant.ToInt32());
 +      case Constant::kFloat32:
-+        return Immediate(
-+            isolate()->factory()->NewNumber(constant.ToFloat32(), TENURED));
++        return Immediate::EmbeddedNumber(constant.ToFloat32());
 +      case Constant::kFloat64:
-+        return Immediate(isolate()->factory()->NewNumber(
-+            constant.ToFloat64(value()).value(), TENURED));
++        return Immediate::EmbeddedNumber(constant.ToFloat64().value());
 +      case Constant::kExternalReference:
 +        return Immediate(constant.ToExternalReference());
 +      case Constant::kHeapObject:
@@ -6112,7 +6109,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 + public:
 +  OutOfLineTruncateDoubleToI(CodeGenerator* gen, Register result,
 +                             X87Register input)
-+      : OutOfLineCode(gen), result_(result), input_(input) {}
++      : OutOfLineCode(gen),
++        result_(result),
++        input_(input),
++        zone_(gen->zone()) {}
 +
 +  void Generate() final {
 +    UNIMPLEMENTED();
@@ -6123,6 +6123,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 + private:
 +  Register const result_;
 +  X87Register const input_;
++  Zone* zone_;
 +};
 +
 +
@@ -6137,7 +6138,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +        value_(value),
 +        scratch0_(scratch0),
 +        scratch1_(scratch1),
-+        mode_(mode) {}
++        mode_(mode),
++        zone_(gen->zone()) {}
 +
 +  void Generate() final {
 +    if (mode_ > RecordWriteMode::kValueIsPointer) {
@@ -6151,10 +6153,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +                                             : OMIT_REMEMBERED_SET;
 +    SaveFPRegsMode const save_fp_mode =
 +        frame()->DidAllocateDoubleRegisters() ? kSaveFPRegs : kDontSaveFPRegs;
-+    RecordWriteStub stub(isolate(), object_, scratch0_, scratch1_,
-+                         remembered_set_action, save_fp_mode);
 +    __ lea(scratch1_, operand_);
-+    __ CallStub(&stub);
++    __ CallStubDelayed(
++        new (zone_) RecordWriteStub(nullptr, object_, scratch0_, scratch1_,
++                                    remembered_set_action, save_fp_mode));
 +  }
 +
 + private:
@@ -6164,6 +6166,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +  Register const scratch0_;
 +  Register const scratch1_;
 +  RecordWriteMode const mode_;
++  Zone* zone_;
 +};
 +
 +}  // namespace
@@ -6262,48 +6265,48 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +    }                                                                 \
 +  } while (0)
 +
-+#define ASSEMBLE_IEEE754_BINOP(name)                                          \
-+  do {                                                                        \
-+    /* Saves the esp into ebx */                                              \
-+    __ push(ebx);                                                             \
-+    __ mov(ebx, esp);                                                         \
-+    /* Pass one double as argument on the stack. */                           \
-+    __ PrepareCallCFunction(4, eax);                                          \
-+    __ fstp(0);                                                               \
-+    /* Load first operand from original stack */                              \
-+    __ fld_d(MemOperand(ebx, 4 + kDoubleSize));                               \
-+    /* Put first operand into stack for function call */                      \
-+    __ fstp_d(Operand(esp, 0 * kDoubleSize));                                 \
-+    /* Load second operand from original stack */                             \
-+    __ fld_d(MemOperand(ebx, 4));                                             \
-+    /* Put second operand into stack for function call */                     \
-+    __ fstp_d(Operand(esp, 1 * kDoubleSize));                                 \
-+    __ CallCFunction(ExternalReference::ieee754_##name##_function(isolate()), \
-+                     4);                                                      \
-+    /* Restore the ebx */                                                     \
-+    __ pop(ebx);                                                              \
-+    /* Return value is in st(0) on x87. */                                    \
-+    __ lea(esp, Operand(esp, 2 * kDoubleSize));                               \
++#define ASSEMBLE_IEEE754_BINOP(name)                                    \
++  do {                                                                  \
++    /* Saves the esp into ebx */                                        \
++    __ push(ebx);                                                       \
++    __ mov(ebx, esp);                                                   \
++    /* Pass one double as argument on the stack. */                     \
++    __ PrepareCallCFunction(4, eax);                                    \
++    __ fstp(0);                                                         \
++    /* Load first operand from original stack */                        \
++    __ fld_d(MemOperand(ebx, 4 + kDoubleSize));                         \
++    /* Put first operand into stack for function call */                \
++    __ fstp_d(Operand(esp, 0 * kDoubleSize));                           \
++    /* Load second operand from original stack */                       \
++    __ fld_d(MemOperand(ebx, 4));                                       \
++    /* Put second operand into stack for function call */               \
++    __ fstp_d(Operand(esp, 1 * kDoubleSize));                           \
++    __ CallCFunction(                                                   \
++        ExternalReference::ieee754_##name##_function(__ isolate()), 4); \
++    /* Restore the ebx */                                               \
++    __ pop(ebx);                                                        \
++    /* Return value is in st(0) on x87. */                              \
++    __ lea(esp, Operand(esp, 2 * kDoubleSize));                         \
 +  } while (false)
 +
-+#define ASSEMBLE_IEEE754_UNOP(name)                                           \
-+  do {                                                                        \
-+    /* Saves the esp into ebx */                                              \
-+    __ push(ebx);                                                             \
-+    __ mov(ebx, esp);                                                         \
-+    /* Pass one double as argument on the stack. */                           \
-+    __ PrepareCallCFunction(2, eax);                                          \
-+    __ fstp(0);                                                               \
-+    /* Load operand from original stack */                                    \
-+    __ fld_d(MemOperand(ebx, 4));                                             \
-+    /* Put operand into stack for function call */                            \
-+    __ fstp_d(Operand(esp, 0));                                               \
-+    __ CallCFunction(ExternalReference::ieee754_##name##_function(isolate()), \
-+                     2);                                                      \
-+    /* Restore the ebx */                                                     \
-+    __ pop(ebx);                                                              \
-+    /* Return value is in st(0) on x87. */                                    \
-+    __ lea(esp, Operand(esp, kDoubleSize));                                   \
++#define ASSEMBLE_IEEE754_UNOP(name)                                     \
++  do {                                                                  \
++    /* Saves the esp into ebx */                                        \
++    __ push(ebx);                                                       \
++    __ mov(ebx, esp);                                                   \
++    /* Pass one double as argument on the stack. */                     \
++    __ PrepareCallCFunction(2, eax);                                    \
++    __ fstp(0);                                                         \
++    /* Load operand from original stack */                              \
++    __ fld_d(MemOperand(ebx, 4));                                       \
++    /* Put operand into stack for function call */                      \
++    __ fstp_d(Operand(esp, 0));                                         \
++    __ CallCFunction(                                                   \
++        ExternalReference::ieee754_##name##_function(__ isolate()), 2); \
++    /* Restore the ebx */                                               \
++    __ pop(ebx);                                                        \
++    /* Return value is in st(0) on x87. */                              \
++    __ lea(esp, Operand(esp, kDoubleSize));                             \
 +  } while (false)
 +
 +void CodeGenerator::AssembleDeconstructFrame() {
@@ -6358,7 +6361,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +
 +namespace {
 +
-+void AdjustStackPointerForTailCall(MacroAssembler* masm,
++void AdjustStackPointerForTailCall(TurboAssembler* tasm,
 +                                   FrameAccessState* state,
 +                                   int new_slot_above_sp,
 +                                   bool allow_shrinkage = true) {
@@ -6366,10 +6369,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +                          StandardFrameConstants::kFixedSlotCountAboveFp;
 +  int stack_slot_delta = new_slot_above_sp - current_sp_offset;
 +  if (stack_slot_delta > 0) {
-+    masm->sub(esp, Immediate(stack_slot_delta * kPointerSize));
++    tasm->sub(esp, Immediate(stack_slot_delta * kPointerSize));
 +    state->IncreaseSPDelta(stack_slot_delta);
 +  } else if (allow_shrinkage && stack_slot_delta < 0) {
-+    masm->add(esp, Immediate(-stack_slot_delta * kPointerSize));
++    tasm->add(esp, Immediate(-stack_slot_delta * kPointerSize));
 +    state->IncreaseSPDelta(stack_slot_delta);
 +  }
 +}
@@ -6390,7 +6393,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      LocationOperand destination_location(
 +          LocationOperand::cast(move->destination()));
 +      InstructionOperand source(move->source());
-+      AdjustStackPointerForTailCall(masm(), frame_access_state(),
++      AdjustStackPointerForTailCall(tasm(), frame_access_state(),
 +                                    destination_location.index());
 +      if (source.IsStackSlot()) {
 +        LocationOperand source_location(LocationOperand::cast(source));
@@ -6408,13 +6411,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      move->Eliminate();
 +    }
 +  }
-+  AdjustStackPointerForTailCall(masm(), frame_access_state(),
++  AdjustStackPointerForTailCall(tasm(), frame_access_state(),
 +                                first_unused_stack_slot, false);
 +}
 +
 +void CodeGenerator::AssembleTailCallAfterGap(Instruction* instr,
 +                                             int first_unused_stack_slot) {
-+  AdjustStackPointerForTailCall(masm(), frame_access_state(),
++  AdjustStackPointerForTailCall(tasm(), frame_access_state(),
 +                                first_unused_stack_slot);
 +}
 +
@@ -6433,7 +6436,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      __ fstp(0);
 +      EnsureSpaceForLazyDeopt();
 +      if (HasImmediateInput(instr, 0)) {
-+        Handle<Code> code = Handle<Code>::cast(i.InputHeapObject(0));
++        Handle<Code> code = i.InputCode(0);
 +        __ call(code, RelocInfo::CODE_TARGET);
 +      } else {
 +        Register reg = i.InputRegister(0);
@@ -6468,7 +6471,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +                                         no_reg, no_reg, no_reg);
 +      }
 +      if (HasImmediateInput(instr, 0)) {
-+        Handle<Code> code = Handle<Code>::cast(i.InputHeapObject(0));
++        Handle<Code> code = i.InputCode(0);
 +        __ jmp(code, RelocInfo::CODE_TARGET);
 +      } else {
 +        Register reg = i.InputRegister(0);
@@ -6735,8 +6738,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      // Keep the x87 FPU stack empty before calling stub code
 +      __ fstp(0);
 +      // Call the MathStub and put return value in stX_0
-+      MathPowStub stub(isolate(), MathPowStub::DOUBLE);
-+      __ CallStub(&stub);
++      __ CallStubDelayed(new (zone())
++                             MathPowStub(nullptr, MathPowStub::DOUBLE));
 +      /* Return value is in st(0) on x87. */
 +      __ lea(esp, Operand(esp, 2 * kDoubleSize));
 +      break;
@@ -7156,7 +7159,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      break;
 +    }
 +    case kX87Float64Mod: {
-+      FrameScope frame_scope(&masm_, StackFrame::MANUAL);
++      FrameScope frame_scope(tasm(), StackFrame::MANUAL);
 +      if (FLAG_debug_code && FLAG_enable_slow_asserts) {
 +        __ VerifyX87StackDepth(1);
 +      }
@@ -8025,8 +8028,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +    void Generate() final {
 +      X87OperandConverter i(gen_, instr_);
 +
-+      Runtime::FunctionId trap_id = static_cast<Runtime::FunctionId>(
-+          i.InputInt32(instr_->InputCount() - 1));
++      Builtins::Name trap_id =
++          static_cast<Builtins::Name>(i.InputInt32(instr_->InputCount() - 1));
 +      bool old_has_frame = __ has_frame();
 +      if (frame_elided_) {
 +        __ set_has_frame(true);
@@ -8034,30 +8037,30 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      }
 +      GenerateCallToTrap(trap_id);
 +      if (frame_elided_) {
-+        ReferenceMap* reference_map =
-+            new (gen_->zone()) ReferenceMap(gen_->zone());
-+        gen_->RecordSafepoint(reference_map, Safepoint::kSimple, 0,
-+                              Safepoint::kNoLazyDeopt);
 +        __ set_has_frame(old_has_frame);
-+      }
-+      if (FLAG_debug_code) {
-+        __ ud2();
 +      }
 +    }
 +
 +   private:
 +    void GenerateCallToTrap(Runtime::FunctionId trap_id) {
-+      if (trap_id == Runtime::kNumFunctions) {
++      if (trap_id == Builtins::builtin_count) {
 +        // We cannot test calls to the runtime in cctest/test-run-wasm.
 +        // Therefore we emit a call to C here instead of a call to the runtime.
 +        __ PrepareCallCFunction(0, esi);
-+        __ CallCFunction(
-+            ExternalReference::wasm_call_trap_callback_for_testing(isolate()),
-+            0);
++        __ CallCFunction(ExternalReference::wasm_call_trap_callback_for_testing(
++                             __ isolate()),
++                         0);
++        __ LeaveFrame(StackFrame::WASM_COMPILED);
++        __ Ret();
 +      } else {
-+        __ Move(esi, isolate()->native_context());
 +        gen_->AssembleSourcePosition(instr_);
-+        __ CallRuntime(trap_id);
++        __ Call(__ isolate()->builtins()->builtin_handle(trap_id),
++                RelocInfo::CODE_TARGET);
++        ReferenceMap* reference_map =
++            new (gen_->zone()) ReferenceMap(gen_->zone());
++        gen_->RecordSafepoint(reference_map, Safepoint::kSimple, 0,
++                              Safepoint::kNoLazyDeopt);
++        __ AssertUnreachable(kUnexpectedReturnFromWasmTrap);
 +      }
 +    }
 +
@@ -8343,6 +8346,40 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +
 +  const RegList saves = descriptor->CalleeSavedRegisters();
 +  if (shrink_slots > 0) {
++    if (info()->IsWasm() && shrink_slots > 128) {
++      // For WebAssembly functions with big frames we have to do the stack
++      // overflow check before we construct the frame. Otherwise we may not
++      // have enough space on the stack to call the runtime for the stack
++      // overflow.
++      Label done;
++
++      // If the frame is bigger than the stack, we throw the stack overflow
++      // exception unconditionally. Thereby we can avoid the integer overflow
++      // check in the condition code.
++      if (shrink_slots * kPointerSize < FLAG_stack_size * 1024) {
++        Register scratch = esi;
++        __ push(scratch);
++        __ mov(scratch,
++               Immediate(ExternalReference::address_of_real_stack_limit(
++                   __ isolate())));
++        __ mov(scratch, Operand(scratch, 0));
++        __ add(scratch, Immediate(shrink_slots * kPointerSize));
++        __ cmp(esp, scratch);
++        __ pop(scratch);
++        __ j(above_equal, &done);
++      }
++      if (!frame_access_state()->has_frame()) {
++        __ set_has_frame(true);
++        __ EnterFrame(StackFrame::WASM_COMPILED);
++      }
++      __ Move(esi, Smi::kZero);
++      __ CallRuntimeDelayed(zone(), Runtime::kThrowWasmStackOverflow);
++      ReferenceMap* reference_map = new (zone()) ReferenceMap(zone());
++      RecordSafepoint(reference_map, Safepoint::kSimple, 0,
++                      Safepoint::kNoLazyDeopt);
++      __ AssertUnreachable(kUnexpectedReturnFromWasmTrap);
++      __ bind(&done);
++    }
 +    __ sub(esp, Immediate(shrink_slots * kPointerSize));
 +  }
 +
@@ -8450,17 +8487,11 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +      Handle<HeapObject> src = src_constant.ToHeapObject();
 +      if (destination->IsRegister()) {
 +        Register dst = g.ToRegister(destination);
-+        __ LoadHeapObject(dst, src);
++        __ Move(dst, src);
 +      } else {
 +        DCHECK(destination->IsStackSlot());
 +        Operand dst = g.ToOperand(destination);
-+        AllowDeferredHandleDereference embedding_raw_address;
-+        if (isolate()->heap()->InNewSpace(*src)) {
-+          __ PushHeapObject(src);
-+          __ pop(dst);
-+        } else {
-+          __ mov(dst, src);
-+        }
++        __ mov(dst, src);
 +      }
 +    } else if (destination->IsRegister()) {
 +      Register dst = g.ToRegister(destination);
@@ -8639,7 +8670,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/compile
 +  int space_needed = Deoptimizer::patch_size();
 +  // Ensure that we have enough space after the previous lazy-bailout
 +  // instruction for patching the code here.
-+  int current_pc = masm()->pc_offset();
++  int current_pc = tasm()->pc_offset();
 +  if (current_pc < last_lazy_deopt_pc_ + space_needed) {
 +    int padding_size = last_lazy_deopt_pc_ + space_needed - current_pc;
 +    __ Nop(padding_size);
@@ -10903,8 +10934,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
    static const int kCodeSizeMultiplier = 165;
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc	2017-12-25 17:42:57.213465676 +0100
-@@ -0,0 +1,2425 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/full-codegen/x87/full-codegen-x87.cc	2017-12-28 02:00:30.471956182 +0100
+@@ -0,0 +1,2418 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -11344,9 +11375,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +void FullCodeGenerator::AccumulatorValueContext::Plug(
 +    Handle<Object> lit) const {
 +  if (lit->IsSmi()) {
-+    __ SafeMove(result_register(), Immediate(lit));
++    __ SafeMove(result_register(), Immediate(Smi::cast(*lit)));
 +  } else {
-+    __ Move(result_register(), Immediate(lit));
++    __ Move(result_register(), Immediate(Handle<HeapObject>::cast(lit)));
 +  }
 +}
 +
@@ -11354,9 +11385,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +void FullCodeGenerator::StackValueContext::Plug(Handle<Object> lit) const {
 +  codegen()->OperandStackDepthIncrement(1);
 +  if (lit->IsSmi()) {
-+    __ SafePush(Immediate(lit));
++    __ SafePush(Immediate(Smi::cast(*lit)));
 +  } else {
-+    __ push(Immediate(lit));
++    __ push(Immediate(Handle<HeapObject>::cast(lit)));
 +  }
 +}
 +
@@ -11381,7 +11412,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +    }
 +  } else {
 +    // For simplicity we always test the accumulator register.
-+    __ mov(result_register(), lit);
++    __ mov(result_register(), Handle<HeapObject>::cast(lit));
 +    codegen()->DoTest(this);
 +  }
 +}
@@ -11437,18 +11468,16 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +
 +
 +void FullCodeGenerator::AccumulatorValueContext::Plug(bool flag) const {
-+  Handle<Object> value = flag
-+      ? isolate()->factory()->true_value()
-+      : isolate()->factory()->false_value();
++  Handle<HeapObject> value = flag ? isolate()->factory()->true_value()
++                                  : isolate()->factory()->false_value();
 +  __ mov(result_register(), value);
 +}
 +
 +
 +void FullCodeGenerator::StackValueContext::Plug(bool flag) const {
 +  codegen()->OperandStackDepthIncrement(1);
-+  Handle<Object> value = flag
-+      ? isolate()->factory()->true_value()
-+      : isolate()->factory()->false_value();
++  Handle<HeapObject> value = flag ? isolate()->factory()->true_value()
++                                  : isolate()->factory()->false_value();
 +  __ push(Immediate(value));
 +}
 +
@@ -12244,11 +12273,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +      UNREACHABLE();
 +      break;
 +  }
-+}
-+
-+void FullCodeGenerator::VisitSuspend(Suspend* expr) {
-+  // Resumable functions are not supported.
-+  UNREACHABLE();
 +}
 +
 +void FullCodeGenerator::PushOperand(MemOperand operand) {
@@ -13189,9 +13213,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/full-co
 +
 +  VisitForAccumulatorValue(sub_expr);
 +
-+  Handle<Object> nil_value = nil == kNullValue
-+      ? isolate()->factory()->null_value()
-+      : isolate()->factory()->undefined_value();
++  Handle<HeapObject> nil_value = nil == kNullValue
++                                     ? isolate()->factory()->null_value()
++                                     : isolate()->factory()->undefined_value();
 +  if (expr->op() == Token::EQ_STRICT) {
 +    __ cmp(eax, nil_value);
 +    Split(equal, if_true, if_false, fall_through);
@@ -15752,8 +15776,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/v8.gyp 
              'mips/assembler-mips.cc',
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc	2017-12-25 17:42:57.219465588 +0100
-@@ -0,0 +1,2217 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.cc	2017-12-28 01:58:14.302045167 +0100
+@@ -0,0 +1,2256 @@
 +// Copyright (c) 1994-2006 Sun Microsystems Inc.
 +// All Rights Reserved.
 +//
@@ -15796,12 +15820,29 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +#include "src/base/bits.h"
 +#include "src/base/cpu.h"
++#include "src/code-stubs.h"
 +#include "src/disassembler.h"
 +#include "src/macro-assembler.h"
 +#include "src/v8.h"
 +
 +namespace v8 {
 +namespace internal {
++
++Immediate Immediate::EmbeddedNumber(double value) {
++  int32_t smi;
++  if (DoubleToSmiInteger(value, &smi)) return Immediate(Smi::FromInt(smi));
++  Immediate result(0, RelocInfo::EMBEDDED_OBJECT);
++  result.is_heap_object_request_ = true;
++  result.value_.heap_object_request = HeapObjectRequest(value);
++  return result;
++}
++
++Immediate Immediate::EmbeddedCode(CodeStub* stub) {
++  Immediate result(0, RelocInfo::CODE_TARGET);
++  result.is_heap_object_request_ = true;
++  result.value_.heap_object_request = HeapObjectRequest(stub);
++  return result;
++}
 +
 +// -----------------------------------------------------------------------------
 +// Implementation of CpuFeatures
@@ -15969,6 +16010,24 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  return Register::from_code(buf_[0] & 0x07);
 +}
 +
++void Assembler::AllocateAndInstallRequestedHeapObjects(Isolate* isolate) {
++  for (auto& request : heap_object_requests_) {
++    Handle<HeapObject> object;
++    switch (request.kind()) {
++      case HeapObjectRequest::kHeapNumber:
++        object = isolate->factory()->NewHeapNumber(request.heap_number(),
++                                                   IMMUTABLE, TENURED);
++        break;
++      case HeapObjectRequest::kCodeStub:
++        request.code_stub()->set_isolate(isolate);
++        object = request.code_stub()->GetCode();
++        break;
++    }
++    Address pc = buffer_ + request.offset();
++    Memory::Object_Handle_at(pc) = object;
++  }
++}
++
 +
 +// -----------------------------------------------------------------------------
 +// Implementation of Assembler.
@@ -15992,10 +16051,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::GetCode(CodeDesc* desc) {
++void Assembler::GetCode(Isolate* isolate, CodeDesc* desc) {
 +  // Finalize code (at this point overflow() may be true, but the gap ensures
 +  // that we are still not overlapping instructions and relocation info).
 +  DCHECK(pc_ <= reloc_info_writer.pos());  // No overlap.
++
++  AllocateAndInstallRequestedHeapObjects(isolate);
++
 +  // Set up code descriptor.
 +  desc->buffer = buffer_;
 +  desc->buffer_size = buffer_size_;
@@ -16077,7 +16139,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  EnsureSpace ensure_space(this);
 +  if (x.is_int8()) {
 +    EMIT(0x6a);
-+    EMIT(x.x_);
++    EMIT(x.immediate());
 +  } else {
 +    EMIT(0x68);
 +    emit(x);
@@ -16145,7 +16207,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  EnsureSpace ensure_space(this);
 +  EMIT(0xC6);
 +  emit_operand(eax, dst);
-+  EMIT(static_cast<int8_t>(src.x_));
++  EMIT(static_cast<int8_t>(src.immediate()));
 +}
 +
 +
@@ -16196,8 +16258,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  EMIT(0x66);
 +  EMIT(0xC7);
 +  emit_operand(eax, dst);
-+  EMIT(static_cast<int8_t>(src.x_ & 0xff));
-+  EMIT(static_cast<int8_t>(src.x_ >> 8));
++  EMIT(static_cast<int8_t>(src.immediate() & 0xff));
++  EMIT(static_cast<int8_t>(src.immediate() >> 8));
 +}
 +
 +
@@ -16215,7 +16277,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::mov(Register dst, Handle<Object> handle) {
++void Assembler::mov(Register dst, Handle<HeapObject> handle) {
 +  EnsureSpace ensure_space(this);
 +  EMIT(0xB8 | dst.code());
 +  emit(handle);
@@ -16244,7 +16306,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::mov(const Operand& dst, Handle<Object> handle) {
++void Assembler::mov(const Operand& dst, Handle<HeapObject> handle) {
 +  EnsureSpace ensure_space(this);
 +  EMIT(0xC7);
 +  emit_operand(eax, dst);
@@ -16496,7 +16558,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::cmp(Register reg, Handle<Object> handle) {
++void Assembler::cmp(Register reg, Handle<HeapObject> handle) {
 +  EnsureSpace ensure_space(this);
 +  emit_arith(7, Operand(reg), Immediate(handle));
 +}
@@ -16520,7 +16582,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::cmp(const Operand& op, Handle<Object> handle) {
++void Assembler::cmp(const Operand& op, Handle<HeapObject> handle) {
 +  EnsureSpace ensure_space(this);
 +  emit_arith(7, op, Immediate(handle));
 +}
@@ -16929,7 +16991,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +    EMIT(0xA8);
 +    emit_b(imm8);
 +  } else if (reg.is_byte_register()) {
-+    emit_arith_b(0xF6, 0xC0, reg, static_cast<uint8_t>(imm8.x_));
++    emit_arith_b(0xF6, 0xC0, reg, static_cast<uint8_t>(imm8.immediate()));
 +  } else {
 +    EMIT(0x66);
 +    EMIT(0xF7);
@@ -17206,16 +17268,19 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::call(Handle<Code> code,
-+                     RelocInfo::Mode rmode,
-+                     TypeFeedbackId ast_id) {
++void Assembler::call(Handle<Code> code, RelocInfo::Mode rmode) {
 +  EnsureSpace ensure_space(this);
 +  DCHECK(RelocInfo::IsCodeTarget(rmode)
 +      || rmode == RelocInfo::CODE_AGE_SEQUENCE);
 +  EMIT(0xE8);
-+  emit(code, rmode, ast_id);
++  emit(code, rmode);
 +}
 +
++void Assembler::call(CodeStub* stub) {
++  EnsureSpace ensure_space(this);
++  EMIT(0xE8);
++  emit(Immediate::EmbeddedCode(stub));
++}
 +
 +void Assembler::jmp(Label* L, Label::Distance distance) {
 +  EnsureSpace ensure_space(this);
@@ -17819,9 +17884,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +  // Some internal data structures overflow for very large buffers,
 +  // they must ensure that kMaximalBufferSize is not too large.
-+  if (desc.buffer_size > kMaximalBufferSize ||
-+      static_cast<size_t>(desc.buffer_size) >
-+          isolate()->heap()->MaxOldGenerationSize()) {
++  if (desc.buffer_size > kMaximalBufferSize) {
 +    V8::FatalProcessOutOfMemory("Assembler::GrowBuffer");
 +  }
 +
@@ -17877,7 +17940,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  if (x.is_int8()) {
 +    EMIT(0x83);  // using a sign-extended 8-bit immediate.
 +    emit_operand(ireg, dst);
-+    EMIT(x.x_ & 0xFF);
++    EMIT(x.immediate() & 0xFF);
 +  } else if (dst.is_reg(eax)) {
 +    EMIT((sel << 3) | 0x05);  // short form if the destination is eax.
 +    emit(x);
@@ -17973,8 +18036,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.h	2017-12-25 17:42:57.220465573 +0100
-@@ -0,0 +1,1107 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.h	2017-12-28 01:53:26.598456142 +0100
+@@ -0,0 +1,1140 @@
 +// Copyright (c) 1994-2006 Sun Microsystems Inc.
 +// All Rights Reserved.
 +//
@@ -18248,38 +18311,65 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 + public:
 +  inline explicit Immediate(int x);
 +  inline explicit Immediate(const ExternalReference& ext);
-+  inline explicit Immediate(Handle<Object> handle);
++  inline explicit Immediate(Handle<HeapObject> handle);
 +  inline explicit Immediate(Smi* value);
 +  inline explicit Immediate(Address addr);
 +  inline explicit Immediate(Address x, RelocInfo::Mode rmode);
++
++  static Immediate EmbeddedNumber(double number);  // Smi or HeapNumber.
++  static Immediate EmbeddedCode(CodeStub* code);
 +
 +  static Immediate CodeRelativeOffset(Label* label) {
 +    return Immediate(label);
 +  }
 +
-+  bool is_zero() const { return x_ == 0 && RelocInfo::IsNone(rmode_); }
++  bool is_heap_object_request() const {
++    DCHECK_IMPLIES(is_heap_object_request_,
++                   rmode_ == RelocInfo::EMBEDDED_OBJECT ||
++                       rmode_ == RelocInfo::CODE_TARGET);
++    return is_heap_object_request_;
++  }
++
++  HeapObjectRequest heap_object_request() const {
++    DCHECK(is_heap_object_request());
++    return value_.heap_object_request;
++  }
++
++  int immediate() const {
++    DCHECK(!is_heap_object_request());
++    return value_.immediate;
++  }
++
++  bool is_zero() const { return RelocInfo::IsNone(rmode_) && immediate() == 0; }
 +  bool is_int8() const {
-+    return -128 <= x_ && x_ < 128 && RelocInfo::IsNone(rmode_);
++    return RelocInfo::IsNone(rmode_) && i::is_int8(immediate());
 +  }
 +  bool is_uint8() const {
-+    return v8::internal::is_uint8(x_) && RelocInfo::IsNone(rmode_);
++    return RelocInfo::IsNone(rmode_) && i::is_uint8(immediate());
 +  }
 +  bool is_int16() const {
-+    return -32768 <= x_ && x_ < 32768 && RelocInfo::IsNone(rmode_);
++    return RelocInfo::IsNone(rmode_) && i::is_int16(immediate());
 +  }
++
 +  bool is_uint16() const {
-+    return v8::internal::is_uint16(x_) && RelocInfo::IsNone(rmode_);
++    return RelocInfo::IsNone(rmode_) && i::is_uint16(immediate());
 +  }
++
++  RelocInfo::Mode rmode() const { return rmode_; }
 +
 + private:
 +  inline explicit Immediate(Label* value);
 +
-+  int x_;
++  union Value {
++    Value() {}
++    HeapObjectRequest heap_object_request;
++    int immediate;
++  } value_;
++  bool is_heap_object_request_ = false;
 +  RelocInfo::Mode rmode_;
 +
 +  friend class Operand;
 +  friend class Assembler;
-+  friend class MacroAssembler;
 +};
 +
 +
@@ -18344,13 +18434,11 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  }
 +
 +  static Operand ForCell(Handle<Cell> cell) {
-+    AllowDeferredHandleDereference embedding_raw_address;
-+    return Operand(reinterpret_cast<int32_t>(cell.location()),
-+                   RelocInfo::CELL);
++    return Operand(reinterpret_cast<int32_t>(cell.address()), RelocInfo::CELL);
 +  }
 +
 +  static Operand ForRegisterPlusImmediate(Register base, Immediate imm) {
-+    return Operand(base, imm.x_, imm.rmode_);
++    return Operand(base, imm.value_.immediate, imm.rmode_);
 +  }
 +
 +  // Returns true if this Operand is a wrapper for the specified register.
@@ -18463,12 +18551,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  Assembler(Isolate* isolate, void* buffer, int buffer_size)
 +      : Assembler(IsolateData(isolate), buffer, buffer_size) {}
 +  Assembler(IsolateData isolate_data, void* buffer, int buffer_size);
-+  virtual ~Assembler() { }
++  virtual ~Assembler() {}
 +
 +  // GetCode emits any pending (non-emitted) code and fills the descriptor
 +  // desc. GetCode() is idempotent; it returns the same result if no other
 +  // Assembler functions are invoked in between GetCode() calls.
-+  void GetCode(CodeDesc* desc);
++  void GetCode(Isolate* isolate, CodeDesc* desc);
 +
 +  // Read/Modify the code target in the branch/call instruction at pc.
 +  // The isolate argument is unused (and may be nullptr) when skipping flushing.
@@ -18593,11 +18681,11 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +  void mov(Register dst, int32_t imm32);
 +  void mov(Register dst, const Immediate& x);
-+  void mov(Register dst, Handle<Object> handle);
++  void mov(Register dst, Handle<HeapObject> handle);
 +  void mov(Register dst, const Operand& src);
 +  void mov(Register dst, Register src);
 +  void mov(const Operand& dst, const Immediate& x);
-+  void mov(const Operand& dst, Handle<Object> handle);
++  void mov(const Operand& dst, Handle<HeapObject> handle);
 +  void mov(const Operand& dst, Register src);
 +
 +  void movsx_b(Register dst, Register src) { movsx_b(dst, Operand(src)); }
@@ -18664,13 +18752,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  void cmpw(Register dst, Register src) { cmpw(Operand(dst), src); }
 +  void cmpw(const Operand& dst, Register src);
 +  void cmp(Register reg, int32_t imm32);
-+  void cmp(Register reg, Handle<Object> handle);
++  void cmp(Register reg, Handle<HeapObject> handle);
 +  void cmp(Register reg0, Register reg1) { cmp(reg0, Operand(reg1)); }
 +  void cmp(Register reg, const Operand& op);
 +  void cmp(Register reg, const Immediate& imm) { cmp(Operand(reg), imm); }
 +  void cmp(const Operand& op, Register reg);
 +  void cmp(const Operand& op, const Immediate& imm);
-+  void cmp(const Operand& op, Handle<Object> handle);
++  void cmp(const Operand& op, Handle<HeapObject> handle);
 +
 +  void dec_b(Register dst);
 +  void dec_b(const Operand& dst);
@@ -18812,9 +18900,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  void call(Register reg) { call(Operand(reg)); }
 +  void call(const Operand& adr);
 +  int CallSize(Handle<Code> code, RelocInfo::Mode mode);
-+  void call(Handle<Code> code,
-+            RelocInfo::Mode rmode,
-+            TypeFeedbackId id = TypeFeedbackId::None());
++  void call(Handle<Code> code, RelocInfo::Mode rmode);
++  void call(CodeStub* stub);
 +
 +  // Jumps
 +  // unconditional jump to L
@@ -18995,13 +19082,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  // code emission
 +  void GrowBuffer();
 +  inline void emit(uint32_t x);
-+  inline void emit(Handle<Object> handle);
-+  inline void emit(uint32_t x,
-+                   RelocInfo::Mode rmode,
-+                   TypeFeedbackId id = TypeFeedbackId::None());
-+  inline void emit(Handle<Code> code,
-+                   RelocInfo::Mode rmode,
-+                   TypeFeedbackId id = TypeFeedbackId::None());
++  inline void emit(Handle<HeapObject> handle);
++  inline void emit(uint32_t x, RelocInfo::Mode rmode);
++  inline void emit(Handle<Code> code, RelocInfo::Mode rmode);
 +  inline void emit(const Immediate& x);
 +  inline void emit_b(Immediate x);
 +  inline void emit_w(const Immediate& x);
@@ -19048,6 +19131,19 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +  // code generation
 +  RelocInfoWriter reloc_info_writer;
++
++  // The following functions help with avoiding allocations of embedded heap
++  // objects during the code assembly phase. {RequestHeapObject} records the
++  // need for a future heap number allocation or code stub generation. After
++  // code assembly, {AllocateAndInstallRequestedHeapObjects} will allocate these
++  // objects and place them where they are expected (determined by the pc offset
++  // associated with each request). That is, for each request, it will patch the
++  // dummy heap object handle that we emitted during code assembly with the
++  // actual heap object handle.
++  void RequestHeapObject(HeapObjectRequest request);
++  void AllocateAndInstallRequestedHeapObjects(Isolate* isolate);
++
++  std::forward_list<HeapObjectRequest> heap_object_requests_;
 +};
 +
 +
@@ -19084,8 +19180,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +#endif  // V8_X87_ASSEMBLER_X87_H_
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87-inl.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87-inl.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87-inl.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87-inl.h	2017-12-25 17:42:57.219465588 +0100
-@@ -0,0 +1,546 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87-inl.h	2017-12-28 01:52:55.041936208 +0100
+@@ -0,0 +1,528 @@
 +// Copyright (c) 1994-2006 Sun Microsystems Inc.
 +// All Rights Reserved.
 +//
@@ -19383,50 +19479,41 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +
 +Immediate::Immediate(int x)  {
-+  x_ = x;
++  value_.immediate = x;
 +  rmode_ = RelocInfo::NONE32;
 +}
 +
 +Immediate::Immediate(Address x, RelocInfo::Mode rmode) {
-+  x_ = reinterpret_cast<int32_t>(x);
++  value_.immediate = reinterpret_cast<int32_t>(x);
 +  rmode_ = rmode;
 +}
 +
 +Immediate::Immediate(const ExternalReference& ext) {
-+  x_ = reinterpret_cast<int32_t>(ext.address());
++  value_.immediate = reinterpret_cast<int32_t>(ext.address());
 +  rmode_ = RelocInfo::EXTERNAL_REFERENCE;
 +}
 +
 +
 +Immediate::Immediate(Label* internal_offset) {
-+  x_ = reinterpret_cast<int32_t>(internal_offset);
++  value_.immediate = reinterpret_cast<int32_t>(internal_offset);
 +  rmode_ = RelocInfo::INTERNAL_REFERENCE;
 +}
 +
 +
-+Immediate::Immediate(Handle<Object> handle) {
-+  AllowDeferredHandleDereference using_raw_address;
-+  // Verify all Objects referred by code are NOT in new space.
-+  Object* obj = *handle;
-+  if (obj->IsHeapObject()) {
-+    x_ = reinterpret_cast<intptr_t>(handle.location());
-+    rmode_ = RelocInfo::EMBEDDED_OBJECT;
-+  } else {
-+    // no relocation needed
-+    x_ =  reinterpret_cast<intptr_t>(obj);
-+    rmode_ = RelocInfo::NONE32;
-+  }
++Immediate::Immediate(Handle<HeapObject> handle) {
++  value_.immediate = reinterpret_cast<intptr_t>(handle.address());
++  rmode_ = RelocInfo::EMBEDDED_OBJECT;
 +}
 +
 +
 +Immediate::Immediate(Smi* value) {
-+  x_ = reinterpret_cast<intptr_t>(value);
++  value_.immediate = reinterpret_cast<intptr_t>(value);
 +  rmode_ = RelocInfo::NONE32;
 +}
 +
 +
 +Immediate::Immediate(Address addr) {
-+  x_ = reinterpret_cast<int32_t>(addr);
++  value_.immediate = reinterpret_cast<int32_t>(addr);
 +  rmode_ = RelocInfo::NONE32;
 +}
 +
@@ -19443,47 +19530,38 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +}
 +
 +
-+void Assembler::emit(Handle<Object> handle) {
-+  AllowDeferredHandleDereference heap_object_check;
-+  // Verify all Objects referred by code are NOT in new space.
-+  Object* obj = *handle;
-+  if (obj->IsHeapObject()) {
-+    emit(reinterpret_cast<intptr_t>(handle.location()),
-+         RelocInfo::EMBEDDED_OBJECT);
-+  } else {
-+    // no relocation needed
-+    emit(reinterpret_cast<intptr_t>(obj));
-+  }
++void Assembler::emit(Handle<HeapObject> handle) {
++  emit(reinterpret_cast<intptr_t>(handle.address()),
++       RelocInfo::EMBEDDED_OBJECT);
 +}
 +
 +
-+void Assembler::emit(uint32_t x, RelocInfo::Mode rmode, TypeFeedbackId id) {
-+  if (rmode == RelocInfo::CODE_TARGET && !id.IsNone()) {
-+    RecordRelocInfo(RelocInfo::CODE_TARGET_WITH_ID, id.ToInt());
-+  } else if (!RelocInfo::IsNone(rmode)
-+      && rmode != RelocInfo::CODE_AGE_SEQUENCE) {
++void Assembler::emit(uint32_t x, RelocInfo::Mode rmode) {
++  if (!RelocInfo::IsNone(rmode) && rmode != RelocInfo::CODE_AGE_SEQUENCE) {
 +    RecordRelocInfo(rmode);
 +  }
 +  emit(x);
 +}
 +
 +
-+void Assembler::emit(Handle<Code> code,
-+                     RelocInfo::Mode rmode,
-+                     TypeFeedbackId id) {
-+  AllowDeferredHandleDereference embedding_raw_address;
-+  emit(reinterpret_cast<intptr_t>(code.location()), rmode, id);
++void Assembler::emit(Handle<Code> code, RelocInfo::Mode rmode) {
++  emit(reinterpret_cast<intptr_t>(code.address()), rmode);
 +}
 +
 +
 +void Assembler::emit(const Immediate& x) {
 +  if (x.rmode_ == RelocInfo::INTERNAL_REFERENCE) {
-+    Label* label = reinterpret_cast<Label*>(x.x_);
++    Label* label = reinterpret_cast<Label*>(x.immediate());
 +    emit_code_relative_offset(label);
 +    return;
 +  }
 +  if (!RelocInfo::IsNone(x.rmode_)) RecordRelocInfo(x.rmode_);
-+  emit(x.x_);
++  if (x.is_heap_object_request()) {
++    RequestHeapObject(x.heap_object_request());
++    emit(0);
++  } else {
++    emit(x.immediate());
++  }
 +}
 +
 +
@@ -19499,13 +19577,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +void Assembler::emit_b(Immediate x) {
 +  DCHECK(x.is_int8() || x.is_uint8());
-+  uint8_t value = static_cast<uint8_t>(x.x_);
++  uint8_t value = static_cast<uint8_t>(x.immediate());
 +  *pc_++ = value;
 +}
 +
 +void Assembler::emit_w(const Immediate& x) {
 +  DCHECK(RelocInfo::IsNone(x.rmode_));
-+  uint16_t value = static_cast<uint16_t>(x.x_);
++  uint16_t value = static_cast<uint16_t>(x.immediate());
 +  reinterpret_cast<uint16_t*>(pc_)[0] = value;
 +  pc_ += sizeof(uint16_t);
 +}
@@ -19626,7 +19704,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +Operand::Operand(Immediate imm) {
 +  // [disp/r]
 +  set_modrm(0, ebp);
-+  set_dispr(imm.x_, imm.rmode_);
++  set_dispr(imm.immediate(), imm.rmode_);
 +}
 +}  // namespace internal
 +}  // namespace v8
@@ -19634,7 +19712,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +#endif  // V8_X87_ASSEMBLER_X87_INL_H_
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/codegen-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/codegen-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/codegen-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/codegen-x87.cc	2017-12-25 17:42:57.221465559 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/codegen-x87.cc	2017-12-27 22:01:35.070961553 +0100
 @@ -0,0 +1,381 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
@@ -19689,7 +19767,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +  __ Ret();
 +
 +  CodeDesc desc;
-+  masm.GetCode(&desc);
++  masm.GetCode(isolate, &desc);
 +  DCHECK(!RelocInfo::RequiresRelocation(isolate, desc));
 +
 +  Assembler::FlushICache(isolate, buffer, actual_size);
@@ -20056,8 +20134,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +#endif  // V8_X87_CODEGEN_X87_H_
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc	2017-12-25 17:42:57.221465559 +0100
-@@ -0,0 +1,3428 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/code-stubs-x87.cc	2017-12-28 01:57:08.188059423 +0100
+@@ -0,0 +1,3423 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -21942,7 +22020,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +
 +  NameDictionaryLookupStub stub(masm->isolate(), properties, r0, r0,
 +                                NEGATIVE_LOOKUP);
-+  __ push(Immediate(Handle<Object>(name)));
++  __ push(Immediate(name));
 +  __ push(Immediate(name->Hash()));
 +  __ CallStub(&stub);
 +  __ test(r0, r0);
@@ -22215,6 +22293,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +}
 +
 +
++void ProfileEntryHookStub::MaybeCallEntryHookDelayed(TurboAssembler* tasm,
++                                                     Zone* zone) {
++  if (tasm->isolate()->function_entry_hook() != NULL) {
++    tasm->CallStubDelayed(new (zone) ProfileEntryHookStub(nullptr));
++  }
++}
++
 +void ProfileEntryHookStub::MaybeCallEntryHook(MacroAssembler* masm) {
 +  if (masm->isolate()->function_entry_hook() != NULL) {
 +    ProfileEntryHookStub stub(masm->isolate());
@@ -22287,24 +22372,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +  // edi - constructor?
 +  // esp[0] - return address
 +  // esp[4] - last argument
-+  Label normal_sequence;
-+  if (mode == DONT_OVERRIDE) {
-+    STATIC_ASSERT(PACKED_SMI_ELEMENTS == 0);
-+    STATIC_ASSERT(HOLEY_SMI_ELEMENTS == 1);
-+    STATIC_ASSERT(PACKED_ELEMENTS == 2);
-+    STATIC_ASSERT(HOLEY_ELEMENTS == 3);
-+    STATIC_ASSERT(PACKED_DOUBLE_ELEMENTS == 4);
-+    STATIC_ASSERT(HOLEY_DOUBLE_ELEMENTS == 5);
-+
-+    // is the low bit set? If so, we are holey and that is good.
-+    __ test_b(edx, Immediate(1));
-+    __ j(not_zero, &normal_sequence);
-+  }
-+
-+  // look at the first argument
-+  __ mov(ecx, Operand(esp, kPointerSize));
-+  __ test(ecx, ecx);
-+  __ j(zero, &normal_sequence);
++  STATIC_ASSERT(PACKED_SMI_ELEMENTS == 0);
++  STATIC_ASSERT(HOLEY_SMI_ELEMENTS == 1);
++  STATIC_ASSERT(PACKED_ELEMENTS == 2);
++  STATIC_ASSERT(HOLEY_ELEMENTS == 3);
++  STATIC_ASSERT(PACKED_DOUBLE_ELEMENTS == 4);
++  STATIC_ASSERT(HOLEY_DOUBLE_ELEMENTS == 5);
 +
 +  if (mode == DISABLE_ALLOCATION_SITES) {
 +    ElementsKind initial = GetInitialFastElementsKind();
@@ -22313,12 +22386,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/cod
 +    ArraySingleArgumentConstructorStub stub_holey(
 +        masm->isolate(), holey_initial, DISABLE_ALLOCATION_SITES);
 +    __ TailCallStub(&stub_holey);
-+
-+    __ bind(&normal_sequence);
-+    ArraySingleArgumentConstructorStub stub(masm->isolate(), initial,
-+                                            DISABLE_ALLOCATION_SITES);
-+    __ TailCallStub(&stub);
 +  } else if (mode == DONT_OVERRIDE) {
++    // is the low bit set? If so, we are holey and that is good.
++    Label normal_sequence;
++    __ test_b(edx, Immediate(1));
++    __ j(not_zero, &normal_sequence);
++
 +    // We are going to create a holey array, but our kind is non-holey.
 +    // Fix kind and retry.
 +    __ inc(edx);
@@ -26687,8 +26760,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-25 17:42:57.223465529 +0100
-@@ -0,0 +1,2546 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-28 02:06:59.546987375 +0100
+@@ -0,0 +1,2568 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -26712,13 +26785,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +MacroAssembler::MacroAssembler(Isolate* isolate, void* buffer, int size,
 +                               CodeObjectRequired create_code_object)
-+    : Assembler(arg_isolate, buffer, size),
-+      generating_stub_(false),
-+      has_frame_(false),
-+      isolate_(isolate) {
-+  if (create_code_object == CodeObjectRequired::kYes) {
-+    code_object_ =
-+        Handle<Object>::New(isolate_->heap()->undefined_value(), isolate_);
++    : TurboAssembler(isolate, buffer, size, create_code_object),
++      jit_cookie_(0) {
++  if (FLAG_mask_constants_with_cookie) {
++    jit_cookie_ = isolate->random_number_generator()->NextInt();
 +  }
 +}
 +
@@ -26758,7 +26828,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +void MacroAssembler::LoadRoot(Register destination, Heap::RootListIndex index) {
 +  if (isolate()->heap()->RootCanBeTreatedAsConstant(index)) {
-+    mov(destination, isolate()->heap()->root_handle(index));
++    Handle<Object> object = isolate()->heap()->root_handle(index);
++    if (object->IsHeapObject()) {
++      mov(destination, Handle<HeapObject>::cast(object));
++    } else {
++      mov(destination, Immediate(Smi::cast(*object)));
++    }
 +    return;
 +  }
 +  ExternalReference roots_array_start =
@@ -26796,20 +26871,30 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +void MacroAssembler::CompareRoot(Register with, Heap::RootListIndex index) {
 +  DCHECK(isolate()->heap()->RootCanBeTreatedAsConstant(index));
-+  cmp(with, isolate()->heap()->root_handle(index));
++  Handle<Object> object = isolate()->heap()->root_handle(index);
++  if (object->IsHeapObject()) {
++    cmp(with, Handle<HeapObject>::cast(object));
++  } else {
++    cmp(with, Immediate(Smi::cast(*object)));
++  }
 +}
 +
 +
 +void MacroAssembler::CompareRoot(const Operand& with,
 +                                 Heap::RootListIndex index) {
 +  DCHECK(isolate()->heap()->RootCanBeTreatedAsConstant(index));
-+  cmp(with, isolate()->heap()->root_handle(index));
++  Handle<Object> object = isolate()->heap()->root_handle(index);
++  if (object->IsHeapObject()) {
++    cmp(with, Handle<HeapObject>::cast(object));
++  } else {
++    cmp(with, Immediate(Smi::cast(*object)));
++  }
 +}
 +
 +
 +void MacroAssembler::PushRoot(Heap::RootListIndex index) {
 +  DCHECK(isolate()->heap()->RootCanBeTreatedAsConstant(index));
-+  Push(isolate()->heap()->root_handle(index));
++  PushObject(isolate()->heap()->root_handle(index));
 +}
 +
 +#define REG(Name) \
@@ -26943,11 +27028,17 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
++void TurboAssembler::SlowTruncateToIDelayed(Zone* zone, Register result_reg,
++                                            Register input_reg, int offset) {
++  CallStubDelayed(
++      new (zone) DoubleToIStub(nullptr, input_reg, result_reg, offset, true));
++}
++
 +void MacroAssembler::SlowTruncateToI(Register result_reg,
 +                                     Register input_reg,
 +                                     int offset) {
 +  DoubleToIStub stub(isolate(), input_reg, result_reg, offset, true);
-+  call(stub.GetCode(), RelocInfo::CODE_TARGET);
++  CallStub(&stub);
 +}
 +
 +
@@ -26996,7 +27087,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::LoadUint32NoSSE2(const Operand& src) {
++void TurboAssembler::LoadUint32NoSSE2(const Operand& src) {
 +  Label done;
 +  push(src);
 +  fild_s(Operand(esp, 0));
@@ -27252,7 +27343,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  call(ces.GetCode(), RelocInfo::DEBUGGER_STATEMENT);
 +}
 +
-+void MacroAssembler::ShlPair(Register high, Register low, uint8_t shift) {
++void TurboAssembler::ShlPair(Register high, Register low, uint8_t shift) {
 +  if (shift >= 32) {
 +    mov(high, low);
 +    shl(high, shift - 32);
@@ -27263,7 +27354,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  }
 +}
 +
-+void MacroAssembler::ShlPair_cl(Register high, Register low) {
++void TurboAssembler::ShlPair_cl(Register high, Register low) {
 +  shld_cl(high, low);
 +  shl_cl(low);
 +  Label done;
@@ -27274,7 +27365,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  bind(&done);
 +}
 +
-+void MacroAssembler::ShrPair(Register high, Register low, uint8_t shift) {
++void TurboAssembler::ShrPair(Register high, Register low, uint8_t shift) {
 +  if (shift >= 32) {
 +    mov(low, high);
 +    shr(low, shift - 32);
@@ -27285,7 +27376,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  }
 +}
 +
-+void MacroAssembler::ShrPair_cl(Register high, Register low) {
++void TurboAssembler::ShrPair_cl(Register high, Register low) {
 +  shrd_cl(low, high);
 +  shr_cl(high);
 +  Label done;
@@ -27296,7 +27387,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  bind(&done);
 +}
 +
-+void MacroAssembler::SarPair(Register high, Register low, uint8_t shift) {
++void TurboAssembler::SarPair(Register high, Register low, uint8_t shift) {
 +  if (shift >= 32) {
 +    mov(low, high);
 +    sar(low, shift - 32);
@@ -27307,7 +27398,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  }
 +}
 +
-+void MacroAssembler::SarPair_cl(Register high, Register low) {
++void TurboAssembler::SarPair_cl(Register high, Register low) {
 +  shrd_cl(low, high);
 +  sar_cl(high);
 +  Label done;
@@ -27321,13 +27412,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +bool MacroAssembler::IsUnsafeImmediate(const Immediate& x) {
 +  static const int kMaxImmediateBits = 17;
 +  if (!RelocInfo::IsNone(x.rmode_)) return false;
-+  return !is_intn(x.x_, kMaxImmediateBits);
++  return !is_intn(x.immediate(), kMaxImmediateBits);
 +}
 +
 +
 +void MacroAssembler::SafeMove(Register dst, const Immediate& x) {
 +  if (IsUnsafeImmediate(x) && jit_cookie() != 0) {
-+    Move(dst, Immediate(x.x_ ^ jit_cookie()));
++    Move(dst, Immediate(x.immediate() ^ jit_cookie()));
 +    xor_(dst, jit_cookie());
 +  } else {
 +    Move(dst, x);
@@ -27337,7 +27428,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +void MacroAssembler::SafePush(const Immediate& x) {
 +  if (IsUnsafeImmediate(x) && jit_cookie() != 0) {
-+    push(Immediate(x.x_ ^ jit_cookie()));
++    push(Immediate(x.immediate() ^ jit_cookie()));
 +    xor_(Operand(esp, 0), Immediate(jit_cookie()));
 +  } else {
 +    push(x);
@@ -27514,20 +27605,20 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  }
 +}
 +
-+void MacroAssembler::StubPrologue(StackFrame::Type type) {
++void TurboAssembler::StubPrologue(StackFrame::Type type) {
 +  push(ebp);  // Caller's frame pointer.
 +  mov(ebp, esp);
 +  push(Immediate(Smi::FromInt(type)));
 +}
 +
 +
-+void MacroAssembler::Prologue(bool code_pre_aging) {
++void TurboAssembler::Prologue(bool code_pre_aging) {
 +  PredictableCodeSizeScope predictible_code_size_scope(this,
 +      kNoCodeAgeSequenceLength);
 +  if (code_pre_aging) {
-+      // Pre-age the code.
++    // Pre-age the code.
 +    call(isolate()->builtins()->MarkCodeAsExecutedOnce(),
-+        RelocInfo::CODE_AGE_SEQUENCE);
++         RelocInfo::CODE_AGE_SEQUENCE);
 +    Nop(kNoCodeAgeSequenceLength - Assembler::kCallInstructionLength);
 +  } else {
 +    push(ebp);  // Caller's frame pointer.
@@ -27544,14 +27635,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::EnterFrame(StackFrame::Type type,
-+                                bool load_constant_pool_pointer_reg) {
-+  // Out-of-line constant pool not implemented on x87.
-+  UNREACHABLE();
-+}
-+
-+
-+void MacroAssembler::EnterFrame(StackFrame::Type type) {
++void TurboAssembler::EnterFrame(StackFrame::Type type) {
 +  push(ebp);
 +  mov(ebp, esp);
 +  push(Immediate(Smi::FromInt(type)));
@@ -27565,7 +27649,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::LeaveFrame(StackFrame::Type type) {
++void TurboAssembler::LeaveFrame(StackFrame::Type type) {
 +  if (emit_debug_code()) {
 +    cmp(Operand(ebp, CommonFrameConstants::kContextOrFrameTypeOffset),
 +        Immediate(Smi::FromInt(type)));
@@ -28113,20 +28197,22 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  bind(&done);
 +}
 +
-+void MacroAssembler::CallStub(CodeStub* stub, TypeFeedbackId ast_id) {
++void MacroAssembler::CallStub(CodeStub* stub) {
 +  DCHECK(AllowThisStubCall(stub));  // Calls are not allowed in some stubs.
-+  call(stub->GetCode(), RelocInfo::CODE_TARGET, ast_id);
++  call(stub->GetCode(), RelocInfo::CODE_TARGET);
 +}
 +
++void TurboAssembler::CallStubDelayed(CodeStub* stub) {
++  DCHECK(AllowThisStubCall(stub));  // Calls are not allowed in some stubs.
++  call(stub);
++}
 +
 +void MacroAssembler::TailCallStub(CodeStub* stub) {
 +  jmp(stub->GetCode(), RelocInfo::CODE_TARGET);
 +}
 +
-+
-+
-+bool MacroAssembler::AllowThisStubCall(CodeStub* stub) {
-+  return has_frame_ || !stub->SometimesSetsUpAFrame();
++bool TurboAssembler::AllowThisStubCall(CodeStub* stub) {
++  return has_frame() || !stub->SometimesSetsUpAFrame();
 +}
 +
 +void MacroAssembler::CallRuntime(const Runtime::Function* f, int num_arguments,
@@ -28146,6 +28232,17 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  CallStub(&ces);
 +}
 +
++void TurboAssembler::CallRuntimeDelayed(Zone* zone, Runtime::FunctionId fid,
++                                        SaveFPRegsMode save_doubles) {
++  const Runtime::Function* f = Runtime::FunctionForId(fid);
++  // TODO(1236192): Most runtime routines don't need the number of
++  // arguments passed in because it is constant. At some point we
++  // should remove this need and make the runtime routine entry code
++  // smarter.
++  Move(eax, Immediate(f->nargs));
++  mov(ebx, Immediate(ExternalReference(f, isolate())));
++  CallStubDelayed(new (zone) CEntryStub(nullptr, 1, save_doubles));
++}
 +
 +void MacroAssembler::CallExternalReference(ExternalReference ref,
 +                                           int num_arguments) {
@@ -28189,7 +28286,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  jmp(ces.GetCode(), RelocInfo::CODE_TARGET);
 +}
 +
-+void MacroAssembler::PrepareForTailCall(
++void TurboAssembler::PrepareForTailCall(
 +    const ParameterCount& callee_args_count, Register caller_args_count_reg,
 +    Register scratch0, Register scratch1, ReturnAddressState ra_state,
 +    int number_of_temp_values_after_return_address) {
@@ -28457,7 +28554,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +                                    const ParameterCount& actual,
 +                                    InvokeFlag flag,
 +                                    const CallWrapper& call_wrapper) {
-+  LoadHeapObject(edi, function);
++  Move(edi, function);
 +  InvokeFunction(edi, expected, actual, flag, call_wrapper);
 +}
 +
@@ -28547,17 +28644,17 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::LoadHeapObject(Register result,
-+                                    Handle<HeapObject> object) {
-+  mov(result, object);
-+}
-+
-+
 +void MacroAssembler::CmpHeapObject(Register reg, Handle<HeapObject> object) {
 +  cmp(reg, object);
 +}
 +
-+void MacroAssembler::PushHeapObject(Handle<HeapObject> object) { Push(object); }
++void MacroAssembler::PushObject(Handle<Object> object) {
++  if (object->IsHeapObject()) {
++    Push(Handle<HeapObject>::cast(object));
++  } else {
++    Push(Smi::cast(*object));
++  }
++}
 +
 +void MacroAssembler::GetWeakValue(Register value, Handle<WeakCell> cell) {
 +  mov(value, cell);
@@ -28571,13 +28668,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  JumpIfSmi(value, miss);
 +}
 +
++void TurboAssembler::Ret() { ret(0); }
 +
-+void MacroAssembler::Ret() {
-+  ret(0);
-+}
-+
-+
-+void MacroAssembler::Ret(int bytes_dropped, Register scratch) {
++void TurboAssembler::Ret(int bytes_dropped, Register scratch) {
 +  if (is_uint16(bytes_dropped)) {
 +    ret(bytes_dropped);
 +  } else {
@@ -28589,7 +28682,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::VerifyX87StackDepth(uint32_t depth) {
++void TurboAssembler::VerifyX87StackDepth(uint32_t depth) {
 +  // Turn off the stack depth check when serializer is enabled to reduce the
 +  // code size.
 +  if (serializer_enabled()) return;
@@ -28620,15 +28713,16 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::Move(Register dst, Register src) {
++void TurboAssembler::Move(Register dst, Register src) {
 +  if (!dst.is(src)) {
 +    mov(dst, src);
 +  }
 +}
 +
 +
-+void MacroAssembler::Move(Register dst, const Immediate& x) {
-+  if (x.is_zero() && RelocInfo::IsNone(x.rmode_)) {
++void TurboAssembler::Move(Register dst, const Immediate& x) {
++  if (!x.is_heap_object_request() && x.is_zero() &&
++      RelocInfo::IsNone(x.rmode())) {
 +    xor_(dst, dst);  // Shorter than mov of 32-bit immediate 0.
 +  } else {
 +    mov(dst, x);
@@ -28636,12 +28730,17 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::Move(const Operand& dst, const Immediate& x) {
++void TurboAssembler::Move(const Operand& dst, const Immediate& x) {
 +  mov(dst, x);
 +}
 +
 +
-+void MacroAssembler::Lzcnt(Register dst, const Operand& src) {
++void TurboAssembler::Move(Register dst, Handle<HeapObject> object) {
++  mov(dst, object);
++}
++
++
++void TurboAssembler::Lzcnt(Register dst, const Operand& src) {
 +  // TODO(intel): Add support for LZCNT (with ABM/BMI1).
 +  Label not_zero_src;
 +  bsr(dst, src);
@@ -28652,7 +28751,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::Tzcnt(Register dst, const Operand& src) {
++void TurboAssembler::Tzcnt(Register dst, const Operand& src) {
 +  // TODO(intel): Add support for TZCNT (with ABM/BMI1).
 +  Label not_zero_src;
 +  bsf(dst, src);
@@ -28662,7 +28761,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::Popcnt(Register dst, const Operand& src) {
++void TurboAssembler::Popcnt(Register dst, const Operand& src) {
 +  // TODO(intel): Add support for POPCNT (with POPCNT)
 +  // if (CpuFeatures::IsSupported(POPCNT)) {
 +  //   CpuFeatureScope scope(this, POPCNT);
@@ -28736,13 +28835,17 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::Assert(Condition cc, BailoutReason reason) {
++void TurboAssembler::Assert(Condition cc, BailoutReason reason) {
 +  if (emit_debug_code()) Check(cc, reason);
++}
++
++void TurboAssembler::AssertUnreachable(BailoutReason reason) {
++  if (emit_debug_code()) Abort(reason);
 +}
 +
 +
 +
-+void MacroAssembler::Check(Condition cc, BailoutReason reason) {
++void TurboAssembler::Check(Condition cc, BailoutReason reason) {
 +  Label L;
 +  j(cc, &L);
 +  Abort(reason);
@@ -28751,7 +28854,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::CheckStackAlignment() {
++void TurboAssembler::CheckStackAlignment() {
 +  int frame_alignment = base::OS::ActivationFrameAlignment();
 +  int frame_alignment_mask = frame_alignment - 1;
 +  if (frame_alignment > kPointerSize) {
@@ -28766,7 +28869,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::Abort(BailoutReason reason) {
++void TurboAssembler::Abort(BailoutReason reason) {
 +#ifdef DEBUG
 +  const char* msg = GetBailoutReason(reason);
 +  if (msg != NULL) {
@@ -28780,13 +28883,10 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  }
 +#endif
 +
-+  // Check if Abort() has already been initialized.
-+  DCHECK(isolate()->builtins()->Abort()->IsHeapObject());
-+
 +  Move(edx, Smi::FromInt(static_cast<int>(reason)));
 +
 +  // Disable stub call restrictions to always allow calls to abort.
-+  if (!has_frame_) {
++  if (!has_frame()) {
 +    // We don't actually want to generate a pile of code for this, so just
 +    // claim there is a stack frame, without generating one.
 +    FrameScope scope(this, StackFrame::NONE);
@@ -28905,7 +29005,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::PrepareCallCFunction(int num_arguments, Register scratch) {
++void TurboAssembler::PrepareCallCFunction(int num_arguments, Register scratch) {
 +  int frame_alignment = base::OS::ActivationFrameAlignment();
 +  if (frame_alignment != 0) {
 +    // Make stack end at alignment and make room for num_arguments words
@@ -28921,7 +29021,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::CallCFunction(ExternalReference function,
++void TurboAssembler::CallCFunction(ExternalReference function,
 +                                   int num_arguments) {
 +  // Trashing eax is ok as it will be the return value.
 +  mov(eax, Immediate(function));
@@ -28929,8 +29029,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::CallCFunction(Register function,
-+                                   int num_arguments) {
++void TurboAssembler::CallCFunction(Register function, int num_arguments) {
 +  DCHECK(has_frame());
 +  // Check stack alignment.
 +  if (emit_debug_code()) {
@@ -28996,13 +29095,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +}
 +
 +
-+void MacroAssembler::CheckPageFlag(
-+    Register object,
-+    Register scratch,
-+    int mask,
-+    Condition cc,
-+    Label* condition_met,
-+    Label::Distance condition_met_distance) {
++void TurboAssembler::CheckPageFlag(Register object, Register scratch, int mask,
++                                   Condition cc, Label* condition_met,
++                                   Label::Distance condition_met_distance) {
 +  DCHECK(cc == zero || cc == not_zero);
 +  if (scratch.is(object)) {
 +    and_(scratch, Immediate(~Page::kPageAlignmentMask));
@@ -29237,8 +29332,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	2017-12-25 17:42:57.224465515 +0100
-@@ -0,0 +1,906 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	2017-12-28 02:05:16.624566310 +0100
+@@ -0,0 +1,921 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -29295,13 +29390,185 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +                Register reg8 = no_reg);
 +#endif
 +
++class TurboAssembler: public Assembler {
++ public:
++  TurboAssembler(Isolate* isolate, void* buffer, int buffer_size,
++                 CodeObjectRequired create_code_object)
++      : Assembler(isolate, buffer, buffer_size), isolate_(isolate) {
++    if (create_code_object == CodeObjectRequired::kYes) {
++      code_object_ =
++          Handle<HeapObject>::New(isolate->heap()->undefined_value(), isolate);
++    }
++  }
++
++  void set_has_frame(bool value) { has_frame_ = value; }
++  bool has_frame() { return has_frame_; }
++
++  Isolate* isolate() const { return isolate_; }
++
++  Handle<HeapObject> CodeObject() {
++    DCHECK(!code_object_.is_null());
++    return code_object_;
++  }
++
++  void CheckPageFlag(Register object, Register scratch, int mask, Condition cc,
++                     Label* condition_met,
++                     Label::Distance condition_met_distance = Label::kFar);
++
++  // Activation support.
++  void EnterFrame(StackFrame::Type type);
++  void EnterFrame(StackFrame::Type type, bool load_constant_pool_pointer_reg) {
++    // Out-of-line constant pool not implemented on x87.
++    UNREACHABLE();
++  }
++  void LeaveFrame(StackFrame::Type type);
++
++  // Print a message to stdout and abort execution.
++  void Abort(BailoutReason reason);
++
++  // Calls Abort(msg) if the condition cc is not satisfied.
++  // Use --debug_code to enable.
++  void Assert(Condition cc, BailoutReason reason);
++
++  // Like Assert(), but without condition.
++  // Use --debug_code to enable.
++  void AssertUnreachable(BailoutReason reason);
++
++  // Like Assert(), but always enabled.
++  void Check(Condition cc, BailoutReason reason);
++
++  // Check that the stack is aligned.
++  void CheckStackAlignment();
++
++  // Nop, because x87 does not have a root register.
++  void InitializeRootRegister() {}
++
++  // Move a constant into a destination using the most efficient encoding.
++  void Move(Register dst, const Immediate& x);
++
++  void Move(Register dst, Smi* source) { Move(dst, Immediate(source)); }
++
++  // Move if the registers are not identical.
++  void Move(Register target, Register source);
++
++  void Move(const Operand& dst, const Immediate& x);
++
++  void Move(Register dst, Handle<HeapObject> handle);
++
++  void Call(Handle<Code> target, RelocInfo::Mode rmode) { call(target, rmode); }
++  void Call(Label* target) { call(target); }
++
++  inline bool AllowThisStubCall(CodeStub* stub);
++  void CallStubDelayed(CodeStub* stub);
++
++  void CallRuntimeDelayed(Zone* zone, Runtime::FunctionId fid,
++                          SaveFPRegsMode save_doubles = kDontSaveFPRegs);
++
++  // Jump the register contains a smi.
++  inline void JumpIfSmi(Register value, Label* smi_label,
++                        Label::Distance distance = Label::kFar) {
++    test(value, Immediate(kSmiTagMask));
++    j(zero, smi_label, distance);
++  }
++  // Jump if the operand is a smi.
++  inline void JumpIfSmi(Operand value, Label* smi_label,
++                        Label::Distance distance = Label::kFar) {
++    test(value, Immediate(kSmiTagMask));
++    j(zero, smi_label, distance);
++  }
++
++  void SmiUntag(Register reg) { sar(reg, kSmiTagSize); }
++
++  // Removes current frame and its arguments from the stack preserving
++  // the arguments and a return address pushed to the stack for the next call.
++  // |ra_state| defines whether return address is already pushed to stack or
++  // not. Both |callee_args_count| and |caller_args_count_reg| do not include
++  // receiver. |callee_args_count| is not modified, |caller_args_count_reg|
++  // is trashed. |number_of_temp_values_after_return_address| specifies
++  // the number of words pushed to the stack after the return address. This is
++  // to allow "allocation" of scratch registers that this function requires
++  // by saving their values on the stack.
++  void PrepareForTailCall(const ParameterCount& callee_args_count,
++                          Register caller_args_count_reg, Register scratch0,
++                          Register scratch1, ReturnAddressState ra_state,
++                          int number_of_temp_values_after_return_address);
++
++  // Before calling a C-function from generated code, align arguments on stack.
++  // After aligning the frame, arguments must be stored in esp[0], esp[4],
++  // etc., not pushed. The argument count assumes all arguments are word sized.
++  // Some compilers/platforms require the stack to be aligned when calling
++  // C++ code.
++  // Needs a scratch register to do some arithmetic. This register will be
++  // trashed.
++  void PrepareCallCFunction(int num_arguments, Register scratch);
++
++  // Calls a C function and cleans up the space for arguments allocated
++  // by PrepareCallCFunction. The called function is not allowed to trigger a
++  // garbage collection, since that might move the code and invalidate the
++  // return address (unless this is somehow accounted for by the called
++  // function).
++  void CallCFunction(ExternalReference function, int num_arguments);
++  void CallCFunction(Register function, int num_arguments);
++
++  void ShlPair(Register high, Register low, uint8_t imm8);
++  void ShlPair_cl(Register high, Register low);
++  void ShrPair(Register high, Register low, uint8_t imm8);
++  void ShrPair_cl(Register high, Register src);
++  void SarPair(Register high, Register low, uint8_t imm8);
++  void SarPair_cl(Register high, Register low);
++
++  // Generates function and stub prologue code.
++  void StubPrologue(StackFrame::Type type);
++  void Prologue(bool code_pre_aging);
++
++  void Lzcnt(Register dst, Register src) { Lzcnt(dst, Operand(src)); }
++  void Lzcnt(Register dst, const Operand& src);
++
++  void Tzcnt(Register dst, Register src) { Tzcnt(dst, Operand(src)); }
++  void Tzcnt(Register dst, const Operand& src);
++
++  void Popcnt(Register dst, Register src) { Popcnt(dst, Operand(src)); }
++  void Popcnt(Register dst, const Operand& src);
++
++  void Ret();
++
++  // Return and drop arguments from stack, where the number of arguments
++  // may be bigger than 2^16 - 1.  Requires a scratch register.
++  void Ret(int bytes_dropped, Register scratch);
++
++  // Insert code to verify that the x87 stack has the specified depth (0-7)
++  void VerifyX87StackDepth(uint32_t depth);
++
++  void LoadUint32NoSSE2(Register src) {
++    LoadUint32NoSSE2(Operand(src));
++  }
++  void LoadUint32NoSSE2(const Operand& src);
++
++  void SlowTruncateToIDelayed(Zone* zone, Register result_reg,
++                              Register input_reg,
++                              int offset = HeapNumber::kValueOffset -
++                                           kHeapObjectTag);
++
++  void Push(Register src) { push(src); }
++  void Push(const Operand& src) { push(src); }
++  void Push(Immediate value) { push(value); }
++  void Push(Handle<HeapObject> handle) { push(Immediate(handle)); }
++  void Push(Smi* smi) { Push(Immediate(smi)); }
++
++ private:
++  bool has_frame_;
++  Isolate* isolate_;
++  // This handle will be patched with the code object on installation.
++  Handle<HeapObject> code_object_;
++};
++
 +// MacroAssembler implements a collection of frequently used macros.
-+class MacroAssembler: public Assembler {
++class MacroAssembler: public TurboAssembler {
 + public:
 +  MacroAssembler(Isolate* isolate, void* buffer, int size,
 +                 CodeObjectRequired create_code_object);
 +
-+  Isolate* isolate() const { return isolate_; }
++  int jit_cookie() const { return jit_cookie_; }
 +
 +  void Load(Register dst, const Operand& src, Representation r);
 +  void Store(Register src, const Operand& dst, Representation r);
@@ -29374,10 +29641,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +                           Register addr, Register scratch,
 +                           SaveFPRegsMode save_fp,
 +                           RememberedSetFinalAction and_then);
-+
-+  void CheckPageFlag(Register object, Register scratch, int mask, Condition cc,
-+                     Label* condition_met,
-+                     Label::Distance condition_met_distance = Label::kFar);
 +
 +  void CheckPageFlagForMap(
 +      Handle<Map> map, int mask, Condition cc, Label* condition_met,
@@ -29466,10 +29729,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +  void DebugBreak();
 +
-+  // Generates function and stub prologue code.
-+  void StubPrologue(StackFrame::Type type);
-+  void Prologue(bool code_pre_aging);
-+
 +  // Enter specific kind of exit frame. Expects the number of
 +  // arguments in register eax and sets up the number of arguments in
 +  // register edi and the pointer to the first argument in register
@@ -29509,28 +29768,15 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  void StoreToSafepointRegisterSlot(Register dst, Immediate src);
 +  void LoadFromSafepointRegisterSlot(Register dst, Register src);
 +
-+  // Nop, because x87 does not have a root register.
-+  void InitializeRootRegister() {}
-+
-+  void LoadHeapObject(Register result, Handle<HeapObject> object);
 +  void CmpHeapObject(Register reg, Handle<HeapObject> object);
-+  void PushHeapObject(Handle<HeapObject> object);
-+
-+  void LoadObject(Register result, Handle<Object> object) {
-+    AllowDeferredHandleDereference heap_object_check;
-+    if (object->IsHeapObject()) {
-+      LoadHeapObject(result, Handle<HeapObject>::cast(object));
-+    } else {
-+      Move(result, Immediate(object));
-+    }
-+  }
++  void PushObject(Handle<Object> object);
 +
 +  void CmpObject(Register reg, Handle<Object> object) {
 +    AllowDeferredHandleDereference heap_object_check;
 +    if (object->IsHeapObject()) {
 +      CmpHeapObject(reg, Handle<HeapObject>::cast(object));
 +    } else {
-+      cmp(reg, Immediate(object));
++      cmp(reg, Immediate(Smi::cast(*object)));
 +    }
 +  }
 +
@@ -29539,20 +29785,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +  // ---------------------------------------------------------------------------
 +  // JavaScript invokes
-+
-+  // Removes current frame and its arguments from the stack preserving
-+  // the arguments and a return address pushed to the stack for the next call.
-+  // |ra_state| defines whether return address is already pushed to stack or
-+  // not. Both |callee_args_count| and |caller_args_count_reg| do not include
-+  // receiver. |callee_args_count| is not modified, |caller_args_count_reg|
-+  // is trashed. |number_of_temp_values_after_return_address| specifies
-+  // the number of words pushed to the stack after the return address. This is
-+  // to allow "allocation" of scratch registers that this function requires
-+  // by saving their values on the stack.
-+  void PrepareForTailCall(const ParameterCount& callee_args_count,
-+                          Register caller_args_count_reg, Register scratch0,
-+                          Register scratch1, ReturnAddressState ra_state,
-+                          int number_of_temp_values_after_return_address);
 +
 +  // Invoke the JavaScript function code by either calling or jumping.
 +
@@ -29581,14 +29813,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +                      const ParameterCount& actual, InvokeFlag flag,
 +                      const CallWrapper& call_wrapper);
 +
-+  void ShlPair(Register high, Register low, uint8_t imm8);
-+  void ShlPair_cl(Register high, Register low);
-+  void ShrPair(Register high, Register low, uint8_t imm8);
-+  void ShrPair_cl(Register high, Register src);
-+  void SarPair(Register high, Register low, uint8_t imm8);
-+  void SarPair_cl(Register high, Register low);
-+
-+  // Expression support
 +  // Support for constant splitting.
 +  bool IsUnsafeImmediate(const Immediate& x);
 +  void SafeMove(Register dst, const Immediate& x);
@@ -29647,35 +29871,15 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +    STATIC_ASSERT(kSmiTagSize == 1);
 +    add(reg, reg);
 +  }
-+  void SmiUntag(Register reg) {
-+    sar(reg, kSmiTagSize);
-+  }
 +
 +  // Modifies the register even if it does not contain a Smi!
-+  void SmiUntag(Register reg, Label* is_smi) {
++  void UntagSmi(Register reg, Label* is_smi) {
 +    STATIC_ASSERT(kSmiTagSize == 1);
 +    sar(reg, kSmiTagSize);
 +    STATIC_ASSERT(kSmiTag == 0);
 +    j(not_carry, is_smi);
 +  }
 +
-+  void LoadUint32NoSSE2(Register src) {
-+    LoadUint32NoSSE2(Operand(src));
-+  }
-+  void LoadUint32NoSSE2(const Operand& src);
-+
-+  // Jump the register contains a smi.
-+  inline void JumpIfSmi(Register value, Label* smi_label,
-+                        Label::Distance distance = Label::kFar) {
-+    test(value, Immediate(kSmiTagMask));
-+    j(zero, smi_label, distance);
-+  }
-+  // Jump if the operand is a smi.
-+  inline void JumpIfSmi(Operand value, Label* smi_label,
-+                        Label::Distance distance = Label::kFar) {
-+    test(value, Immediate(kSmiTagMask));
-+    j(zero, smi_label, distance);
-+  }
 +  // Jump if register contain a non-smi.
 +  inline void JumpIfNotSmi(Register value, Label* not_smi_label,
 +                           Label::Distance distance = Label::kFar) {
@@ -29748,7 +29952,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  // enabled via --debug-code.
 +  void AssertBoundFunction(Register object);
 +
-+  // Abort execution if argument is not a JSGeneratorObject,
++  // Abort execution if argument is not a JSGeneratorObject (or subclass),
 +  // enabled via --debug-code.
 +  void AssertGeneratorObject(Register object);
 +
@@ -29826,7 +30030,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  // Runtime calls
 +
 +  // Call a code stub.  Generate the code if necessary.
-+  void CallStub(CodeStub* stub, TypeFeedbackId ast_id = TypeFeedbackId::None());
++  void CallStub(CodeStub* stub);
 +
 +  // Tail call a code stub (jump).  Generate the code if necessary.
 +  void TailCallStub(CodeStub* stub);
@@ -29858,35 +30062,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  // Convenience function: tail call a runtime routine (jump).
 +  void TailCallRuntime(Runtime::FunctionId fid);
 +
-+  // Before calling a C-function from generated code, align arguments on stack.
-+  // After aligning the frame, arguments must be stored in esp[0], esp[4],
-+  // etc., not pushed. The argument count assumes all arguments are word sized.
-+  // Some compilers/platforms require the stack to be aligned when calling
-+  // C++ code.
-+  // Needs a scratch register to do some arithmetic. This register will be
-+  // trashed.
-+  void PrepareCallCFunction(int num_arguments, Register scratch);
-+
-+  // Calls a C function and cleans up the space for arguments allocated
-+  // by PrepareCallCFunction. The called function is not allowed to trigger a
-+  // garbage collection, since that might move the code and invalidate the
-+  // return address (unless this is somehow accounted for by the called
-+  // function).
-+  void CallCFunction(ExternalReference function, int num_arguments);
-+  void CallCFunction(Register function, int num_arguments);
-+
 +  // Jump to a runtime routine.
 +  void JumpToExternalReference(const ExternalReference& ext,
 +                               bool builtin_exit_frame = false);
 +
 +  // ---------------------------------------------------------------------------
 +  // Utilities
-+
-+  void Ret();
-+
-+  // Return and drop arguments from stack, where the number of arguments
-+  // may be bigger than 2^16 - 1.  Requires a scratch register.
-+  void Ret(int bytes_dropped, Register scratch);
 +
 +  // Emit code that loads |parameter_index|'th parameter from the stack to
 +  // the register according to the CallInterfaceDescriptor definition.
@@ -29910,50 +30091,11 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  // from the stack, clobbering only the esp register.
 +  void Drop(int element_count);
 +
-+  void Call(Label* target) { call(target); }
-+  void Call(Handle<Code> target, RelocInfo::Mode rmode,
-+            TypeFeedbackId id = TypeFeedbackId::None()) {
-+    call(target, rmode, id);
-+  }
 +  void Jump(Handle<Code> target, RelocInfo::Mode rmode) { jmp(target, rmode); }
-+  void Push(Register src) { push(src); }
-+  void Push(const Operand& src) { push(src); }
-+  void Push(Immediate value) { push(value); }
 +  void Pop(Register dst) { pop(dst); }
 +  void Pop(const Operand& dst) { pop(dst); }
 +  void PushReturnAddressFrom(Register src) { push(src); }
 +  void PopReturnAddressTo(Register dst) { pop(dst); }
-+
-+  void Lzcnt(Register dst, Register src) { Lzcnt(dst, Operand(src)); }
-+  void Lzcnt(Register dst, const Operand& src);
-+
-+  void Tzcnt(Register dst, Register src) { Tzcnt(dst, Operand(src)); }
-+  void Tzcnt(Register dst, const Operand& src);
-+
-+  void Popcnt(Register dst, Register src) { Popcnt(dst, Operand(src)); }
-+  void Popcnt(Register dst, const Operand& src);
-+
-+  // Move if the registers are not identical.
-+  void Move(Register target, Register source);
-+
-+  // Move a constant into a destination using the most efficient encoding.
-+  void Move(Register dst, const Immediate& x);
-+  void Move(const Operand& dst, const Immediate& x);
-+
-+  void Move(Register dst, Handle<Object> handle) { LoadObject(dst, handle); }
-+  void Move(Register dst, Smi* source) { Move(dst, Immediate(source)); }
-+
-+  // Push a handle value.
-+  void Push(Handle<Object> handle) { push(Immediate(handle)); }
-+  void Push(Smi* smi) { Push(Immediate(smi)); }
-+
-+  Handle<Object> CodeObject() {
-+    DCHECK(!code_object_.is_null());
-+    return code_object_;
-+  }
-+
-+  // Insert code to verify that the x87 stack has the specified depth (0-7)
-+  void VerifyX87StackDepth(uint32_t depth);
 +
 +  // Emit code for a truncating division by a constant. The dividend register is
 +  // unchanged, the result is in edx, and eax gets clobbered.
@@ -29967,29 +30109,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  void DecrementCounter(StatsCounter* counter, int value);
 +  void IncrementCounter(Condition cc, StatsCounter* counter, int value);
 +  void DecrementCounter(Condition cc, StatsCounter* counter, int value);
-+
-+  // ---------------------------------------------------------------------------
-+  // Debugging
-+
-+  // Calls Abort(msg) if the condition cc is not satisfied.
-+  // Use --debug_code to enable.
-+  void Assert(Condition cc, BailoutReason reason);
-+
-+  // Like Assert(), but always enabled.
-+  void Check(Condition cc, BailoutReason reason);
-+
-+  // Print a message to stdout and abort execution.
-+  void Abort(BailoutReason reason);
-+
-+  // Check that the stack is aligned.
-+  void CheckStackAlignment();
-+
-+  // Verify restrictions about code generated in stubs.
-+  void set_generating_stub(bool value) { generating_stub_ = value; }
-+  bool generating_stub() { return generating_stub_; }
-+  void set_has_frame(bool value) { has_frame_ = value; }
-+  bool has_frame() { return has_frame_; }
-+  inline bool AllowThisStubCall(CodeStub* stub);
 +
 +  // ---------------------------------------------------------------------------
 +  // String utilities.
@@ -30019,11 +30138,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  // Load the type feedback vector from a JavaScript frame.
 +  void EmitLoadFeedbackVector(Register vector);
 +
-+  // Activation support.
-+  void EnterFrame(StackFrame::Type type);
-+  void EnterFrame(StackFrame::Type type, bool load_constant_pool_pointer_reg);
-+  void LeaveFrame(StackFrame::Type type);
-+
 +  void EnterBuiltinFrame(Register context, Register target, Register argc);
 +  void LeaveBuiltinFrame(Register context, Register target, Register argc);
 +
@@ -30042,11 +30156,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +                                       Label* no_memento_found);
 +
 + private:
-+  bool generating_stub_;
-+  bool has_frame_;
-+  Isolate* isolate_;
-+  // This handle will be patched with the code object on installation.
-+  Handle<Object> code_object_;
++  int jit_cookie_;
 +
 +  // Helper functions for generating invokes.
 +  void InvokePrologue(const ParameterCount& expected,
