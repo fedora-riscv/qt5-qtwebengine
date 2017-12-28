@@ -18142,7 +18142,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/assembler-x87.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.h	2017-12-28 01:53:26.598456142 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/assembler-x87.h	2017-12-28 05:24:49.899521687 +0100
 @@ -0,0 +1,1140 @@
 +// Copyright (c) 1994-2006 Sun Microsystems Inc.
 +// All Rights Reserved.
@@ -18476,6 +18476,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +
 +  friend class Operand;
 +  friend class Assembler;
++  friend class MacroAssembler;
 +};
 +
 +
@@ -18573,7 +18574,6 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/ass
 +  RelocInfo::Mode rmode_;
 +
 +  friend class Assembler;
-+  friend class MacroAssembler;
 +};
 +
 +
@@ -26100,8 +26100,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-28 03:27:22.050899783 +0100
-@@ -0,0 +1,2571 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-28 05:21:52.412245739 +0100
+@@ -0,0 +1,2572 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -26110,6 +26110,7 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +#include "src/base/bits.h"
 +#include "src/base/division-by-constant.h"
++#include "src/base/utils/random-number-generator.h"
 +#include "src/bootstrapper.h"
 +#include "src/codegen.h"
 +#include "src/debug/debug.h"
