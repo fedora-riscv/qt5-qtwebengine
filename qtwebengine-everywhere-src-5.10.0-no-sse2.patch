@@ -25691,8 +25691,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/fra
 +#endif  // V8_X87_FRAMES_X87_H_
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc	2017-12-28 03:38:40.380712871 +0100
-@@ -0,0 +1,375 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/interface-descriptors-x87.cc	2017-12-29 01:59:03.000000000 +0100
+@@ -0,0 +1,450 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -25851,11 +25851,79 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +  data->InitializePlatformSpecific(arraysize(registers), registers);
 +}
 +
++void CallVarargsDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // eax : number of arguments (on the stack, not including receiver)
++  // edi : the target to call
++  // ebx : arguments list (FixedArray)
++  // ecx : arguments list length (untagged)
++  Register registers[] = {edi, eax, ebx, ecx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
 +void CallForwardVarargsDescriptor::InitializePlatformSpecific(
 +    CallInterfaceDescriptorData* data) {
++  // eax : number of arguments
 +  // ecx : start index (to support rest parameters)
 +  // edi : the target to call
-+  Register registers[] = {edi, ecx};
++  Register registers[] = {edi, eax, ecx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
++void CallWithSpreadDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // eax : number of arguments (on the stack, not including receiver)
++  // edi : the target to call
++  // ebx : the object to spread
++  Register registers[] = {edi, eax, ebx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
++void CallWithArrayLikeDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // edi : the target to call
++  // ebx : the arguments list
++  Register registers[] = {edi, ebx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
++void ConstructVarargsDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // eax : number of arguments (on the stack, not including receiver)
++  // edi : the target to call
++  // edx : the new target
++  // ebx : arguments list (FixedArray)
++  // ecx : arguments list length (untagged)
++  Register registers[] = {edi, edx, eax, ebx, ecx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
++void ConstructForwardVarargsDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // eax : number of arguments
++  // edx : the new target
++  // ecx : start index (to support rest parameters)
++  // edi : the target to call
++  Register registers[] = {edi, edx, eax, ecx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
++void ConstructWithSpreadDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // eax : number of arguments (on the stack, not including receiver)
++  // edi : the target to call
++  // edx : the new target
++  // ebx : the object to spread
++  Register registers[] = {edi, edx, eax, ebx};
++  data->InitializePlatformSpecific(arraysize(registers), registers);
++}
++
++void ConstructWithArrayLikeDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // edi : the target to call
++  // edx : the new target
++  // ebx : the arguments list
++  Register registers[] = {edi, edx, ebx};
 +  data->InitializePlatformSpecific(arraysize(registers), registers);
 +}
 +
@@ -25891,6 +25959,13 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +    CallInterfaceDescriptorData* data) {
 +  // register state
 +  data->InitializePlatformSpecific(0, nullptr, nullptr);
++}
++
++void ArrayConstructorDescriptor::InitializePlatformSpecific(
++    CallInterfaceDescriptorData* data) {
++  // kTarget, kNewTarget, kActualArgumentsCount, kAllocationSite
++  Register registers[] = {edi, edx, eax, ebx};
++  data->InitializePlatformSpecific(arraysize(registers), registers, NULL);
 +}
 +
 +void ArrayNoArgumentConstructorDescriptor::InitializePlatformSpecific(
@@ -26070,8 +26145,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/int
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-28 05:21:52.412245739 +0100
-@@ -0,0 +1,2572 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.cc	2017-12-29 02:00:17.837154172 +0100
+@@ -0,0 +1,2584 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -26859,6 +26934,18 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +  if (emit_debug_code()) {
 +    test(object, Immediate(kSmiTagMask));
 +    Check(equal, kOperandIsNotASmi);
++  }
++}
++
++
++void MacroAssembler::AssertFixedArray(Register object) {
++  if (emit_debug_code()) {
++    test(object, Immediate(kSmiTagMask));
++    Check(not_equal, kOperandIsASmiAndNotAFixedArray);
++    Push(object);
++    CmpObjectType(object, FIXED_ARRAY_TYPE, object);
++    Pop(object);
++    Check(equal, kOperandIsNotAFixedArray);
 +  }
 +}
 +
@@ -28646,8 +28733,8 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +#endif  // V8_TARGET_ARCH_X87
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h
 --- qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	1970-01-01 01:00:00.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	2017-12-28 03:27:27.352808166 +0100
-@@ -0,0 +1,920 @@
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/3rdparty/chromium/v8/src/x87/macro-assembler-x87.h	2017-12-29 01:59:56.457468424 +0100
+@@ -0,0 +1,923 @@
 +// Copyright 2012 the V8 project authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -29257,6 +29344,9 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/3rdparty/chromium/v8/src/x87/mac
 +
 +  // Abort execution if argument is a smi, enabled via --debug-code.
 +  void AssertNotSmi(Register object);
++
++  // Abort execution if argument is not a FixedArray, enabled via --debug-code.
++  void AssertFixedArray(Register object);
 +
 +  // Abort execution if argument is not a JSFunction, enabled via --debug-code.
 +  void AssertFunction(Register object);
