@@ -1,164 +1,164 @@
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webengine/customdialogs/customdialogs.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/customdialogs/customdialogs.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webengine/customdialogs/customdialogs.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/customdialogs/customdialogs.pro	2017-12-25 12:48:31.714986364 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/customdialogs/customdialogs.pro	2017-12-30 00:42:17.069800971 +0100
 @@ -1,5 +1,7 @@
  QT += webengine
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      server.h
  
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webengine/minimal/minimal.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/minimal/minimal.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webengine/minimal/minimal.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/minimal/minimal.pro	2017-12-25 12:48:31.752985827 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/minimal/minimal.pro	2017-12-30 00:42:00.003067640 +0100
 @@ -2,6 +2,8 @@
  
  QT += webengine
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  SOURCES += main.cpp
  
  RESOURCES += qml.qrc
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webengine/quicknanobrowser/quicknanobrowser.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/quicknanobrowser/quicknanobrowser.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webengine/quicknanobrowser/quicknanobrowser.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/quicknanobrowser/quicknanobrowser.pro	2017-12-25 12:48:31.815984938 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/quicknanobrowser/quicknanobrowser.pro	2017-12-30 00:42:06.126971953 +0100
 @@ -20,5 +20,7 @@
      QT += widgets # QApplication is required to get native styling with QtQuickControls
  }
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  target.path = $$[QT_INSTALL_EXAMPLES]/webengine/quicknanobrowser
  INSTALLS += target
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webengine/recipebrowser/recipebrowser.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/recipebrowser/recipebrowser.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webengine/recipebrowser/recipebrowser.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/recipebrowser/recipebrowser.pro	2017-12-25 12:48:31.937983215 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webengine/recipebrowser/recipebrowser.pro	2017-12-30 00:42:11.598886454 +0100
 @@ -2,6 +2,8 @@
  
  QT += quick qml quickcontrols2 webengine
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  cross_compile {
    posix|qnx|linux: DEFINES += QTWEBENGINE_RECIPE_BROWSER_EMBEDDED
  }
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro	2017-12-25 12:48:31.938983201 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/contentmanipulation/contentmanipulation.pro	2017-12-30 00:41:54.676150874 +0100
 @@ -1,5 +1,7 @@
  QT      +=  webenginewidgets
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS =   mainwindow.h
  SOURCES =   main.cpp \
              mainwindow.cpp
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro	2017-12-25 12:48:32.492975378 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/cookiebrowser/cookiebrowser.pro	2017-12-30 00:39:17.808601947 +0100
 @@ -3,6 +3,8 @@
  TEMPLATE = app
  CONFIG += c++11
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  SOURCES += \
      main.cpp\
      mainwindow.cpp
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/html2pdf/html2pdf.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/html2pdf/html2pdf.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/html2pdf/html2pdf.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/html2pdf/html2pdf.pro	2017-12-25 12:49:15.954361683 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/html2pdf/html2pdf.pro	2017-12-30 00:39:29.007426964 +0100
 @@ -2,6 +2,8 @@
  
  QT += webenginewidgets
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  SOURCES += html2pdf.cpp
  
  target.path = $$[QT_INSTALL_EXAMPLES]/webenginewidgets/html2pdf
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/maps/maps.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/maps/maps.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/maps/maps.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/maps/maps.pro	2017-12-25 12:49:16.125359268 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/maps/maps.pro	2017-12-30 00:39:43.928193826 +0100
 @@ -2,6 +2,8 @@
  
  QT += webenginewidgets
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      mainwindow.h
  
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/markdowneditor/markdowneditor.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/markdowneditor/markdowneditor.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/markdowneditor/markdowneditor.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/markdowneditor/markdowneditor.pro	2017-12-25 12:49:16.187358393 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/markdowneditor/markdowneditor.pro	2017-12-30 00:41:37.256423059 +0100
 @@ -3,6 +3,8 @@
  QT += webenginewidgets webchannel
  CONFIG += c++11
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      mainwindow.h \
      previewpage.h \
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/minimal/minimal.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/minimal/minimal.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/minimal/minimal.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/minimal/minimal.pro	2017-12-25 12:49:16.247357545 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/minimal/minimal.pro	2017-12-30 00:39:11.992692822 +0100
 @@ -2,6 +2,8 @@
  
  QT += webenginewidgets
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  SOURCES += main.cpp
  
  target.path = $$[QT_INSTALL_EXAMPLES]/webenginewidgets/minimal
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/simplebrowser/simplebrowser.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/simplebrowser/simplebrowser.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/simplebrowser/simplebrowser.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/simplebrowser/simplebrowser.pro	2017-12-25 12:49:16.314356599 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/simplebrowser/simplebrowser.pro	2017-12-30 00:39:37.644292012 +0100
 @@ -3,6 +3,8 @@
  QT += webenginewidgets
  CONFIG += c++11
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      browser.h \
      browserwindow.h \
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/spellchecker/spellchecker.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/spellchecker/spellchecker.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/spellchecker/spellchecker.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/spellchecker/spellchecker.pro	2017-12-25 12:49:16.314356599 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/spellchecker/spellchecker.pro	2017-12-30 00:41:43.565324482 +0100
 @@ -9,6 +9,8 @@
      error("Spellcheck example can not be built when using native OS dictionaries.")
  }
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      webview.h
  
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/stylesheetbrowser/stylesheetbrowser.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/stylesheetbrowser/stylesheetbrowser.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/stylesheetbrowser/stylesheetbrowser.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/stylesheetbrowser/stylesheetbrowser.pro	2017-12-25 12:50:32.558279999 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/stylesheetbrowser/stylesheetbrowser.pro	2017-12-30 00:41:49.055238701 +0100
 @@ -3,6 +3,8 @@
  QT += webenginewidgets
  CONFIG += c++11
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      mainwindow.h \
      stylesheetdialog.h
 diff -Nur qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/videoplayer/videoplayer.pro qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/videoplayer/videoplayer.pro
 --- qtwebengine-everywhere-src-5.10.0/examples/webenginewidgets/videoplayer/videoplayer.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/videoplayer/videoplayer.pro	2017-12-25 12:49:16.314356599 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/examples/webenginewidgets/videoplayer/videoplayer.pro	2017-12-30 00:39:23.960505823 +0100
 @@ -2,6 +2,8 @@
  
  QT += webenginewidgets
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../../../src/core/release
 +
  HEADERS += \
      mainwindow.h \
@@ -30280,12 +30280,12 @@ diff -Nur qtwebengine-everywhere-src-5.10.0/src/core/core_module.pro qtwebengine
              icu.CONFIG += no_check_exist
 diff -Nur qtwebengine-everywhere-src-5.10.0/src/process/process.pro qtwebengine-everywhere-src-5.10.0-no-sse2/src/process/process.pro
 --- qtwebengine-everywhere-src-5.10.0/src/process/process.pro	2017-11-29 09:42:29.000000000 +0100
-+++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/process/process.pro	2017-12-25 13:05:24.093938639 +0100
++++ qtwebengine-everywhere-src-5.10.0-no-sse2/src/process/process.pro	2017-12-30 00:42:27.968630675 +0100
 @@ -9,6 +9,8 @@
  
  SOURCES = main.cpp
  
-+QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../core/Release
++QMAKE_LFLAGS += -Wl,-rpath-link,$$OUT_PWD/../core/release
 +
  win32 {
      SOURCES += \
