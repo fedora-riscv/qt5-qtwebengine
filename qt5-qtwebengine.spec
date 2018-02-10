@@ -10,10 +10,8 @@
 %global docs 1
 %endif
 
-%if 0
-# need libvpx >= 1.6.2
-# (The needed commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e was added after
-# 1.6.1, not released anywhere yet.)
+%if 0%{?fedora} > 27
+# need libvpx >= 1.7.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
 %endif
 # need libwebp >= 0.6.0
@@ -52,7 +50,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.10.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -187,7 +185,7 @@ BuildRequires: pkgconfig(lcms2)
 BuildRequires: perl-interpreter
 BuildRequires: python
 %if 0%{?use_system_libvpx}
-BuildRequires: pkgconfig(vpx) >= 1.6.2
+BuildRequires: pkgconfig(vpx) >= 1.7.0
 %endif
 
 # extra (non-upstream) functions needed, see
@@ -572,6 +570,9 @@ done
 
 
 %changelog
+* Sat Feb 10 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.0-5
+- Reenable system libvpx on F28+, Rawhide (future F28) has libvpx 1.7.0 now
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.10.0-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
