@@ -367,7 +367,9 @@ BuildArch: noarch
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .icu59
 %patch100 -p1 -b .no-aspirational-scripts
+%if 0%{?fedora} > 27
 %patch101 -p1 -b .QTBUG-64759
+%endif
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
