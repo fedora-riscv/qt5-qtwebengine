@@ -50,7 +50,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.10.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -117,6 +117,8 @@ Patch22: qtwebengine-everywhere-src-5.10.0-icu59.patch
 # see: http://www.unicode.org/reports/tr31/#Aspirational_Use_Scripts
 # backport of: https://chromium-review.googlesource.com/c/chromium/src/+/731871
 Patch100: qtwebengine-everywhere-src-5.10.0-no-aspirational-scripts.patch
+# workaround FTBFS
+Patch101: qtwebengine-everywhere-src-5.10.0-QTBUG-64759.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -365,6 +367,7 @@ BuildArch: noarch
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .icu59
 %patch100 -p1 -b .no-aspirational-scripts
+%patch101 -p1 -b .QTBUG-64759
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -570,6 +573,9 @@ done
 
 
 %changelog
+* Fri Feb 16 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.10.0-6
+- workaround FTBFS, build with -fabi-version=11 (#1545918)
+
 * Sat Feb 10 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.0-5
 - Reenable system libvpx on F28+, Rawhide (future F28) has libvpx 1.7.0 now
 
