@@ -49,8 +49,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.10.0
-Release: 6%{?dist}
+Version: 5.10.1
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -58,8 +58,8 @@ Release: 6%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.10/5.10.0/submodules/qtwebengine-everywhere-src-5.10.0.tar.xz
-# ./clean_qtwebengine.sh 5.10.0
+# wget http://download.qt.io/official_releases/qt/5.10/5.10.1/submodules/qtwebengine-everywhere-src-5.10.1.tar.xz
+# ./clean_qtwebengine.sh 5.10.1
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -95,7 +95,7 @@ Patch5:  qtwebengine-everywhere-src-5.10.0-system-icu-utf.patch
 # Gerrit review 570351 and V8 Gerrit review 575756, along with some custom fixes
 # and improvements
 # also build V8 shared and twice on i686 (once for x87, once for SSE2)
-Patch6:  qtwebengine-everywhere-src-5.10.0-no-sse2.patch
+Patch6:  qtwebengine-everywhere-src-5.10.1-no-sse2.patch
 # fix missing ARM -mfpu setting
 Patch9:  qtwebengine-opensource-src-5.9.2-arm-fpu-fix.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
@@ -208,9 +208,9 @@ BuildRequires: pkgconfig(vpx) >= 1.7.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
-# Some security fixes (up to version 62.0.3202.94) are backported, see:
+# Some security fixes (up to version 64.0.3282.140) are backported, see:
 # http://code.qt.io/cgit/qt/qtwebengine-chromium.git/log/?h=61-based
-# see dist/changes-5.10.0 for the version numbers (base, security fixes) and for
+# see dist/changes-5.10.1 for the version numbers (base, security fixes) and for
 # a list of CVEs fixed by the added security backports
 Provides: bundled(chromium) = 61.0.3163.140
 
@@ -576,6 +576,10 @@ done
 
 
 %changelog
+* Sun Feb 18 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-1
+- Update to 5.10.1
+- Rediff (unfuzz) no-sse2 patch
+
 * Fri Feb 16 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.10.0-6
 - workaround FTBFS, build with -fabi-version=11 (#1545918)
 
