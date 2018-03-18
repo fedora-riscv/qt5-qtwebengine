@@ -50,7 +50,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.10.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -122,6 +122,9 @@ Patch100: qtwebengine-everywhere-src-5.10.0-no-aspirational-scripts.patch
 # see the patch metadata for the list of fixed CVEs and Chromium bug IDs
 # omit the Chromium bug 806122 fix because we do not ship that FFmpeg file
 Patch101: qtwebengine-everywhere-src-5.10.1-security-5.9.5.patch
+# fix incomplete (and thus having no effect) fix for CVE-2018-6033 in 5.10.1
+# (forward-ported from 5.9.5, will also be included in 5.11)
+Patch102: qtwebengine-everywhere-src-5.10.1-CVE-2018-6033.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -372,6 +375,7 @@ BuildArch: noarch
 %patch22 -p1 -b .icu59
 %patch100 -p1 -b .no-aspirational-scripts
 %patch101 -p1 -b .security-5.9.5
+%patch102 -p1 -b .CVE-2018-6033
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -577,6 +581,9 @@ done
 
 
 %changelog
+* Sun Mar 18 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-4
+- Fix incomplete fix for CVE-2018-6033 in 5.10.1 (forward-ported from 5.9.5)
+
 * Sat Mar 17 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-3
 - Forward-port security backports from 5.9.5 LTS (up to Chromium 65.0.3325.146)
 
