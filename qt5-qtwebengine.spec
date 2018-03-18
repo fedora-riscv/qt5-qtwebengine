@@ -582,7 +582,7 @@ done
 
 %changelog
 * Sun Mar 18 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-4
-- Fix incomplete fix for CVE-2018-6033 in 5.10.1 (forward-ported from 5.9.5)
+- Fix (from 5.9.5) for incomplete, ineffective fix for CVE-2018-6033 in 5.10.1
 
 * Sat Mar 17 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-3
 - Forward-port security backports from 5.9.5 LTS (up to Chromium 65.0.3325.146)
