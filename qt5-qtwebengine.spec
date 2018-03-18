@@ -50,7 +50,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.10.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -191,7 +191,7 @@ BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
 BuildRequires: pkgconfig(lcms2)
 BuildRequires: perl-interpreter
-BuildRequires: python
+BuildRequires: python2
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.7.0
 %endif
@@ -581,6 +581,10 @@ done
 
 
 %changelog
+* Sun Mar 18 2018 Iryna Shcherbina <ishcherb@redhat.com> - 5.10.1-5
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
+
 * Sun Mar 18 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-4
 - Fix (from 5.9.5) for incomplete, ineffective fix for CVE-2018-6033 in 5.10.1
 
