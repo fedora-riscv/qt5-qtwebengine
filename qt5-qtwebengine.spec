@@ -112,6 +112,11 @@ Patch21: qtwebengine-everywhere-src-5.10.0-gn-bootstrap-verbose.patch
 # https://codereview.qt-project.org/#/c/196922/
 # see QTBUG-60886 and QTBUG-65090
 Patch22: qtwebengine-everywhere-src-5.10.0-icu59.patch
+# Fix FTBFS with GCC 8 on i686: GCC8 has changed the alignof operator to return
+# the minimal alignment required by the target ABI instead of the preferred
+# alignment. This means int64_t is now 4 on i686 (instead of 8). Use __alignof__
+# to get the value we expect (and chromium checks for). Patch by spot.
+Patch23: qtwebengine-everywhere-src-5.10.1-gcc8-alignof.patch
 ## Upstream patches:
 # drop support for obsolete Unicode "aspirational scripts" (dropped in UTS 31),
 # fixes #error with ICU >= 60 (which was a reminder to double-check the list)
@@ -373,6 +378,7 @@ BuildArch: noarch
 %patch12 -p1 -b .webrtc-neon-detect
 %patch21 -p1 -b .gn-bootstrap-verbose
 %patch22 -p1 -b .icu59
+%patch23 -p1 -b .gcc8
 %patch100 -p1 -b .no-aspirational-scripts
 %patch101 -p1 -b .security-5.9.5
 %patch102 -p1 -b .CVE-2018-6033
@@ -583,6 +589,7 @@ done
 %changelog
 * Sun May 27 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.10.1-7
 - rebuild (qt5 5.11.0)
+- Add patch by spot from the Fedora Chromium RPM for FTBFS with GCC 8 on i686
 
 * Mon Apr 30 2018 Pete Walter <pwalter@fedoraproject.org> - 5.10.1-6
 - Rebuild for ICU 61.1
