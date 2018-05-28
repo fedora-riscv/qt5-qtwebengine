@@ -1,0 +1,35 @@
+From c041711febbee334ce5369f25cfae3f560819855 Mon Sep 17 00:00:00 2001
+From: Kai Koehne <kai.koehne@qt.io>
+Date: Tue, 16 Jan 2018 14:09:50 +0100
+Subject: [PATCH 027/230] Fix compilation of simplebrowser example
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Previously qstyle.h was included indirectly through the uic
+generated code, but this got changed in qtbase
+commit 058474884c2505a8a0.
+
+Task-number: QTBUG-65793
+Change-Id: I56a1cd045d53b268999d728f6907ee8d952ba6e9
+Reviewed-by: Jüri Valdmann <juri.valdmann@qt.io>
+Reviewed-by: Michal Klocek <michal.klocek@qt.io>
+---
+ examples/webenginewidgets/simplebrowser/webpage.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/examples/webenginewidgets/simplebrowser/webpage.cpp b/examples/webenginewidgets/simplebrowser/webpage.cpp
+index 3b78b861..90395641 100644
+--- a/examples/webenginewidgets/simplebrowser/webpage.cpp
++++ b/examples/webenginewidgets/simplebrowser/webpage.cpp
+@@ -56,6 +56,7 @@
+ #include "webview.h"
+ #include <QAuthenticator>
+ #include <QMessageBox>
++#include <QStyle>
+ 
+ WebPage::WebPage(QWebEngineProfile *profile, QObject *parent)
+     : QWebEnginePage(profile, parent)
+-- 
+2.17.0
+

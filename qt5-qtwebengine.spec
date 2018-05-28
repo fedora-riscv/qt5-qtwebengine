@@ -130,6 +130,8 @@ Patch101: qtwebengine-everywhere-src-5.10.1-security-5.9.5.patch
 # fix incomplete (and thus having no effect) fix for CVE-2018-6033 in 5.10.1
 # (forward-ported from 5.9.5, will also be included in 5.11)
 Patch102: qtwebengine-everywhere-src-5.10.1-CVE-2018-6033.patch
+# From 5.11 branch, fix build against Qt 5.11.x
+Patch103: 0027-Fix-compilation-of-simplebrowser-example.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -382,6 +384,7 @@ BuildArch: noarch
 %patch100 -p1 -b .no-aspirational-scripts
 %patch101 -p1 -b .security-5.9.5
 %patch102 -p1 -b .CVE-2018-6033
+%patch103 -p1 -b .0027
 # fix // in #include in content/renderer/gpu to avoid debugedit failure
 sed -i -e 's!gpu//!gpu/!g' \
   src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
@@ -590,6 +593,7 @@ done
 * Sun May 27 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.10.1-7
 - rebuild (qt5 5.11.0)
 - Add patch by spot from the Fedora Chromium RPM for FTBFS with GCC 8 on i686
+- include 0027-Fix-compilation-of-simplebrowser-example.patch (5.11 branch)
 
 * Mon Apr 30 2018 Pete Walter <pwalter@fedoraproject.org> - 5.10.1-6
 - Rebuild for ICU 61.1
