@@ -50,7 +50,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.10.1
-Release: 4%{?dist}
+Release: 4%{?dist}.1
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -581,6 +581,9 @@ done
 
 
 %changelog
+* Tue Jun 12 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.10.1-4.1
+- (branch) rebuild (qt5)
+
 * Sun Mar 18 2018 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.10.1-4
 - Fix (from 5.9.5) for incomplete, ineffective fix for CVE-2018-6033 in 5.10.1
 
