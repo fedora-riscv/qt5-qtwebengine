@@ -99,10 +99,15 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/arm/vp56_arith.h \
                 libavcodec/arm/vp8.h \
                 libavcodec/arm/vp8dsp.h \
+		libavcodec/aac_ac3_parser.h \
+		libavcodec/ac3_parser_internal.h \
+		libavcodec/ac3.h \
+		libavcodec/adts_header.h \
                 libavcodec/avcodec.h \
                 libavcodec/blockdsp.h \
                 libavcodec/bytestream.h \
                 libavcodec/dct.h \
+		libavcodec/dct32.h \
                 libavcodec/dsputil.h \
                 libavcodec/dv_profile_internal.h \
                 libavcodec/error_resilience.h \
@@ -119,12 +124,19 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/h264pred.h \
                 libavcodec/hpeldsp.h \
                 libavcodec/hwaccel.h \
+		libavcodec/hwaccels.h \
                 libavcodec/idctdsp.h \
                 libavcodec/internal.h \
                 libavcodec/mathops.h \
+		libavcodec/mdct15.h \
                 libavcodec/me_cmp.h \
                 libavcodec/motion_est.h \
+		libavcodec/mpegaudio_tablegen.h \
+		libavcodec/mpegaudiodectab.h \
+                libavcodec/mpegaudiodsp.h \
+		libavcodec/mpeg12.h \
                 libavcodec/mpeg12data.h \
+		libavcodec/mpeg12vlc.h \
                 libavcodec/mpegpicture.h \
                 libavcodec/mpegutils.h \
                 libavcodec/mpegvideo.h \
@@ -132,6 +144,8 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/mpegvideoencdsp.h \
                 libavcodec/old_codec_ids.h \
                 libavcodec/options_table.h \
+		libavcodec/opus_celt.h \
+		libavcodec/opus_pvq.h \
                 libavcodec/opus_rc.h \
                 libavcodec/pcm_tablegen.h \
                 libavcodec/pel_template.c \
@@ -211,12 +225,15 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavutil/x86/float_dsp.asm \
                 libavutil/x86/lls.asm \
                 libavcodec/bit_depth_template.c \
+		libavcodec/dct32_template.c \
                 libavcodec/fft_template.c \
                 libavcodec/h264pred_template.c \
                 libavcodec/hpel_template.c \
                 libavcodec/hpeldsp_template.c \
                 libavcodec/mdct_template.c \
-                libavcodec/pel_template.c \
+		libavcodec/mpegaudiodec_template.c \
+		libavcodec/mpegaudiodsp_template.c
+		libavcodec/mpegaudiodsp.c \
                 libavcodec/videodsp_template.c \
                 libavcodec/flacdec.c \
                 libavcodec/flacdsp.c \
