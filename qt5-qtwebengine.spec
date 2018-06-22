@@ -50,8 +50,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.11.0
-Release: 2%{?dist}
+Version: 5.11.1
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -59,8 +59,8 @@ Release: 2%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.11/5.11.0/submodules/qtwebengine-everywhere-src-5.11.0.tar.xz
-# ./clean_qtwebengine.sh 5.10.1
+# wget http://download.qt.io/official_releases/qt/5.11/5.11.1/submodules/qtwebengine-everywhere-src-5.11.1.tar.xz
+# ./clean_qtwebengine.sh 5.11.1
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -119,7 +119,6 @@ Patch22: qtwebengine-everywhere-src-5.10.0-icu59.patch
 # to get the value we expect (and chromium checks for). Patch by spot.
 Patch23: qtwebengine-everywhere-src-5.10.1-gcc8-alignof.patch
 ## Upstream patches:
-Patch102: 0002-Fix-build-with-GCC-8.1.0.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -361,9 +360,6 @@ BuildArch: noarch
 %endif
 
 ## upstream patches
-pushd src/3rdparty/chromium
-%patch102 -p2 -b .0002
-popd
 
 ##FIXME/TODO rebase
 #patch4 -p1 -b .system-nspr-prtime
@@ -581,6 +577,9 @@ done
 
 
 %changelog
+* Fri Jun 22 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-1
+- 5.11.1
+
 * Wed Jun 20 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.0-2
 - rebuild (qt5)
 

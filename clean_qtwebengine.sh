@@ -21,7 +21,7 @@
 
 if [ -z "$1" ] ; then
   echo "usage: ./clean_qtwebengine.sh VERSION"
-  echo "e.g.: ./clean_qtwebengine.sh 5.11.0"
+  echo "e.g.: ./clean_qtwebengine.sh 5.11.1"
   exit 1
 fi
 
