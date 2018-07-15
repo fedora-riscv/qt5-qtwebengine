@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -185,7 +185,9 @@ BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
 BuildRequires: pkgconfig(lcms2)
 BuildRequires: perl-interpreter
-BuildRequires: python2
+# recommended workaround from
+# https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
+BuildRequires: /usr/bin/python
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.7.0
 %endif
@@ -577,6 +579,9 @@ done
 
 
 %changelog
+* Sun Jul 15 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-4
+- BR: /usr/bin/python
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 5.11.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
