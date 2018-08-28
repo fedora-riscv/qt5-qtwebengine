@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -165,7 +165,7 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(zlib)
-BuildRequires: pkgconfig(minizip)
+BuildRequires: minizip-compat-devel
 BuildRequires: pkgconfig(x11)
 BuildRequires: pkgconfig(xi)
 BuildRequires: pkgconfig(xcursor)
@@ -579,6 +579,9 @@ done
 
 
 %changelog
+* Tue Aug 28 2018 Patrik Novotný <panovotn@redhat.com> - 5.11.1-5
+- change requires to minizip-compat(-devel), rhbz#1609830, rhbz#1615381
+
 * Sun Jul 15 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-4
 - BR: /usr/bin/python
 
