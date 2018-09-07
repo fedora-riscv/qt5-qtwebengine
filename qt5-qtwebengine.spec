@@ -165,7 +165,11 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(zlib)
+%if 0%{?fedora} > 29
 BuildRequires: minizip-compat-devel
+%else
+BuildRequires: pkgconfig(minizip)
+%endif
 BuildRequires: pkgconfig(x11)
 BuildRequires: pkgconfig(xi)
 BuildRequires: pkgconfig(xcursor)
