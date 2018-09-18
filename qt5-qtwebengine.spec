@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -165,10 +165,10 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(zlib)
-%if 0%{?fedora} > 29
-BuildRequires: minizip-compat-devel
-%else
 BuildRequires: pkgconfig(minizip)
+# make sure we get the right minizip
+%if 0%{?fedora} > 29
+BuildRequires:  minizip-compat-devel
 %endif
 BuildRequires: pkgconfig(x11)
 BuildRequires: pkgconfig(xi)
@@ -583,6 +583,9 @@ done
 
 
 %changelog
+* Tue Sep 18 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-6
+- cleaner (imo) minizip deps, unconditionally and explicitly use pkgconfig
+
 * Tue Aug 28 2018 Patrik Novotný <panovotn@redhat.com> - 5.11.1-5
 - change requires to minizip-compat(-devel), rhbz#1609830, rhbz#1615381
 
