@@ -165,10 +165,13 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(zlib)
-BuildRequires: pkgconfig(minizip)
 # make sure we get the right minizip
+# this conditional should only be temporary, see also:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1630448
 %if 0%{?fedora} > 29
 BuildRequires:  minizip-compat-devel
+%else
+BuildRequires: pkgconfig(minizip)
 %endif
 BuildRequires: pkgconfig(x11)
 BuildRequires: pkgconfig(xi)
@@ -584,7 +587,7 @@ done
 
 %changelog
 * Tue Sep 18 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-6
-- cleaner (imo) minizip deps, unconditionally and explicitly use pkgconfig
+- cleaner (imo) minizip deps, workaround rhbz#1630448
 
 * Tue Aug 28 2018 Patrik Novotný <panovotn@redhat.com> - 5.11.1-5
 - change requires to minizip-compat(-devel), rhbz#1609830, rhbz#1615381
