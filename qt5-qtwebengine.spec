@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.1
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -586,6 +586,9 @@ done
 
 
 %changelog
+* Fri Sep 21 2018 Jan Grulich <jgrulich@redhat.com> - 5.11.1-7
+- rebuild (qt5)
+
 * Tue Sep 18 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-6
 - cleaner (imo) minizip deps, workaround rhbz#1630448
 
