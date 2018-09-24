@@ -165,13 +165,10 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(zlib)
-# make sure we get the right minizip
-# this conditional should only be temporary, see also:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1630448
-%if 0%{?fedora} > 29
-BuildRequires:  minizip-compat-devel
-%else
+%if 0%{?fedora} && 0%{?fedora} < 30
 BuildRequires: pkgconfig(minizip)
+%else
+Provides: bundled(minizip) = 1.2
 %endif
 BuildRequires: pkgconfig(x11)
 BuildRequires: pkgconfig(xi)
@@ -586,6 +583,9 @@ done
 
 
 %changelog
+* Mon Sep 24 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-8
+- use bundled minizip on f30+ (#1632196)
+
 * Fri Sep 21 2018 Jan Grulich <jgrulich@redhat.com> - 5.11.1-7
 - rebuild (qt5)
 
