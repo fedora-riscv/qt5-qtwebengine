@@ -50,8 +50,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.11.1
-Release: 8%{?dist}
+Version: 5.11.2
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -583,6 +583,9 @@ done
 
 
 %changelog
+* Mon Sep 24 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.2-1
+- 5.11.2
+
 * Mon Sep 24 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.1-8
 - use bundled minizip on f30+ (#1632196)
 
