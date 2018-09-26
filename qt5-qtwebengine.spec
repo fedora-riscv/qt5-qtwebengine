@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -430,7 +430,8 @@ export NINJA_PATH=%{__ninja}
 %{qmake_qt5} CONFIG+="%{debug_config}" \
   QMAKE_EXTRA_ARGS+="-system-webengine-icu" .
 
-%make_build
+# avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
+make %{?_smp_mflags}
 
 %if 0%{?docs}
 %make_build docs
@@ -583,6 +584,9 @@ done
 
 
 %changelog
+* Wed Sep 26 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.2-2
+- avoid using %%make_build for now
+
 * Mon Sep 24 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.2-1
 - 5.11.2
 
