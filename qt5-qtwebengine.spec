@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -587,6 +587,9 @@ done
 
 
 %changelog
+* Tue Dec 11 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.3-2
+- rebuild (Qt5)
+
 * Tue Dec 04 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.3-1
 - 5.11.3
 
