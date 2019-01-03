@@ -51,7 +51,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.11.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -329,10 +329,17 @@ Provides: bundled(fdlibm) = 5.3
 %package devel
 Summary: Development files for %{name}
 Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}-devtools%{?_isa} = %{version}-%{release}
 Requires: qt5-qtbase-devel%{?_isa}
 Requires: qt5-qtdeclarative-devel%{?_isa}
 %description devel
 %{summary}.
+
+%package devtools
+Summary: WebEngine devtools_resources
+Requires: %{name}%{?_isa} = %{version}-%{release}
+%description devtools
+Support for remote debugging.
 
 %package examples
 Summary: Example files for %{name}
@@ -511,7 +518,10 @@ done
 %{_qt5_libdir}/qtwebengine/
 %endif
 %{_qt5_plugindir}/designer/libqwebengineview.so
-%{_qt5_datadir}/resources/
+%dir %{_qt5_datadir}/resources/
+%{_qt5_datadir}/resources/qtwebengine_resources_100p.pak
+%{_qt5_datadir}/resources/qtwebengine_resources_200p.pak
+%{_qt5_datadir}/resources/qtwebengine_resources.pak
 %dir %{_qtwebengine_dictionaries_dir}
 %dir %{_qt5_translationdir}/qtwebengine_locales
 %lang(am) %{_qt5_translationdir}/qtwebengine_locales/am.pak
@@ -577,6 +587,9 @@ done
 %{_qt5_libdir}/pkgconfig/Qt5*.pc
 %{_qt5_archdatadir}/mkspecs/modules/*.pri
 
+%files devtools
+%{_qt5_datadir}/resources/qtwebengine_devtools_resources.pak
+
 %files examples
 %{_qt5_examplesdir}/
 
@@ -587,6 +600,9 @@ done
 
 
 %changelog
+* Thu Jan 03 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.11.3-3
+- -devtools subpkg, workaround multilib conflicts (#1663299)
+
 * Tue Dec 11 2018 Rex Dieter <rdieter@fedoraproject.org> - 5.11.3-2
 - rebuild (Qt5)
 
