@@ -329,7 +329,8 @@ Provides: bundled(fdlibm) = 5.3
 %package devel
 Summary: Development files for %{name}
 Requires: %{name}%{?_isa} = %{version}-%{release}
-Requires: %{name}-devtools%{?_isa} = %{version}-%{release}
+# not arch'd for now, see if can get away with avoiding multilib'ing -- rex
+Requires: %{name}-devtools = %{version}-%{release}
 Requires: qt5-qtbase-devel%{?_isa}
 Requires: qt5-qtdeclarative-devel%{?_isa}
 %description devel
