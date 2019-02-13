@@ -77,8 +77,6 @@ Patch2:  qtwebengine-opensource-src-5.12.1-fix-extractcflag.patch
 # disable NEON vector instructions on ARM where the NEON code FTBFS due to
 # GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
 Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
-# python -> python2
-Patch7:  qtwebengine-everywhere-src-5.12.1-python2.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
 Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 # Force verbose output from the GN bootstrap process
