@@ -1,0 +1,11 @@
+diff -up qtwebengine-everywhere-src-5.12.1/src/core/config/linux.pri.python2 qtwebengine-everywhere-src-5.12.1/src/core/config/linux.pri
+--- qtwebengine-everywhere-src-5.12.1/src/core/config/linux.pri.python2	2019-02-01 09:30:19.194657298 -0600
++++ qtwebengine-everywhere-src-5.12.1/src/core/config/linux.pri	2019-02-01 10:53:16.756357279 -0600
+@@ -205,5 +205,5 @@ gn_args += linux_link_libpci=true
+ CHROMIUM_SRC_DIR = "$$QTWEBENGINE_ROOT/$$getChromiumSrcDir()"
+ R_G_F_PY = "$$CHROMIUM_SRC_DIR/build/linux/unbundle/replace_gn_files.py"
+ R_G_F_PY_ARGS = "--system-libraries yasm"
+-log("Running python $$R_G_F_PY $$R_G_F_PY_ARGS$${EOL}")
+-!system("python $$R_G_F_PY $$R_G_F_PY_ARGS"): error("-- unbundling failed")
++log("Running python2 $$R_G_F_PY $$R_G_F_PY_ARGS$${EOL}")
++!system("python2 $$R_G_F_PY $$R_G_F_PY_ARGS"): error("-- unbundling failed")

@@ -140,6 +140,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/mpegpicture.h \
                 libavcodec/mpegutils.h \
                 libavcodec/mpegvideo.h \
+                libavcodec/mpegvideodata.h \
                 libavcodec/mpegvideodsp.h \
                 libavcodec/mpegvideoencdsp.h \
                 libavcodec/old_codec_ids.h \
