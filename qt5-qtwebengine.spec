@@ -109,6 +109,7 @@ BuildRequires: gcc-c++
 BuildRequires: libstdc++-static
 BuildRequires: git-core
 BuildRequires: gperf
+BuildRequires: krb5-devel
 BuildRequires: libicu-devel
 BuildRequires: libjpeg-devel
 BuildRequires: re2-devel
@@ -343,7 +344,6 @@ BuildArch: noarch
 
 ## upstream patches
 
-%patch7 -p1 -b .python2
 %patch10 -p1 -b .openmax-dl-neon
 ## NEEDSWORK
 #patch21 -p1 -b .gn-bootstrap-verbose
@@ -403,7 +403,9 @@ export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
   CONFIG+="%{debug_config}" \
-  QMAKE_EXTRA_ARGS+="-system-webengine-icu" .
+  QMAKE_EXTRA_ARGS+="-system-webengine-icu" \
+  QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
+  .
 
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
 make %{?_smp_mflags}
@@ -565,8 +567,9 @@ done
 
 
 %changelog
-* Wed Feb 13 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.1-1
+* Sun Feb 24 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.1-1
 - 5.12.1
+- enable kerberos support
 
 * Tue Feb 05 2019 Björn Esser <besser82@fedoraproject.org> - 5.11.3-5
 - rebuilt (libvpx)
