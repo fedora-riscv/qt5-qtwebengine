@@ -159,6 +159,7 @@ BuildRequires: pkgconfig(libpci)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
 BuildRequires: pkgconfig(lcms2)
+BuildRequires: pkgconfig(libxslt) pkgconfig(libxml-2.0)
 BuildRequires: perl-interpreter
 BuildRequires: python2-devel
 %if 0%{?use_system_libvpx}
@@ -228,7 +229,7 @@ Provides: bundled(libwebp) = 0.6.0
 %endif
 # bundled as "libxml"
 # see src/3rdparty/chromium/third_party/libxml/linux/include/libxml/xmlversion.h
-Provides: bundled(libxml2) = 2.9.4
+#Provides: bundled(libxml2) = 2.9.4
 # see src/3rdparty/chromium/third_party/libxslt/linux/config.h for version
 Provides: bundled(libxslt) = 1.1.29
 Provides: bundled(libXNVCtrl) = 302.17
