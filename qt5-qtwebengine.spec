@@ -570,6 +570,7 @@ done
 %changelog
 * Mon Mar 25 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.2-1
 - 5.12.2
+- use system libxml2/libxslt
 
 * Sun Feb 24 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.1-1
 - 5.12.1
