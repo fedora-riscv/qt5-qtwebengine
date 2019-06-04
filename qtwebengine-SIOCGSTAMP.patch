@@ -1,0 +1,11 @@
+diff -up qtwebengine-everywhere-src-5.12.3/src/3rdparty/chromium/third_party/webrtc/rtc_base/physicalsocketserver.cc.socket qtwebengine-everywhere-src-5.12.3/src/3rdparty/chromium/third_party/webrtc/rtc_base/physicalsocketserver.cc
+--- qtwebengine-everywhere-src-5.12.3/src/3rdparty/chromium/third_party/webrtc/rtc_base/physicalsocketserver.cc.socket	2019-04-04 10:55:59.000000000 -0500
++++ qtwebengine-everywhere-src-5.12.3/src/3rdparty/chromium/third_party/webrtc/rtc_base/physicalsocketserver.cc	2019-06-04 16:21:09.120555044 -0500
+@@ -69,6 +69,7 @@ typedef void* SockOptArg;
+ 
+ #if defined(WEBRTC_POSIX) && !defined(WEBRTC_MAC) && !defined(__native_client__)
+ 
++#include <linux/socket.h>
+ int64_t GetSocketRecvTimestamp(int socket) {
+   struct timeval tv_ioctl;
+   int ret = ioctl(socket, SIOCGSTAMP, &tv_ioctl);
