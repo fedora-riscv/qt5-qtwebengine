@@ -46,8 +46,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.12.3
-Release: 4%{?dist}
+Version: 5.12.4
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -341,7 +341,8 @@ BuildArch: noarch
 %setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}}
 %patch0 -p1 -b .linux-pri
 %patch1 -p1 -b .no-icudtl-dat
-%patch2 -p1 -b .fix-extractcflag
+## FIXME?  no longer applies, relevant code very different now, hopefuly no longer needed -- rex
+#patch2 -p1 -b .fix-extractcflag
 %if !0%{?arm_neon}
 %patch3 -p1 -b .no-neon
 %endif
@@ -572,6 +573,9 @@ done
 
 
 %changelog
+* Mon Jun 17 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-1
+- 5.12.4
+
 * Tue Jun 11 2019 Jan Grulich <jgrulich@redhat.com> - 5.12.3-4
 - rebuild (qt5)
 
