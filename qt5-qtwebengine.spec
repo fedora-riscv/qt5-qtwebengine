@@ -73,7 +73,7 @@ Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
 Patch1:  qtwebengine-everywhere-src-5.11.0-no-icudtl-dat.patch
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
-Patch2:  qtwebengine-opensource-src-5.12.1-fix-extractcflag.patch
+Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
 # disable NEON vector instructions on ARM where the NEON code FTBFS due to
 # GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
 Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
@@ -341,8 +341,7 @@ BuildArch: noarch
 %setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}}
 %patch0 -p1 -b .linux-pri
 %patch1 -p1 -b .no-icudtl-dat
-## FIXME?  no longer applies, relevant code very different now, hopefuly no longer needed -- rex
-#patch2 -p1 -b .fix-extractcflag
+%patch2 -p1 -b .fix-extractcflag
 %if !0%{?arm_neon}
 %patch3 -p1 -b .no-neon
 %endif
