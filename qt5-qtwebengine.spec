@@ -47,7 +47,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.12.4
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -64,6 +64,7 @@ Source2: clean_ffmpeg.sh
 Source3: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
+
 # some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
 Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
@@ -85,7 +86,12 @@ Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
+
 ## Upstream patches:
+# qtwebengine-chromium
+Patch101: 0001-Fix-changing-should_override_user_agent_in_new_tabs_.patch
+Patch102: 0002-Bump-V8-patch-level.patch
+Patch103: 0003-Fix-segfaults-with-arm-32bit-on-metrics.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -339,6 +345,13 @@ BuildArch: noarch
 
 %prep
 %setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}}
+
+pushd src/3rdparty/chromium
+%patch101 -p2 -b .0001
+%patch102 -p2 -b .0002
+%patch103 -p2 -b .0003
+popd
+
 %patch0 -p1 -b .linux-pri
 %patch1 -p1 -b .no-icudtl-dat
 %patch2 -p1 -b .fix-extractcflag
@@ -572,6 +585,9 @@ done
 
 
 %changelog
+* Wed Jun 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-5
+- pull in some upstream fixes
+
 * Tue Jun 25 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-4
 - rebuild (qt5)
 
