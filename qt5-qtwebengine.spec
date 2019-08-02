@@ -47,7 +47,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.12.4
-Release: 5%{?dist}
+Release: 5%{?dist}.1
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -92,6 +92,9 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 Patch101: 0001-Fix-changing-should_override_user_agent_in_new_tabs_.patch
 Patch102: 0002-Bump-V8-patch-level.patch
 Patch103: 0003-Fix-segfaults-with-arm-32bit-on-metrics.patch
+
+## RHEL8 only patch
+Patch500: qt5-qtbase-5.11.1-mkspecs.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -415,6 +418,12 @@ cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
 
 
 %build
+mkdir patched-mkspecs-features
+cp -a /usr/lib64/qt5/mkspecs/features/qt_module{,_headers}.prf \
+  patched-mkspecs-features/
+patch -p3 -d patched-mkspecs-features <%{PATCH500}
+export QMAKEFEATURES=`pwd`/patched-mkspecs-features
+
 export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
 export NINJA_PATH=%{__ninja}
@@ -585,6 +594,9 @@ done
 
 
 %changelog
+* Fri Aug 02 2019 Troy Dawson <tdawson@redhat.com> - 5.12.4-5.1
+- Add mkspecs to build on RHEL8 (Kevin Kofler)
+
 * Wed Jun 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-5
 - pull in some upstream fixes
 
