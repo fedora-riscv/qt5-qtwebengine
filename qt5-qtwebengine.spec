@@ -4,7 +4,7 @@
 
 # define to build docs, need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
-%global docs 1
+%global docs 0
 
 %if 0%{?fedora} > 29
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
@@ -596,6 +596,7 @@ done
 %changelog
 * Fri Aug 02 2019 Troy Dawson <tdawson@redhat.com> - 5.12.4-5.1
 - Add mkspecs to build on RHEL8 (Kevin Kofler)
+- Do not build docs for initial EPEL8 build.
 
 * Wed Jun 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-5
 - pull in some upstream fixes
