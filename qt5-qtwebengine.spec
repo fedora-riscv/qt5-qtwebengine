@@ -422,6 +422,7 @@ mkdir patched-mkspecs-features
 cp -a /usr/lib64/qt5/mkspecs/features/qt_module{,_headers}.prf \
   patched-mkspecs-features/
 patch -p3 -d patched-mkspecs-features <%{PATCH500}
+sed -i "s|\$\${PWD}|/usr/lib64/qt5/mkspecs/features|" patched-mkspecs-features/qt_module.prf
 export QMAKEFEATURES=`pwd`/patched-mkspecs-features
 
 export STRIP=strip
