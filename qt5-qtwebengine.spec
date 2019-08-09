@@ -65,6 +65,9 @@ Source3: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
 
+# pulseaudio headers
+Source20: pulseaudio-12.2-headers.tar.gz
+
 # some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
 Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
@@ -344,7 +347,9 @@ BuildArch: noarch
 
 
 %prep
-%setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}}
+%setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}} -a20
+
+mv pulse src/3rdparty/chromium/
 
 pushd src/3rdparty/chromium
 %patch101 -p2 -b .0001
@@ -587,6 +592,7 @@ done
 %changelog
 * Wed Aug 07 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-7
 - rebuild (re2, #1672014#c10)
+- build using bundled pulse headers, workaround FTBFS bug #1729806
 
 * Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.12.4-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
