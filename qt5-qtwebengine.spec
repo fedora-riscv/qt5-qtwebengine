@@ -47,7 +47,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.12.4
-Release: 7%{?dist}
+Release: 8%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -425,7 +425,8 @@ export NINJAFLAGS="%{__ninja_common_opts}"
 export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
-  CONFIG+="%{debug_config}" \
+  %{?debug_config:CONFIG+="%{debug_config}}" \
+  CONFIG+="link_pulseaudio" \
   QMAKE_EXTRA_ARGS+="-system-webengine-icu" \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   .
@@ -590,6 +591,9 @@ done
 
 
 %changelog
+* Mon Aug 12 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-8
+- CONFIG+=link_pulseaudio
+
 * Wed Aug 07 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-7
 - rebuild (re2, #1672014#c10)
 - build using bundled pulse headers, workaround FTBFS bug #1729806
