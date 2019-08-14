@@ -47,7 +47,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.12.4
-Release: 8%{?dist}
+Release: 9%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -591,6 +591,9 @@ done
 
 
 %changelog
+* Wed Aug 14 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-9
+- rebuild (re2)
+
 * Mon Aug 12 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-8
 - CONFIG+=link_pulseaudio
 
