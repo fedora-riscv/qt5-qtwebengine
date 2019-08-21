@@ -173,6 +173,8 @@ BuildRequires: pkgconfig(lcms2)
 ## https://bugreports.qt.io/browse/QTBUG-59094
 #BuildRequires: pkgconfig(libxslt) pkgconfig(libxml-2.0)
 BuildRequires: perl-interpreter
+# fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
+# per https://fedoraproject.org/wiki/Changes/RetirePython2#FESCo_exceptions
 BuildRequires: python2-devel
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.7.0
