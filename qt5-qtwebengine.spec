@@ -175,7 +175,8 @@ BuildRequires: pkgconfig(lcms2)
 BuildRequires: perl-interpreter
 # fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
 # per https://fedoraproject.org/wiki/Changes/RetirePython2#FESCo_exceptions
-BuildRequires: python2-devel
+# Only the interpreter is needed
+BuildRequires: %{__python2}
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.7.0
 %endif
