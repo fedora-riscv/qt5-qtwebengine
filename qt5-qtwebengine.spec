@@ -46,8 +46,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.12.4
-Release: 10%{?dist}
+Version: 5.12.5
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -55,8 +55,8 @@ Release: 10%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.12/5.12.3/submodules/qtwebengine-everywhere-src-5.12.3.tar.xz
-# ./clean_qtwebengine.sh 5.12.2
+# wget http://download.qt.io/official_releases/qt/5.12/5.12.5/submodules/qtwebengine-everywhere-src-5.12.5.tar.xz
+# ./clean_qtwebengine.sh 5.12.5
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -92,9 +92,6 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
-Patch101: 0001-Fix-changing-should_override_user_agent_in_new_tabs_.patch
-Patch102: 0002-Bump-V8-patch-level.patch
-Patch103: 0003-Fix-segfaults-with-arm-32bit-on-metrics.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -355,9 +352,6 @@ BuildArch: noarch
 mv pulse src/3rdparty/chromium/
 
 pushd src/3rdparty/chromium
-%patch101 -p2 -b .0001
-%patch102 -p2 -b .0002
-%patch103 -p2 -b .0003
 popd
 
 %patch0 -p1 -b .linux-pri
@@ -595,6 +589,9 @@ done
 
 
 %changelog
+* Thu Sep 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.5-1
+- 5.12.5
+
 * Tue Sep 24 2019 Jan Grulich <jgrulich@redhat.com> - 5.12.4-10
 - rebuild (qt5)
 
