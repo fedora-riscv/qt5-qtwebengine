@@ -173,7 +173,12 @@ BuildRequires: perl-interpreter
 # fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
 # per https://fedoraproject.org/wiki/Changes/RetirePython2#FESCo_exceptions
 # Only the interpreter is needed
+%if 0%{?fedora} > 29 || 0%{?rhel} > 8
 BuildRequires: %{__python2}
+%else
+BuildRequires: python2
+BuildRequires: python2-rpm-macros
+%endif
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.7.0
 %endif
