@@ -47,7 +47,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.12.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -475,6 +475,8 @@ for prl_file in libQt5*.prl ; do
     sed -i -e "/^QMAKE_PRL_LIBS/d" ${prl_file}
   fi
 done
+# explicitly omit, at least until there's a real library installed associated with it -- rex
+rm -fv Qt5WebEngineCore.la
 popd
 
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
@@ -576,7 +578,7 @@ done
 %{_qt5_headerdir}/Qt*/
 %{_qt5_libdir}/libQt5*.so
 %{_qt5_libdir}/libQt5*.prl
-%{_qt5_libdir}/Qt5WebEngineCore.la
+#{_qt5_libdir}/Qt5WebEngineCore.la
 %{_qt5_libdir}/cmake/Qt5*/
 %{_qt5_libdir}/pkgconfig/Qt5*.pc
 %{_qt5_archdatadir}/mkspecs/modules/*.pri
@@ -594,6 +596,9 @@ done
 
 
 %changelog
+* Wed Oct 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.5-2
+- explicitly omit QtWebEngineCore.la from packaging
+
 * Thu Sep 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.5-1
 - 5.12.5
 
