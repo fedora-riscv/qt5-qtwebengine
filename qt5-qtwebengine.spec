@@ -596,6 +596,9 @@ done
 
 
 %changelog
+* Mon Dec 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.6-1
+- 5.12.6
+
 * Wed Oct 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.5-2
 - explicitly omit QtWebEngineCore.la from packaging
 
