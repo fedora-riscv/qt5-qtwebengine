@@ -46,7 +46,7 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.12.6
+Version: 5.13.2
 Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
@@ -596,6 +596,9 @@ done
 
 
 %changelog
+* Mon Dec 09 2019 Jan Grulich <jgrulich@redhat.com> - 5.13.2-1
+- 5.13.2
+
 * Mon Dec 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.6-1
 - 5.12.6
 
