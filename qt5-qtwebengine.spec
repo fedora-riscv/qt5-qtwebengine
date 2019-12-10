@@ -89,6 +89,8 @@ Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
+# Fix missing semicolon in Blink
+Patch25: qtwebengine-everywhere-5.13.2-missing-semicolon-in-blink.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
@@ -373,6 +375,7 @@ popd
 ## NEEDSWORK
 #patch21 -p1 -b .gn-bootstrap-verbose
 %patch24 -p1 -b .aarch64-new-stat
+%patch25 -p1 -b .missing-semicolon-in-blink
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
