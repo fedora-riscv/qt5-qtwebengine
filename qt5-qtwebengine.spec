@@ -91,6 +91,8 @@ Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Fix missing semicolon in Blink
 Patch25: qtwebengine-everywhere-5.13.2-missing-semicolon-in-blink.patch
+# Use Python2
+Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
@@ -376,6 +378,7 @@ popd
 #patch21 -p1 -b .gn-bootstrap-verbose
 %patch24 -p1 -b .aarch64-new-stat
 %patch25 -p1 -b .missing-semicolon-in-blink
+%patch26 -p1 -b .use-python2
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
