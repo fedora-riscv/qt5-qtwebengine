@@ -47,7 +47,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.13.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -602,6 +602,9 @@ done
 
 
 %changelog
+* Wed Jan 08 2020 Than Ngo <than@redhat.com> - 5.13.2-2
+- merged Pull-Request, keep ppc files in ffmpeg
+
 * Mon Dec 09 2019 Jan Grulich <jgrulich@redhat.com> - 5.13.2-1
 - 5.13.2
 
