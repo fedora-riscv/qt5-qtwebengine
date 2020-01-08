@@ -46,6 +46,12 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/arm/intmath.h \
                 libavutil/arm/intreadwrite.h \
                 libavutil/arm/timer.h \
+                libavutil/ppc/cpu.h \
+                libavutil/ppc/float_dsp_altivec.h \
+                libavutil/ppc/float_dsp_vsx.h \
+                libavutil/ppc/intreadwrite.h \
+                libavutil/ppc/timer.h \
+                libavutil/ppc/util_altivec.h \
                 libavutil/aes_internal.h \
                 libavutil/atomic.h \
                 libavutil/atomic_gcc.h \
@@ -99,6 +105,9 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/arm/vp56_arith.h \
                 libavcodec/arm/vp8.h \
                 libavcodec/arm/vp8dsp.h \
+                libavcodec/ppc/fft_vsx.h \
+                libavcodec/ppc/hpeldsp_altivec.h \
+                libavcodec/ppc/mathops.h \
 		libavcodec/aac_ac3_parser.h \
 		libavcodec/ac3_parser_internal.h \
 		libavcodec/ac3.h \
@@ -270,6 +279,19 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/arm/vorbisdsp_neon.S \
                 libavcodec/arm/mdct_neon.S \
                 libavcodec/arm/fft_neon.S \
+                libavutil/ppc/cpu.c \
+                libavutil/ppc/float_dsp_altivec.c \
+                libavutil/ppc/float_dsp_init.c \
+                libavutil/ppc/float_dsp_vsx.c \
+                libavcodec/ppc/fft_altivec.S \
+                libavcodec/ppc/fft_init.c \
+                libavcodec/ppc/fft_vsx.c \
+                libavcodec/ppc/hpeldsp_altivec.c \
+                libavcodec/ppc/mpegaudiodsp_altivec.c \
+                libavcodec/ppc/videodsp.c \
+                libavcodec/ppc/vorbisdsp_altivec.c \
+                libavcodec/ppc/vp3dsp_altivec.c \
+                libavcodec/ppc/vp8dsp_altivec.c \
                 chromium/ffmpeg_stub_headers.fragment \
                 chromium/ffmpegsumo.sigs"
 
