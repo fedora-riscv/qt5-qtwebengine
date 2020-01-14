@@ -36,11 +36,8 @@
 
 %global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
-# exclude plugins (all architectures) and libv8.so (i686, it's static everywhere
-# else)
-%global __provides_exclude ^lib.*plugin\\.so.*|libv8\\.so$
-# exclude libv8.so (i686, it's static everywhere else)
-%global __requires_exclude ^libv8\\.so$
+# exclude plugins
+%global __provides_exclude ^lib.*plugin\\.so.*$
 # and designer plugins
 %global __provides_exclude_from ^%{_qt5_plugindir}/.*\\.so$
 
