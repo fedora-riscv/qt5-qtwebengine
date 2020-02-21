@@ -6,12 +6,12 @@
 # where qt5-qttools (qt5-doctools) builds are not yet available
 %global docs 1
 
-%if 0%{?fedora} > 29
+%if 0%{?fedora}
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
+%endif
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
-%endif
 
 # NEON support on ARM (detected at runtime) - disable this if you are hitting
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
