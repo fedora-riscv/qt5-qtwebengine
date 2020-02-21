@@ -9,9 +9,9 @@
 %if 0%{?fedora} > 29
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
-%endif
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
+%endif
 
 # NEON support on ARM (detected at runtime) - disable this if you are hitting
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
@@ -90,6 +90,8 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 Patch25: qtwebengine-everywhere-5.13.2-missing-semicolon-in-blink.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
+# Fix missing include in chromium
+Patch27: qtwebengine-everywhere-5.13.2-fix-chromium-headers.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
@@ -376,6 +378,7 @@ popd
 %patch24 -p1 -b .aarch64-new-stat
 %patch25 -p1 -b .missing-semicolon-in-blink
 %patch26 -p1 -b .use-python2
+%patch27 -p1 -b .fix-chromium
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -599,8 +602,8 @@ done
 
 
 %changelog
-* Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 5.13.2-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+* Fri Feb 21 2020 Troy Dawson <tdawson@redhat.com> - 5.13.2-3
+- Patch 3rd party chromium, fix FTBFS (#1799084)
 
 * Wed Jan 08 2020 Than Ngo <than@redhat.com> - 5.13.2-2
 - merged Pull-Request, keep ppc files in ffmpeg
