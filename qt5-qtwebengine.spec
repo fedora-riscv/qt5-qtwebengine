@@ -513,11 +513,6 @@ done
 %{_qt5_bindir}/qwebengine_convert_dict
 %{_qt5_libdir}/qt5/qml/*
 %{_qt5_libdir}/qt5/libexec/QtWebEngineProcess
-#ifarch %{ix86}
-%if 0%{?sse2}
-# shared V8 library and its SSE2 version
-%{_qt5_libdir}/qtwebengine/
-%endif
 %{_qt5_plugindir}/designer/libqwebengineview.so
 %dir %{_qt5_datadir}/resources/
 %{_qt5_datadir}/resources/qtwebengine_resources_100p.pak
