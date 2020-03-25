@@ -13,6 +13,11 @@
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
 
+%if 0%{?fedora} > 31
+# need libicu >= 64, only currently available on f32+
+%global use_system_libicu 1
+%endif
+
 # NEON support on ARM (detected at runtime) - disable this if you are hitting
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
 #global arm_neon 1
@@ -43,17 +48,17 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.13.2
-Release: 4%{?dist}
+Version: 5.14.1
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
 # The other licenses are from Chromium and the code it bundles
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
-# cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.12/5.12.6/submodules/qtwebengine-everywhere-src-5.12.6.tar.xz
-# ./clean_qtwebengine.sh 5.12.6
+# leaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
+# wget http://download.qt.io/official_releases/qt/5.14/5.14.1/submodules/qtwebengine-everywhere-src-5.14.1.tar.xz
+# ./clean_qtwebengine.sh 5.14.1
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -80,25 +85,20 @@ Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
 Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
 # workaround FTBFS against kernel-headers-5.2.0+
 Patch4:  qtwebengine-SIOCGSTAMP.patch
+#  fix build when using qt < 5.14
+Patch5:  qtwebengine-5.14-1-QT_DEPRECATED_VERSION.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
 Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 # Force verbose output from the GN bootstrap process
 Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
-# Fix missing semicolon in Blink
-Patch25: qtwebengine-everywhere-5.13.2-missing-semicolon-in-blink.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 # Fix missing include in chromium
 Patch27: qtwebengine-everywhere-5.13.2-fix-chromium-headers.patch
-# Fix for clock_nanosleep
-# https://bugreports.qt.io/browse/QTBUG-81313
-# https://codereview.qt-project.org/c/qt/qtwebengine-chromium/+/292352
-# Qt: https://codereview.qt-project.org/gitweb?p=qt/qtwebengine-chromium.git;a=patch;h=2c37da9ad4fe7d5b1911ba991798e508c81ba5ef
-# Chromium: https://chromium.googlesource.com/chromium/src/+/54407b422a9cbf775a68c1d57603c0ecac8ce0d7%5E%21/#F0
-# Didn't apply cleanly, manually ported
-Patch28: qtwebengine-everywhere-5.13.2-allow-restricted-clock_nanosleep-in-Linux-sandbox-manual.patch
+# Fix gcc10 FTBFS
+Patch29: qtwebengine-everywhere-5.14.1-gcc10.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
@@ -128,7 +128,9 @@ BuildRequires: libstdc++-static
 BuildRequires: git-core
 BuildRequires: gperf
 BuildRequires: krb5-devel
-BuildRequires: libicu-devel
+%if 0%{?use_system_libicu}
+BuildRequires: libicu-devel >= 64
+%endif
 BuildRequires: libjpeg-devel
 BuildRequires: re2-devel
 BuildRequires: snappy-devel
@@ -370,24 +372,25 @@ pushd src/3rdparty/chromium
 popd
 
 %patch0 -p1 -b .linux-pri
+%if 0%{?use_system_libicu}
 %patch1 -p1 -b .no-icudtl-dat
+%endif
 %patch2 -p1 -b .fix-extractcflag
 %if !0%{?arm_neon}
 %patch3 -p1 -b .no-neon
 %endif
 %patch4 -p1 -b .SIOCGSTAMP
+%patch5 -p1 -b .QT_DEPRECATED_VERSION
 
 ## upstream patches
 
-%patch10 -p1 -b .openmax-dl-neon
+#patch10 -p1 -b .openmax-dl-neon
 ## NEEDSWORK
 #patch21 -p1 -b .gn-bootstrap-verbose
 %patch24 -p1 -b .aarch64-new-stat
-%patch25 -p1 -b .missing-semicolon-in-blink
 %patch26 -p1 -b .use-python2
 %patch27 -p1 -b .fix-chromium
-
-%patch28 -p0 -b .allow-clock_nanosleep
+%patch29 -p1 -b .gcc10
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -444,12 +447,12 @@ export NINJA_PATH=%{__ninja}
 %{qmake_qt5} \
   %{?debug_config:CONFIG+="%{debug_config}}" \
   CONFIG+="link_pulseaudio" \
-  QMAKE_EXTRA_ARGS+="-system-webengine-icu" \
+  %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   .
 
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
-make %{?_smp_mflags}
+make %{?_smp_mflags} -k
 
 %if 0%{?docs}
 %make_build docs
@@ -524,6 +527,9 @@ done
 %{_qt5_libdir}/qt5/libexec/QtWebEngineProcess
 %{_qt5_plugindir}/designer/libqwebengineview.so
 %dir %{_qt5_datadir}/resources/
+%if ! 0%{?use_system_libicu}
+%{_qt5_datadir}/resources/icudtl.dat
+%endif
 %{_qt5_datadir}/resources/qtwebengine_resources_100p.pak
 %{_qt5_datadir}/resources/qtwebengine_resources_200p.pak
 %{_qt5_datadir}/resources/qtwebengine_resources.pak
@@ -606,6 +612,11 @@ done
 
 
 %changelog
+* Wed Mar 25 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.1-1
+- 5.14.1
+- use_system_icu on f32+
+- drop upstreamed patches
+
 * Wed Mar 25 2020 Ankur Sinha <ankursinha AT fedoraproject DOT org> - 5.13.2-4
 - Add patch to allow clock_nanosleep in Linux sandbox (Chromium)
 

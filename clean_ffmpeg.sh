@@ -155,12 +155,14 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/old_codec_ids.h \
                 libavcodec/options_table.h \
 		libavcodec/opus_celt.h \
+		libavcodec/opusdsp.h \
 		libavcodec/opus_pvq.h \
                 libavcodec/opus_rc.h \
                 libavcodec/pcm_tablegen.h \
                 libavcodec/pel_template.c \
                 libavcodec/pixblockdsp.h \
                 libavcodec/pixels.h \
+		libavcodec/png.h \
                 libavcodec/pthread_internal.h \
                 libavcodec/put_bits.h \
                 libavcodec/qpeldsp.h \
@@ -178,6 +180,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/vorbisdsp.h \
                 libavcodec/vp3data.h \
                 libavcodec/vp3dsp.h \
+		libavcodec/vp4data.h \
                 libavcodec/vp56.h \
                 libavcodec/vp56dsp.h \
                 libavcodec/vp8data.h \
