@@ -91,6 +91,8 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/time_internal.h \
                 libavutil/version.h \
                 libavutil/x86_cpu.h
+		libavcodec/aarch64/neon.S \
+		libavcodec/aarch64/vp8dsp.h \
                 libavcodec/x86/constants.h \
                 libavcodec/x86/dsputil_x86.h \
                 libavcodec/x86/fft.h \
@@ -279,9 +281,11 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/aarch64/h264pred_neon.S \
                 libavcodec/aarch64/mdct_neon.S \
                 libavcodec/aarch64/vorbisdsp_neon.S \
+		libavcodec/aarch64/vp8dsp_neon.S \
                 libavcodec/arm/vorbisdsp_neon.S \
                 libavcodec/arm/mdct_neon.S \
                 libavcodec/arm/fft_neon.S \
+		libavcodec/arm/vp8dsp_neon.S \
                 libavutil/ppc/cpu.c \
                 libavutil/ppc/float_dsp_altivec.c \
                 libavutil/ppc/float_dsp_init.c \
