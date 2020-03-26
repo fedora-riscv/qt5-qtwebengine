@@ -452,7 +452,7 @@ export NINJA_PATH=%{__ninja}
   .
 
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
-make %{?_smp_mflags} -k
+make %{?_smp_mflags}
 
 %if 0%{?docs}
 %make_build docs
