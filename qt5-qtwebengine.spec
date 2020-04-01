@@ -48,7 +48,7 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.14.1
+Version: 5.14.2
 Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
@@ -57,8 +57,8 @@ Release: 1%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # leaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.14/5.14.1/submodules/qtwebengine-everywhere-src-5.14.1.tar.xz
-# ./clean_qtwebengine.sh 5.14.1
+# wget http://download.qt.io/official_releases/qt/5.14/5.14.2/submodules/qtwebengine-everywhere-src-5.14.2.tar.xz
+# ./clean_qtwebengine.sh 5.14.2
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -612,6 +612,9 @@ done
 
 
 %changelog
+* Wed Apr 01 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.2-1
+- 5.14.2
+
 * Wed Mar 25 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.1-1
 - 5.14.1
 - use_system_icu on f32+
