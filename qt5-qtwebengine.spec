@@ -46,8 +46,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.12.4
-Release: 5%{?dist}.1
+Version: 5.12.8
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -55,8 +55,8 @@ Release: 5%{?dist}.1
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.12/5.12.3/submodules/qtwebengine-everywhere-src-5.12.3.tar.xz
-# ./clean_qtwebengine.sh 5.12.2
+# wget http://download.qt.io/official_releases/qt/5.12/5.12.6/submodules/qtwebengine-everywhere-src-5.12.6.tar.xz
+# ./clean_qtwebengine.sh 5.12.6
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -64,6 +64,9 @@ Source2: clean_ffmpeg.sh
 Source3: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
+
+# pulseaudio headers
+Source20: pulseaudio-12.2-headers.tar.gz
 
 # some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
 Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
@@ -89,12 +92,6 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
-Patch101: 0001-Fix-changing-should_override_user_agent_in_new_tabs_.patch
-Patch102: 0002-Bump-V8-patch-level.patch
-Patch103: 0003-Fix-segfaults-with-arm-32bit-on-metrics.patch
-
-## RHEL8 only patch
-Patch500: qt5-qtbase-5.11.1-mkspecs.patch
 
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
@@ -173,7 +170,15 @@ BuildRequires: pkgconfig(lcms2)
 ## https://bugreports.qt.io/browse/QTBUG-59094
 #BuildRequires: pkgconfig(libxslt) pkgconfig(libxml-2.0)
 BuildRequires: perl-interpreter
-BuildRequires: python2-devel
+# fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
+# per https://fedoraproject.org/wiki/Changes/RetirePython2#FESCo_exceptions
+# Only the interpreter is needed
+%if 0%{?fedora} > 29 || 0%{?rhel} > 8
+BuildRequires: %{__python2}
+%else
+BuildRequires: python2
+BuildRequires: python2-rpm-macros
+%endif
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.7.0
 %endif
@@ -347,12 +352,11 @@ BuildArch: noarch
 
 
 %prep
-%setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}}
+%setup -q -n %{qt_module}-everywhere-src-%{version}%{?prerelease:-%{prerelease}} -a20
+
+mv pulse src/3rdparty/chromium/
 
 pushd src/3rdparty/chromium
-%patch101 -p2 -b .0001
-%patch102 -p2 -b .0002
-%patch103 -p2 -b .0003
 popd
 
 %patch0 -p1 -b .linux-pri
@@ -418,19 +422,13 @@ cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
 
 
 %build
-mkdir patched-mkspecs-features
-cp -a /usr/lib64/qt5/mkspecs/features/qt_module{,_headers}.prf \
-  patched-mkspecs-features/
-patch -p3 -d patched-mkspecs-features <%{PATCH500}
-sed -i "s|\$\${PWD}|/usr/lib64/qt5/mkspecs/features|" patched-mkspecs-features/qt_module.prf
-export QMAKEFEATURES=`pwd`/patched-mkspecs-features
-
 export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
 export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
-  CONFIG+="%{debug_config}" \
+  %{?debug_config:CONFIG+="%{debug_config}}" \
+  CONFIG+="link_pulseaudio" \
   QMAKE_EXTRA_ARGS+="-system-webengine-icu" \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   .
@@ -477,6 +475,8 @@ for prl_file in libQt5*.prl ; do
     sed -i -e "/^QMAKE_PRL_LIBS/d" ${prl_file}
   fi
 done
+# explicitly omit, at least until there's a real library installed associated with it -- rex
+rm -fv Qt5WebEngineCore.la
 popd
 
 mkdir -p %{buildroot}%{_qtwebengine_dictionaries_dir}
@@ -578,6 +578,7 @@ done
 %{_qt5_headerdir}/Qt*/
 %{_qt5_libdir}/libQt5*.so
 %{_qt5_libdir}/libQt5*.prl
+#{_qt5_libdir}/Qt5WebEngineCore.la
 %{_qt5_libdir}/cmake/Qt5*/
 %{_qt5_libdir}/pkgconfig/Qt5*.pc
 %{_qt5_archdatadir}/mkspecs/modules/*.pri
@@ -595,8 +596,33 @@ done
 
 
 %changelog
-* Fri Aug 02 2019 Troy Dawson <tdawson@redhat.com> - 5.12.4-5.1
-- Add mkspecs to build on RHEL8 (Kevin Kofler)
+* Thu Apr 30 2020 Troy Dawson <tdawson@redhat.com> - 5.12.8-1
+- 5.12.8
+
+* Mon Dec 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.6-1
+- 5.12.6
+
+* Wed Oct 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.5-2
+- explicitly omit QtWebEngineCore.la from packaging
+
+* Thu Sep 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.5-1
+- 5.12.5
+
+* Tue Sep 24 2019 Jan Grulich <jgrulich@redhat.com> - 5.12.4-10
+- rebuild (qt5)
+
+* Wed Aug 14 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-9
+- rebuild (re2)
+
+* Mon Aug 12 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-8
+- CONFIG+=link_pulseaudio
+
+* Wed Aug 07 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-7
+- rebuild (re2, #1672014#c10)
+- build using bundled pulse headers, workaround FTBFS bug #1729806
+
+* Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 5.12.4-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
 * Wed Jun 26 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.4-5
 - pull in some upstream fixes
