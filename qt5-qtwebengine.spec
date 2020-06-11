@@ -13,7 +13,7 @@
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
 
-%if 0%{?fedora} > 31
+%if 0%{?fedora} > 31 && 0%{?fedora} < 33
 # need libicu >= 64, only currently available on f32+
 %global use_system_libicu 1
 %endif
@@ -48,8 +48,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.14.2
-Release: 2%{?dist}
+Version: 5.15.0
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -95,10 +95,6 @@ Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
-# Fix missing include in chromium
-Patch27: qtwebengine-everywhere-5.13.2-fix-chromium-headers.patch
-# Fix gcc10 FTBFS
-Patch29: qtwebengine-everywhere-5.14.1-gcc10.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
@@ -114,6 +110,7 @@ BuildRequires: qt5-qtdeclarative-devel
 BuildRequires: qt5-qtxmlpatterns-devel
 BuildRequires: qt5-qtlocation-devel
 BuildRequires: qt5-qtsensors-devel
+BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtwebchannel-devel
 BuildRequires: qt5-qttools-static
 # for examples?
@@ -380,7 +377,7 @@ popd
 %patch3 -p1 -b .no-neon
 %endif
 %patch4 -p1 -b .SIOCGSTAMP
-%patch5 -p1 -b .QT_DEPRECATED_VERSION
+#patch5 -p1 -b .QT_DEPRECATED_VERSION
 
 ## upstream patches
 
@@ -389,8 +386,6 @@ popd
 #patch21 -p1 -b .gn-bootstrap-verbose
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
-%patch27 -p1 -b .fix-chromium
-%patch29 -p1 -b .gcc10
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -405,10 +400,12 @@ sed -i -e 's|QT_CONFIG(xkbcommon)|QT_CONFIG(xkbcommon_evdev)|g' src/core/web_eve
 sed -i -e 's!audio_processing//!audio_processing/!g' \
   src/3rdparty/chromium/third_party/webrtc/modules/audio_processing/utility/ooura_fft.cc \
   src/3rdparty/chromium/third_party/webrtc/modules/audio_processing/utility/ooura_fft_sse2.cc
+
 # remove ./ from #line commands in ANGLE to avoid debugedit failure (?)
-sed -i -e 's!\./!!g' \
-  src/3rdparty/chromium/third_party/angle/src/compiler/preprocessor/Tokenizer.cpp \
-  src/3rdparty/chromium/third_party/angle/src/compiler/translator/glslang_lex.cpp
+#sed -i -e 's!\./!!g' \
+#  src/3rdparty/chromium/third_party/angle/src/compiler/preprocessor/Tokenizer.cpp \
+#  src/3rdparty/chromium/third_party/angle/src/compiler/translator/glslang_lex.cpp
+
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
 sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
@@ -526,6 +523,7 @@ done
 %{_qt5_libdir}/qt5/qml/*
 %{_qt5_libdir}/qt5/libexec/QtWebEngineProcess
 %{_qt5_plugindir}/designer/libqwebengineview.so
+%{_qt5_plugindir}/imageformats/libqpdf.so
 %dir %{_qt5_datadir}/resources/
 %if ! 0%{?use_system_libicu}
 %{_qt5_datadir}/resources/icudtl.dat
@@ -612,6 +610,10 @@ done
 
 
 %changelog
+* Wed Jun 10 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
+- 5.15.0
+- f33's icu-67.x currently not compatible, use bundled icu
+
 * Sat Apr 04 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.2-2
 - rebuild (qt5)
 

@@ -80,6 +80,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/lzo.h \
                 libavutil/macros.h \
                 libavutil/mem_internal.h \
+                libavcodec/mlp_parse.h \
                 libavutil/old_pix_fmts.h \
                 libavutil/pixfmt.h \
                 libavutil/qsort.h \
@@ -89,6 +90,8 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/timer.h \
                 libavutil/timestamp.h \
                 libavutil/time_internal.h \
+                libavutil/tx_priv.h \
+                libavutil/tx_template.c \
                 libavutil/version.h \
                 libavutil/x86_cpu.h
 		libavcodec/aarch64/neon.S \
