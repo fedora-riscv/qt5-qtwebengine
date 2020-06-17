@@ -10,8 +10,12 @@
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
 %endif
+%if 0%{?fedora} > 30 || 0%{?epel} > 7
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
+%global use_system_jsoncpp 1
+%global use_system_re2 1
+%endif
 
 %if 0%{?fedora} > 31 && 0%{?fedora} < 33
 # need libicu >= 64, only currently available on f32+
@@ -99,8 +103,10 @@ Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 ## Upstream patches:
 # qtwebengine-chromium
 
+%if 0%{?fedora} || 0%{?epel} > 7
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
+%endif
 
 BuildRequires: qt5-qtbase-devel
 BuildRequires: qt5-qtbase-private-devel
@@ -129,7 +135,9 @@ BuildRequires: krb5-devel
 BuildRequires: libicu-devel >= 64
 %endif
 BuildRequires: libjpeg-devel
+%if 0%{?use_system_re2}
 BuildRequires: re2-devel
+%endif
 BuildRequires: snappy-devel
 %ifarch %{ix86} x86_64
 BuildRequires: yasm
@@ -141,7 +149,9 @@ BuildRequires: pkgconfig(fontconfig)
 BuildRequires: pkgconfig(freetype2)
 BuildRequires: pkgconfig(gl)
 BuildRequires: pkgconfig(egl)
+%if 0%{?use_system_jsoncpp}
 BuildRequires: pkgconfig(jsoncpp)
+%endif
 BuildRequires: pkgconfig(libpng)
 BuildRequires: pkgconfig(libudev)
 %if 0%{?use_system_libwebp}
@@ -411,9 +421,11 @@ sed -i -e 's!audio_processing//!audio_processing/!g' \
 sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
   src/3rdparty/chromium/build/toolchain/linux/BUILD.gn
 
+%if 0%{?use_system_re2}
 # http://bugzilla.redhat.com/1337585
 # can't just delete, but we'll overwrite with system headers to be on the safe side
 cp -bv /usr/include/re2/*.h src/3rdparty/chromium/third_party/re2/src/re2/
+%endif
 
 %if 0
 #ifarch x86_64
