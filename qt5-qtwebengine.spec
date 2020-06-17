@@ -326,6 +326,9 @@ Provides: bundled(fdlibm) = 5.3
 
 %{?_qt5_version:Requires: qt5-qtbase%{?_isa} = %{_qt5_version}}
 
+%if 0%{?rhel} == 7
+BuildRequires: devtoolset-7-toolchain	
+%endif
 
 %description
 %{summary}.
@@ -449,6 +452,10 @@ cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
 
 
 %build
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
 export NINJA_PATH=%{__ninja}
