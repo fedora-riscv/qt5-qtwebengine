@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -102,6 +102,7 @@ Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 
 ## Upstream patches:
 # qtwebengine-chromium
+Patch100: qtwebengine-opensource-bison-37.patch
 
 %if 0%{?fedora} || 0%{?epel} > 7
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
@@ -400,6 +401,8 @@ popd
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
 
+%patch100 -p1 -b .bison37
+
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
 %if "%{_qt5_version}" < "5.12.0"
@@ -462,7 +465,7 @@ export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
   %{?debug_config:CONFIG+="%{debug_config}}" \
-  CONFIG+="link_pulseaudio" \
+  CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   .
@@ -629,6 +632,9 @@ done
 
 
 %changelog
+* Fri Sep 04 2020 Than Ngo <than@redhat.com> - 5.15.0-4
+- Fix FTBFS
+
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.0-3
 - Second attempt - Rebuilt for
   https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
