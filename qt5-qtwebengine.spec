@@ -52,8 +52,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.15.0
-Release: 4%{?dist}
+Version: 5.15.1
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -61,8 +61,8 @@ Release: 4%{?dist}
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
 # leaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.14/5.14.2/submodules/qtwebengine-everywhere-src-5.14.2.tar.xz
-# ./clean_qtwebengine.sh 5.14.2
+# wget http://download.qt.io/official_releases/qt/5.15/5.15.1/submodules/qtwebengine-everywhere-src-5.15.1.tar.xz
+# ./clean_qtwebengine.sh 5.15.1
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -101,8 +101,6 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 
 ## Upstream patches:
-# qtwebengine-chromium
-Patch100: qtwebengine-opensource-bison-37.patch
 
 %if 0%{?fedora} || 0%{?epel} > 7
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
@@ -401,8 +399,6 @@ popd
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
 
-%patch100 -p1 -b .bison37
-
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
 %if "%{_qt5_version}" < "5.12.0"
@@ -632,6 +628,9 @@ done
 
 
 %changelog
+* Fri Sep 11 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.1-1
+- 5.15.1
+
 * Fri Sep 04 2020 Than Ngo <than@redhat.com> - 5.15.0-4
 - Fix FTBFS
 
