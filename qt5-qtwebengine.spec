@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -99,6 +99,8 @@ Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
+# Missing #includes for gcc-11
+Patch27: qtwebengine-gcc11.patch
 
 ## Upstream patches:
 
@@ -399,6 +401,7 @@ popd
 #patch21 -p1 -b .gn-bootstrap-verbose
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
+%patch27 -p1 -b .gcc11
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -629,6 +632,9 @@ done
 
 
 %changelog
+* Wed Nov 04 2020 Jeff Law <law@redhat.com> - 5.15.1-3
+- Fix missing #includes for gcc-11
+
 * Wed Sep 23 12:52:56 CEST 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.1-2
 - Rebuild (libevent)
 
