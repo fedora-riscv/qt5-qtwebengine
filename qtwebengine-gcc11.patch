@@ -1,5 +1,20 @@
+diff --git a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/containers/string_pool.cc b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/containers/string_pool.cc
+index fd651958f..1e8d0606c 100644
+--- a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/containers/string_pool.cc
++++ b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/containers/string_pool.cc
+@@ -14,9 +14,9 @@
+  * limitations under the License.
+  */
+ 
++#include <limits>
+ #include "src/trace_processor/containers/string_pool.h"
+ 
+-#include <limits>
+ 
+ #include "perfetto/base/logging.h"
+ #include "perfetto/ext/base/utils.h"
 diff --git a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/db/column.cc b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/db/column.cc
-index b957d3ddd..2f9df34b0 100644
+index 80dcf5b24..b0037ec34 100644
 --- a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/db/column.cc
 +++ b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/db/column.cc
 @@ -14,6 +14,7 @@
@@ -9,9 +24,9 @@ index b957d3ddd..2f9df34b0 100644
 +#include <limits>
  #include "src/trace_processor/db/column.h"
  
- #include "src/trace_processor/db/table.h"
+ #include "src/trace_processor/db/compare.h"
 diff --git a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/importers/proto/heap_graph_walker.cc b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/importers/proto/heap_graph_walker.cc
-index 020d3b4a9..fd405d179 100644
+index fc9e41558..0e5bd92f4 100644
 --- a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/importers/proto/heap_graph_walker.cc
 +++ b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/importers/proto/heap_graph_walker.cc
 @@ -14,6 +14,8 @@
@@ -23,18 +38,3 @@ index 020d3b4a9..fd405d179 100644
  #include "src/trace_processor/importers/proto/heap_graph_walker.h"
  #include "perfetto/base/logging.h"
  
-diff --git a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/string_pool.cc b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/string_pool.cc
-index f02990069..df1c0eeb2 100644
---- a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/string_pool.cc
-+++ b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/string_pool.cc
-@@ -14,9 +14,9 @@
-  * limitations under the License.
-  */
- 
-+#include <limits>
- #include "src/trace_processor/string_pool.h"
- 
--#include <limits>
- 
- #include "perfetto/base/logging.h"
- #include "perfetto/ext/base/utils.h"
