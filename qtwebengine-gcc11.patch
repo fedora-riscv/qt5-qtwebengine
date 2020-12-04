@@ -38,3 +38,15 @@ index fc9e41558..0e5bd92f4 100644
  #include "src/trace_processor/importers/proto/heap_graph_walker.h"
  #include "perfetto/base/logging.h"
  
+diff --git a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/types/variadic.cc b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/types/variadic.cc
+index 837bfeba9..cdd56817d 100644
+--- a/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/types/variadic.cc
++++ b/src/3rdparty/chromium/third_party/perfetto/src/trace_processor/types/variadic.cc
+@@ -14,6 +14,7 @@
+  * limitations under the License.
+  */
+ 
++#include <limits>
+ #include "src/trace_processor/types/variadic.h"
+ 
+ namespace perfetto {

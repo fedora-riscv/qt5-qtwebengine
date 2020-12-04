@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -632,6 +632,9 @@ done
 
 
 %changelog
+* Fri Dec 04 2020 Jeff Law <law@redhat.com> - 5.15.2-3
+- Fix another missing #include for gcc-11
+
 * Tue Nov 24 07:55:13 CET 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.2-2
 - Rebuild for qtbase with -no-reduce-relocations option
 
