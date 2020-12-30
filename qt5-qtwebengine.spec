@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -632,6 +632,9 @@ done
 
 
 %changelog
+* Wed Dec 30 2020 Mattia Verga <mattia.verga@protonmail.com> - 5.15.2-4
+- Rebuild for gcc bugfix upgrade
+
 * Fri Dec 04 2020 Jeff Law <law@redhat.com> - 5.15.2-3
 - Fix another missing #include for gcc-11
 
