@@ -109,6 +109,7 @@ Patch27: qtwebengine-gcc11.patch
 ExclusiveArch: %{qt5_qtwebengine_arches}
 %endif
 
+BuildRequires: make
 BuildRequires: qt5-qtbase-devel
 BuildRequires: qt5-qtbase-private-devel
 # TODO: check of = is really needed or if >= would be good enough -- rex
