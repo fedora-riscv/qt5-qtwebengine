@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -101,6 +101,8 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 # Missing #includes for gcc-11
 Patch27: qtwebengine-gcc11.patch
+# Fix sandbox issue breaking text rendering with glibc 2.33 (#1904652)
+Patch28: qtwebengine-everywhere-src-5.15.2-#1904652.patch
 
 ## Upstream patches:
 
@@ -403,6 +405,7 @@ popd
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
 %patch27 -p1 -b .gcc11
+%patch28 -p1 -b .rh#1904652
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -633,6 +636,9 @@ done
 
 
 %changelog
+* Wed Jan 20 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-5
+- Fix sandbox issue breaking text rendering with glibc 2.33 (#1904652)
+
 * Wed Dec 30 2020 Mattia Verga <mattia.verga@protonmail.com> - 5.15.2-4
 - Rebuild for gcc bugfix upgrade
 
