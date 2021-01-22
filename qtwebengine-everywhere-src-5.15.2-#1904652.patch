@@ -22,16 +22,17 @@ diff -ur qtwebengine-everywhere-src-5.15.2/src/3rdparty/chromium/sandbox/linux/s
      return Error(fs_denied_errno);
 diff -ur qtwebengine-everywhere-src-5.15.2/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.cc qtwebengine-everywhere-src-5.15.2-#1904652/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.cc
 --- qtwebengine-everywhere-src-5.15.2/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.cc	2020-11-07 02:22:36.000000000 +0100
-+++ qtwebengine-everywhere-src-5.15.2-#1904652/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.cc	2021-01-20 02:44:06.132477575 +0100
-@@ -6,6 +6,7 @@
++++ qtwebengine-everywhere-src-5.15.2-#1904652/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.cc	2021-01-22 19:02:55.651668257 +0100
+@@ -6,6 +6,8 @@
  
  #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
  
++#include <errno.h>
 +#include <fcntl.h>
  #include <stddef.h>
  #include <stdint.h>
  #include <sys/syscall.h>
-@@ -353,6 +354,32 @@
+@@ -353,6 +355,35 @@
    return -ENOSYS;
  }
  
@@ -49,6 +50,9 @@ diff -ur qtwebengine-everywhere-src-5.15.2/src/3rdparty/chromium/sandbox/linux/s
 +          && args.args[3] == static_cast<uint64_t>(AT_EMPTY_PATH)) {
 +        return sandbox::sys_fstat64(static_cast<int>(args.args[0]),
 +                                    reinterpret_cast<struct stat64 *>(args.args[2]));
++      } else {
++        errno = EACCES;
++        return -1;
 +      }
 +      break;
 +#endif
@@ -64,7 +68,7 @@ diff -ur qtwebengine-everywhere-src-5.15.2/src/3rdparty/chromium/sandbox/linux/s
  bpf_dsl::ResultExpr CrashSIGSYS() {
    return bpf_dsl::Trap(CrashSIGSYS_Handler, NULL);
  }
-@@ -385,6 +412,10 @@
+@@ -385,6 +416,10 @@
    return bpf_dsl::Trap(SIGSYSSchedHandler, NULL);
  }
  
