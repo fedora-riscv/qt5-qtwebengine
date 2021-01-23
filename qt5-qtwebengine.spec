@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -101,8 +101,10 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
 # Missing #includes for gcc-11
 Patch27: qtwebengine-gcc11.patch
-# Fix sandbox issue breaking text rendering with glibc 2.33 (#1904652)
+# Fix sandbox issue breaking text rendering with glibc >= 2.33 (#1904652)
 Patch28: qtwebengine-everywhere-src-5.15.2-#1904652.patch
+# Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
+Patch29: qtwebengine-everywhere-src-5.15.2-sandbox-time64-syscalls.patch
 
 ## Upstream patches:
 
@@ -406,6 +408,7 @@ popd
 %patch26 -p1 -b .use-python2
 %patch27 -p1 -b .gcc11
 %patch28 -p1 -b .rh#1904652
+%patch29 -p1 -b .sandbox-time64-syscalls
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -636,6 +639,9 @@ done
 
 
 %changelog
+* Sat Jan 23 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-7
+- Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
+
 * Sat Jan 23 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-6
 - Reenable system ICU on F33+, ICU 67 supported since 5.15.1 according to Debian
 
