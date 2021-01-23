@@ -17,7 +17,7 @@
 %global use_system_re2 1
 %endif
 
-%if 0%{?fedora} > 31 && 0%{?fedora} < 33
+%if 0%{?fedora} > 31
 # need libicu >= 64, only currently available on f32+
 %global use_system_libicu 1
 %endif
@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -636,6 +636,9 @@ done
 
 
 %changelog
+* Sat Jan 23 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-6
+- Reenable system ICU on F33+, ICU 67 supported since 5.15.1 according to Debian
+
 * Wed Jan 20 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-5
 - Fix sandbox issue breaking text rendering with glibc 2.33 (#1904652)
 
