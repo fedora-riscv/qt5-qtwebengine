@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 7%{?dist}
+Release: 8%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -332,6 +332,11 @@ Provides: bundled(v8) = 6.1.534.44
 Provides: bundled(fdlibm) = 5.3
 
 %{?_qt5_version:Requires: qt5-qtbase%{?_isa} = %{_qt5_version}}
+
+%if 0%{?use_system_icu}
+# Those versions were built with bundled ICU and want the data file.
+Conflicts: qt5-qtwebengine-freeworld < 5.15.2-2
+%endif
 
 %if 0%{?rhel} == 7
 BuildRequires: devtoolset-7-toolchain	
@@ -639,6 +644,9 @@ done
 
 
 %changelog
+* Tue Jan 26 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-8
+- Add versioned Conflicts with -freeworld built against bundled ICU (#1920379)
+
 * Sat Jan 23 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-7
 - Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
 
