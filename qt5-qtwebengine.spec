@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 8%{?dist}
+Release: 9%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -644,6 +644,9 @@ done
 
 
 %changelog
+* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 5.15.2-9
+- Rebuilt for removed libstdc++ symbol (#1937698)
+
 * Tue Jan 26 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-8
 - Add versioned Conflicts with -freeworld built against bundled ICU (#1920379)
 
