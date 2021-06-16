@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.2
-Release: 11%{?dist}
+Release: 12%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -105,6 +105,8 @@ Patch27: qtwebengine-gcc11.patch
 Patch28: qtwebengine-everywhere-src-5.15.2-#1904652.patch
 # Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
 Patch29: qtwebengine-everywhere-src-5.15.2-sandbox-time64-syscalls.patch
+# Fix FTBFS with latest glibc, https://bugzilla.redhat.com/show_bug.cgi?id=1945595
+Patch30: qtwebengine-everywhere-5.15.2-SIGSTKSZ.patch
 
 ## Upstream patches:
 
@@ -414,6 +416,7 @@ popd
 %patch27 -p1 -b .gcc11
 %patch28 -p1 -b .rh#1904652
 %patch29 -p1 -b .sandbox-time64-syscalls
+%patch30 -p1 -b .SIGSTKSZ
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -644,6 +647,9 @@ done
 
 
 %changelog
+* Wed Jun 16 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.2-12
+- workaround SIGSTKSZ FTBFS (#19455950
+
 * Thu May 20 2021 Pete Walter <pwalter@fedoraproject.org> - 5.15.2-11
 - Rebuild for ICU 69
 
