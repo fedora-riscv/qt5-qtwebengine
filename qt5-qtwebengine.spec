@@ -107,6 +107,8 @@ Patch28: qtwebengine-everywhere-src-5.15.2-#1904652.patch
 Patch29: qtwebengine-everywhere-src-5.15.2-sandbox-time64-syscalls.patch
 # Fix FTBFS with latest glibc, https://bugzilla.redhat.com/show_bug.cgi?id=1945595
 Patch30: qtwebengine-everywhere-5.15.2-SIGSTKSZ.patch
+# FIX FTBFS with latest glibc: 'TRUE'/'FALSE' was not declared in this scope
+Patch31: qtwebengine-everywhere-src-5.15.2-bool.patch
 
 ## Upstream patches:
 
@@ -417,6 +419,7 @@ popd
 %patch28 -p1 -b .rh#1904652
 %patch29 -p1 -b .sandbox-time64-syscalls
 %patch30 -p1 -b .SIGSTKSZ
+%patch31 -p1 -b .bool
 
 # the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
 # when building on older Qt releases
@@ -649,6 +652,7 @@ done
 %changelog
 * Wed Jun 16 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.2-12
 - workaround SIGSTKSZ FTBFS (#19455950
+- workaround 'TRUE'/'FALSE' was not declared in this scope
 
 * Thu May 20 2021 Pete Walter <pwalter@fedoraproject.org> - 5.15.2-11
 - Rebuild for ICU 69
