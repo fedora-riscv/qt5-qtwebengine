@@ -38,6 +38,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/x86/timer.h \
                 libavutil/aarch64/asm.S \
                 libavutil/aarch64/bswap.h \
+                libavutil/aarch64/cpu.h \
                 libavutil/aarch64/timer.h \
                 libavutil/arm/asm.S \
                 libavutil/arm/bswap.h \
@@ -61,6 +62,16 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/avutil.h \
                 libavutil/bswap.h \
                 libavutil/buffer_internal.h \
+                libavcodec/bsf_internal.h \
+                libavcodec/codec.h \
+                libavcodec/codec_desc.h \
+                libavcodec/codec_id.h \
+                libavcodec/codec_par.h \
+                libavcodec/decode.h \
+                libavcodec/hwconfig.h \
+                libavcodec/internal.h \
+                libavcodec/packet.h \
+                libavcodec/packet_internal.h \
                 libavutil/common.h \
                 libavutil/colorspace.h \
                 libavutil/cpu_internal.h \
@@ -272,6 +283,7 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavutil/fixed_dsp.c \
                 libavutil/float_dsp.c \
                 libavutil/imgutils.c \
+                libavutil/aarch64/cpu.c \
                 libavutil/aarch64/float_dsp_neon.S \
                 libavutil/arm/cpu.c \
                 libavutil/arm/float_dsp_neon.S \

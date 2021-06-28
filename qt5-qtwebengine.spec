@@ -2,7 +2,7 @@
 
 %global _hardened_build 1
 
-# define to build docs, need to undef this for bootstrapping
+# define to build docs, may need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
 %global docs 1
 
@@ -17,8 +17,8 @@
 %global use_system_re2 1
 %endif
 
-%if 0%{?fedora} > 31
-# need libicu >= 64, only currently available on f32+
+%if 0%{?fedora} > 32
+# need libicu >= 65, only currently available on f33+
 %global use_system_libicu 1
 %endif
 
@@ -52,8 +52,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.15.2
-Release: 12%{?dist}
+Version: 5.15.5
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -75,12 +75,13 @@ Source10: macros.qt5-qtwebengine
 Source20: pulseaudio-12.2-headers.tar.gz
 
 # some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
+# FIXME/TODO: review, I *think* this is no longer needed -- rdieter
 Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
 # resulting warnings - not upstreamable as is because it removes the fallback
 # mechanism for the ICU data directory (which is not used in our builds because
 # we use the system ICU, which embeds the data statically) completely
-Patch1:  qtwebengine-everywhere-src-5.11.0-no-icudtl-dat.patch
+Patch1:  qtwebengine-everywhere-src-5.15.0-no-icudtl-dat.patch
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
 Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
@@ -90,25 +91,23 @@ Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
 # workaround FTBFS against kernel-headers-5.2.0+
 Patch4:  qtwebengine-SIOCGSTAMP.patch
 #  fix build when using qt < 5.14
-Patch5:  qtwebengine-5.14-1-QT_DEPRECATED_VERSION.patch
+Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
 Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
-# Force verbose output from the GN bootstrap process
-Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
-Patch26: qtwebengine-everywhere-5.13.2-use-python2.patch
-# Missing #includes for gcc-11
-Patch27: qtwebengine-gcc11.patch
+Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
 # Fix sandbox issue breaking text rendering with glibc >= 2.33 (#1904652)
-Patch28: qtwebengine-everywhere-src-5.15.2-#1904652.patch
+# https://bugs.chromium.org/p/chromium/issues/detail?id=1164975
+Patch28: qtwebengine-everywhere-src-5.15.5-#1904652.patch
 # Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
-Patch29: qtwebengine-everywhere-src-5.15.2-sandbox-time64-syscalls.patch
-# Fix FTBFS with latest glibc, https://bugzilla.redhat.com/show_bug.cgi?id=1945595
-Patch30: qtwebengine-everywhere-5.15.2-SIGSTKSZ.patch
-# FIX FTBFS with latest glibc: 'TRUE'/'FALSE' was not declared in this scope
-Patch31: qtwebengine-everywhere-src-5.15.2-bool.patch
+Patch29: qtwebengine-everywhere-src-5.15.5-sandbox-time64-syscalls.patch
+# don't assume type-ness of SIGSTKSZ,
+# https://bugzilla.redhat.com/show_bug.cgi?id=1945595
+Patch30: qtwebengine-everywhere-src-5.15.5-SIGSTKSZ.patch
+# FTBFS TRUE/FALSE undeclared
+Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
 
 ## Upstream patches:
 
@@ -142,9 +141,10 @@ BuildRequires: git-core
 BuildRequires: gperf
 BuildRequires: krb5-devel
 %if 0%{?use_system_libicu}
-BuildRequires: libicu-devel >= 64
+BuildRequires: libicu-devel >= 65
 %endif
 BuildRequires: libjpeg-devel
+BuildRequires: nodejs
 %if 0%{?use_system_re2}
 BuildRequires: re2-devel
 %endif
@@ -172,10 +172,12 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(protobuf)
 BuildRequires: pkgconfig(libevent)
+BuildRequires: pkgconfig(poppler-cpp)
 BuildRequires: pkgconfig(zlib)
 %if 0%{?fedora} && 0%{?fedora} < 30
 BuildRequires: pkgconfig(minizip)
 %else
+BuildConflicts: minizip-devel
 Provides: bundled(minizip) = 1.2
 %endif
 BuildRequires: pkgconfig(x11)
@@ -197,7 +199,9 @@ BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
 BuildRequires: pkgconfig(lcms2)
 BuildRequires: pkgconfig(xkbcommon)
+BuildRequires: pkgconfig(xkbfile)
 ## https://bugreports.qt.io/browse/QTBUG-59094
+## requires libxml2 built with icu support
 #BuildRequires: pkgconfig(libxslt) pkgconfig(libxml-2.0)
 BuildRequires: perl-interpreter
 # fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
@@ -209,8 +213,10 @@ BuildRequires: %{__python2}
 BuildRequires: python2
 BuildRequires: python2-rpm-macros
 %endif
+## HACK, seems patch26 is not 100% complete
+BuildRequires: %{_bindir}/python
 %if 0%{?use_system_libvpx}
-BuildRequires: pkgconfig(vpx) >= 1.7.0
+BuildRequires: pkgconfig(vpx) >= 1.8.0
 %endif
 
 # extra (non-upstream) functions needed, see
@@ -397,7 +403,7 @@ mv pulse src/3rdparty/chromium/
 pushd src/3rdparty/chromium
 popd
 
-%patch0 -p1 -b .linux-pri
+#patch0 -p1 -b .linux-pri
 %if 0%{?use_system_libicu}
 %patch1 -p1 -b .no-icudtl-dat
 %endif
@@ -406,39 +412,17 @@ popd
 %patch3 -p1 -b .no-neon
 %endif
 %patch4 -p1 -b .SIOCGSTAMP
-#patch5 -p1 -b .QT_DEPRECATED_VERSION
+%patch5 -p1 -b .QT_DEPRECATED_VERSION
 
 ## upstream patches
 
 #patch10 -p1 -b .openmax-dl-neon
-## NEEDSWORK
-#patch21 -p1 -b .gn-bootstrap-verbose
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
-%patch27 -p1 -b .gcc11
 %patch28 -p1 -b .rh#1904652
 %patch29 -p1 -b .sandbox-time64-syscalls
 %patch30 -p1 -b .SIGSTKSZ
-%patch31 -p1 -b .bool
-
-# the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
-# when building on older Qt releases
-%if "%{_qt5_version}" < "5.12.0"
-sed -i -e 's|QT_CONFIG(xkbcommon)|QT_CONFIG(xkbcommon_evdev)|g' src/core/web_event_factory.cpp
-%endif
-
-# fix // in #include in content/renderer/gpu to avoid debugedit failure
-#sed -i -e 's!gpu//!gpu/!g' \
-#  src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
-# and another one in 2 files in WebRTC
-sed -i -e 's!audio_processing//!audio_processing/!g' \
-  src/3rdparty/chromium/third_party/webrtc/modules/audio_processing/utility/ooura_fft.cc \
-  src/3rdparty/chromium/third_party/webrtc/modules/audio_processing/utility/ooura_fft_sse2.cc
-
-# remove ./ from #line commands in ANGLE to avoid debugedit failure (?)
-#sed -i -e 's!\./!!g' \
-#  src/3rdparty/chromium/third_party/angle/src/compiler/preprocessor/Tokenizer.cpp \
-#  src/3rdparty/chromium/third_party/angle/src/compiler/translator/glslang_lex.cpp
+%patch31 -p1 -b .TRUE
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
@@ -470,6 +454,16 @@ popd
 
 # copy the Chromium license so it is installed with the appropriate name
 cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
+
+# consider doing this as part of the tarball creation step instead?  rdieter
+# fix/workaround
+# fatal error: QtWebEngineCore/qtwebenginecoreglobal.h: No such file or directory
+if [ ! -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h" ]; then
+%_qt5_bindir/syncqt.pl -version %{version}
+fi
+
+# abort if this doesn't get created by syncqt.pl
+test -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h"
 
 
 %build
@@ -512,14 +506,6 @@ sed -i \
   -e "s|@@EVR@@|%{?epoch:%{epoch:}}%{version}-%{release}|g" \
   %{buildroot}%{rpm_macros_dir}/macros.qt5-qtwebengine
 
-# hardlink files to {_bindir}
-mkdir -p %{buildroot}%{_bindir}
-pushd %{buildroot}%{_qt5_bindir}
-for i in * ; do
-  ln -v  ${i} %{buildroot}%{_bindir}/${i}
-done
-popd
-
 ## .prl/.la file love
 # nuke .prl reference(s) to %%buildroot, excessive (.la-like) libs
 pushd %{buildroot}%{_qt5_libdir}
@@ -558,7 +544,6 @@ done
 %files
 %license LICENSE.* src/webengine/doc/src/qtwebengine-3rdparty.qdoc
 %{_qt5_libdir}/libQt5*.so.*
-%{_bindir}/qwebengine_convert_dict
 %{_qt5_bindir}/qwebengine_convert_dict
 %{_qt5_libdir}/qt5/qml/*
 %{_qt5_libdir}/qt5/libexec/QtWebEngineProcess
@@ -632,7 +617,6 @@ done
 %{_qt5_headerdir}/Qt*/
 %{_qt5_libdir}/libQt5*.so
 %{_qt5_libdir}/libQt5*.prl
-#{_qt5_libdir}/Qt5WebEngineCore.la
 %{_qt5_libdir}/cmake/Qt5*/
 %{_qt5_libdir}/pkgconfig/Qt5*.pc
 %{_qt5_archdatadir}/mkspecs/modules/*.pri
@@ -650,6 +634,9 @@ done
 
 
 %changelog
+* Wed Jun 23 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.5-1
+- 5.15.5
+
 * Wed Jun 16 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.2-12
 - workaround SIGSTKSZ FTBFS (#19455950
 - workaround 'TRUE'/'FALSE' was not declared in this scope
