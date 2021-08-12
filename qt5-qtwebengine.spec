@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -213,8 +213,6 @@ BuildRequires: %{__python2}
 BuildRequires: python2
 BuildRequires: python2-rpm-macros
 %endif
-## HACK, seems patch26 is not 100% complete
-BuildRequires: %{_bindir}/python
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.8.0
 %endif
@@ -634,6 +632,9 @@ done
 
 
 %changelog
+* Thu Aug 12 2021 Troy Dawson <tdawson@redhat.com> - 5.15.5-3
+- Fix use-python2.patch
+
 * Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.5-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
