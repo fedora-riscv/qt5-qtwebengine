@@ -234,12 +234,7 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
-# Some security fixes (up to version 64.0.3282.140) are backported, see:
-# http://code.qt.io/cgit/qt/qtwebengine-chromium.git/log/?h=61-based
-# see dist/changes-5.10.1 for the version numbers (base, security fixes) and for
-# a list of CVEs fixed by the added security backports
-# See Patch101 for additional fixes applied (up to version 65.0.3325.146)
-Provides: bundled(chromium) = 61.0.3163.140
+Provides: bundled(chromium) = 90.0.44.30.228
 
 # Bundled in src/3rdparty/chromium/third_party:
 # Check src/3rdparty/chromium/third_party/*/README.chromium for version numbers,
