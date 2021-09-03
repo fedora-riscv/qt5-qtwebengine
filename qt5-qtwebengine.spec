@@ -52,8 +52,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.15.5
-Release: 3%{?dist}
+Version: 5.15.6
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -108,6 +108,9 @@ Patch29: qtwebengine-everywhere-src-5.15.5-sandbox-time64-syscalls.patch
 Patch30: qtwebengine-everywhere-src-5.15.5-SIGSTKSZ.patch
 # FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
+# Issue 1213452: Sandbox doesn't work with clone3
+# https://bugs.chromium.org/p/chromium/issues/detail?id=1213452
+Patch32: qtwebengine-everywhere-src-5.15.6-clone3.patch
 
 ## Upstream patches:
 
@@ -416,6 +419,7 @@ popd
 %patch29 -p1 -b .sandbox-time64-syscalls
 %patch30 -p1 -b .SIGSTKSZ
 %patch31 -p1 -b .TRUE
+%patch32 -p1 -b .clone3
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
@@ -627,6 +631,9 @@ done
 
 
 %changelog
+* Fri Sep 03 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.6-1
+- 5.15.6
+
 * Thu Aug 12 2021 Troy Dawson <tdawson@redhat.com> - 5.15.5-3
 - Fix use-python2.patch
 
