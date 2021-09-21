@@ -1,5 +1,5 @@
 diff --git a/src/3rdparty/chromium/components/paint_preview/common/subset_font.cc b/src/3rdparty/chromium/components/paint_preview/common/subset_font.cc
-index ba5391708..8565b67e3 100644
+index ba5391708..f5fad4148 100644
 --- a/src/3rdparty/chromium/components/paint_preview/common/subset_font.cc
 +++ b/src/3rdparty/chromium/components/paint_preview/common/subset_font.cc
 @@ -71,9 +71,9 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
@@ -10,7 +10,7 @@ index ba5391708..8565b67e3 100644
 +  hb_subset_input_set_flags(input.get(), HB_SUBSET_FLAGS_RETAIN_GIDS);
  
 -  HbScoped<hb_face_t> subset_face(hb_subset(face.get(), input.get()));
-+  HbFace subset_face(hb_subset_or_fail(face.get(), input.get()));
++  HbScoped<hb_face_t> subset_face(hb_subset_or_fail(face.get(), input.get()));
    HbScoped<hb_blob_t> subset_blob(hb_face_reference_blob(subset_face.get()));
    if (!subset_blob)
      return nullptr;
