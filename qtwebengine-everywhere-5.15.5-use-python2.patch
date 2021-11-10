@@ -1,0 +1,35 @@
+diff --git a/src/3rdparty/chromium/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py b/src/3rdparty/chromium/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
+index 8af373102..b551c0fe2 100644
+--- a/src/3rdparty/chromium/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
++++ b/src/3rdparty/chromium/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
+@@ -83,7 +83,7 @@ def _MinifyJS(input_js):
+ 
+   with tempfile.NamedTemporaryFile() as _:
+     args = [
+-        'python',
++        'python2',
+         rjsmin_path
+     ]
+     p = subprocess.Popen(args,
+@@ -203,7 +203,7 @@ def _MinifyCSS(css_text):
+       os.path.join(py_vulcanize_path, 'third_party', 'rcssmin', 'rcssmin.py'))
+ 
+   with tempfile.NamedTemporaryFile() as _:
+-    rcssmin_args = ['python', rcssmin_path]
++    rcssmin_args = ['python2', rcssmin_path]
+     p = subprocess.Popen(rcssmin_args,
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE,
+diff --git a/src/webengine/module.pro b/src/webengine/module.pro
+index 49a1086b2..afc89d49e 100644
+--- a/src/webengine/module.pro
++++ b/src/webengine/module.pro
+@@ -76,7 +76,7 @@ qtConfig(webengine-testsupport) {
+     python = $$pythonPathForShell()
+     chromium_attributions.commands = \
+         cd $$shell_quote($$shell_path($$PWD/../3rdparty)) && \
+-        $$python chromium/tools/licenses.py \
++        python2 chromium/tools/licenses.py \
+         --file-template ../../tools/about_credits.tmpl \
+         --entry-template ../../tools/about_credits_entry.tmpl credits \
+         $$shell_quote($$shell_path($$OUT_PWD/chromium_attributions.qdoc))

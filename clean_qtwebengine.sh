@@ -21,7 +21,7 @@
 
 if [ -z "$1" ] ; then
   echo "usage: ./clean_qtwebengine.sh VERSION"
-  echo "e.g.: ./clean_qtwebengine.sh 5.11.1"
+  echo "e.g.: ./clean_qtwebengine.sh 5.14.1"
   exit 1
 fi
 
@@ -32,7 +32,7 @@ rm -rf "$DIRNAME" || exit $?
 
 if [ -f "$DIRNAME.tar.xz" ] ; then
   echo "unpacking $DIRNAME.tar.xz"
-  tar xJf "$DIRNAME.tar.xz" || exit $?
+  XZ_OPT="-T 4" tar xJf "$DIRNAME.tar.xz" || exit $?
 elif [ -f "$DIRNAME.tar.bz2" ] ; then
   echo "unpacking $DIRNAME.tar.bz2"
   tar xjf "$DIRNAME.tar.bz2" || exit $?
@@ -61,7 +61,7 @@ echo "ripping out openh264 sources"
 rm -rf "$DIRNAME/src/3rdparty/chromium/third_party/openh264/src" || exit $?
 
 echo "repacking as $DIRNAME-clean.tar.xz"
-XZ_OPT="-9 -f" tar cJf "$DIRNAME-clean.tar.xz" "$DIRNAME" || exit $?
+XZ_OPT="-9 -T 4" tar cJf "$DIRNAME-clean.tar.xz" "$DIRNAME" || exit $?
 
 echo "removing $DIRNAME"
 rm -rf "$DIRNAME" || exit $?

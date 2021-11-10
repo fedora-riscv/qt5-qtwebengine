@@ -38,6 +38,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/x86/timer.h \
                 libavutil/aarch64/asm.S \
                 libavutil/aarch64/bswap.h \
+                libavutil/aarch64/cpu.h \
                 libavutil/aarch64/timer.h \
                 libavutil/arm/asm.S \
                 libavutil/arm/bswap.h \
@@ -46,6 +47,12 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/arm/intmath.h \
                 libavutil/arm/intreadwrite.h \
                 libavutil/arm/timer.h \
+                libavutil/ppc/cpu.h \
+                libavutil/ppc/float_dsp_altivec.h \
+                libavutil/ppc/float_dsp_vsx.h \
+                libavutil/ppc/intreadwrite.h \
+                libavutil/ppc/timer.h \
+                libavutil/ppc/util_altivec.h \
                 libavutil/aes_internal.h \
                 libavutil/atomic.h \
                 libavutil/atomic_gcc.h \
@@ -55,6 +62,16 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/avutil.h \
                 libavutil/bswap.h \
                 libavutil/buffer_internal.h \
+                libavcodec/bsf_internal.h \
+                libavcodec/codec.h \
+                libavcodec/codec_desc.h \
+                libavcodec/codec_id.h \
+                libavcodec/codec_par.h \
+                libavcodec/decode.h \
+                libavcodec/hwconfig.h \
+                libavcodec/internal.h \
+                libavcodec/packet.h \
+                libavcodec/packet_internal.h \
                 libavutil/common.h \
                 libavutil/colorspace.h \
                 libavutil/cpu_internal.h \
@@ -74,6 +91,7 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/lzo.h \
                 libavutil/macros.h \
                 libavutil/mem_internal.h \
+                libavcodec/mlp_parse.h \
                 libavutil/old_pix_fmts.h \
                 libavutil/pixfmt.h \
                 libavutil/qsort.h \
@@ -83,8 +101,12 @@ header_files="  libavutil/x86/asm.h \
                 libavutil/timer.h \
                 libavutil/timestamp.h \
                 libavutil/time_internal.h \
+                libavutil/tx_priv.h \
+                libavutil/tx_template.c \
                 libavutil/version.h \
                 libavutil/x86_cpu.h
+		libavcodec/aarch64/neon.S \
+		libavcodec/aarch64/vp8dsp.h \
                 libavcodec/x86/constants.h \
                 libavcodec/x86/dsputil_x86.h \
                 libavcodec/x86/fft.h \
@@ -99,6 +121,9 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/arm/vp56_arith.h \
                 libavcodec/arm/vp8.h \
                 libavcodec/arm/vp8dsp.h \
+                libavcodec/ppc/fft_vsx.h \
+                libavcodec/ppc/hpeldsp_altivec.h \
+                libavcodec/ppc/mathops.h \
 		libavcodec/aac_ac3_parser.h \
 		libavcodec/ac3_parser_internal.h \
 		libavcodec/ac3.h \
@@ -146,12 +171,14 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/old_codec_ids.h \
                 libavcodec/options_table.h \
 		libavcodec/opus_celt.h \
+		libavcodec/opusdsp.h \
 		libavcodec/opus_pvq.h \
                 libavcodec/opus_rc.h \
                 libavcodec/pcm_tablegen.h \
                 libavcodec/pel_template.c \
                 libavcodec/pixblockdsp.h \
                 libavcodec/pixels.h \
+		libavcodec/png.h \
                 libavcodec/pthread_internal.h \
                 libavcodec/put_bits.h \
                 libavcodec/qpeldsp.h \
@@ -169,6 +196,7 @@ header_files="  libavutil/x86/asm.h \
                 libavcodec/vorbisdsp.h \
                 libavcodec/vp3data.h \
                 libavcodec/vp3dsp.h \
+		libavcodec/vp4data.h \
                 libavcodec/vp56.h \
                 libavcodec/vp56dsp.h \
                 libavcodec/vp8data.h \
@@ -255,6 +283,7 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavutil/fixed_dsp.c \
                 libavutil/float_dsp.c \
                 libavutil/imgutils.c \
+                libavutil/aarch64/cpu.c \
                 libavutil/aarch64/float_dsp_neon.S \
                 libavutil/arm/cpu.c \
                 libavutil/arm/float_dsp_neon.S \
@@ -267,9 +296,24 @@ manual_files="  libavutil/x86/x86inc.asm \
                 libavcodec/aarch64/h264pred_neon.S \
                 libavcodec/aarch64/mdct_neon.S \
                 libavcodec/aarch64/vorbisdsp_neon.S \
+		libavcodec/aarch64/vp8dsp_neon.S \
                 libavcodec/arm/vorbisdsp_neon.S \
                 libavcodec/arm/mdct_neon.S \
                 libavcodec/arm/fft_neon.S \
+		libavcodec/arm/vp8dsp_neon.S \
+                libavutil/ppc/cpu.c \
+                libavutil/ppc/float_dsp_altivec.c \
+                libavutil/ppc/float_dsp_init.c \
+                libavutil/ppc/float_dsp_vsx.c \
+                libavcodec/ppc/fft_altivec.S \
+                libavcodec/ppc/fft_init.c \
+                libavcodec/ppc/fft_vsx.c \
+                libavcodec/ppc/hpeldsp_altivec.c \
+                libavcodec/ppc/mpegaudiodsp_altivec.c \
+                libavcodec/ppc/videodsp.c \
+                libavcodec/ppc/vorbisdsp_altivec.c \
+                libavcodec/ppc/vp3dsp_altivec.c \
+                libavcodec/ppc/vp8dsp_altivec.c \
                 chromium/ffmpeg_stub_headers.fragment \
                 chromium/ffmpegsumo.sigs"
 

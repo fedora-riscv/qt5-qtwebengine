@@ -2,16 +2,25 @@
 
 %global _hardened_build 1
 
-# define to build docs, need to undef this for bootstrapping
+# define to build docs, may need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
 %global docs 1
 
-%if 0%{?fedora} > 29
+%if 0%{?fedora}
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
 %endif
+%if 0%{?fedora} > 30 || 0%{?epel} > 7
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
+%global use_system_jsoncpp 1
+%global use_system_re2 1
+%endif
+
+%if 0%{?fedora} > 32
+# need libicu >= 65, only currently available on f33+
+%global use_system_libicu 1
+%endif
 
 # NEON support on ARM (detected at runtime) - disable this if you are hitting
 # FTBFS due to e.g. GCC bug https://bugzilla.redhat.com/show_bug.cgi?id=1282495
@@ -36,17 +45,14 @@
 
 %global rpm_macros_dir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
-# exclude plugins (all architectures) and libv8.so (i686, it's static everywhere
-# else)
-%global __provides_exclude ^lib.*plugin\\.so.*|libv8\\.so$
-# exclude libv8.so (i686, it's static everywhere else)
-%global __requires_exclude ^libv8\\.so$
+# exclude plugins
+%global __provides_exclude ^lib.*plugin\\.so.*$
 # and designer plugins
 %global __provides_exclude_from ^%{_qt5_plugindir}/.*\\.so$
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.12.8
+Version: 5.15.6
 Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
@@ -54,9 +60,9 @@ Release: 1%{?dist}
 # The other licenses are from Chromium and the code it bundles
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
-# cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.12/5.12.6/submodules/qtwebengine-everywhere-src-5.12.6.tar.xz
-# ./clean_qtwebengine.sh 5.12.6
+# leaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
+# wget http://download.qt.io/official_releases/qt/5.15/5.15.1/submodules/qtwebengine-everywhere-src-5.15.1.tar.xz
+# ./clean_qtwebengine.sh 5.15.1
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
 # cleanup scripts used above
 Source1: clean_qtwebengine.sh
@@ -69,12 +75,13 @@ Source10: macros.qt5-qtwebengine
 Source20: pulseaudio-12.2-headers.tar.gz
 
 # some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
+# FIXME/TODO: review, I *think* this is no longer needed -- rdieter
 Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
 # resulting warnings - not upstreamable as is because it removes the fallback
 # mechanism for the ICU data directory (which is not used in our builds because
 # we use the system ICU, which embeds the data statically) completely
-Patch1:  qtwebengine-everywhere-src-5.11.0-no-icudtl-dat.patch
+Patch1:  qtwebengine-everywhere-src-5.15.0-no-icudtl-dat.patch
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
 Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
@@ -83,19 +90,36 @@ Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
 Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
 # workaround FTBFS against kernel-headers-5.2.0+
 Patch4:  qtwebengine-SIOCGSTAMP.patch
+#  fix build when using qt < 5.14
+Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
 # remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
 Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
-# Force verbose output from the GN bootstrap process
-Patch21: qtwebengine-everywhere-src-5.12.0-gn-bootstrap-verbose.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
+# Use Python2
+Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
+# Fix sandbox issue breaking text rendering with glibc >= 2.33 (#1904652)
+# https://bugs.chromium.org/p/chromium/issues/detail?id=1164975
+Patch28: qtwebengine-everywhere-src-5.15.5-#1904652.patch
+# Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
+Patch29: qtwebengine-everywhere-src-5.15.5-sandbox-time64-syscalls.patch
+# don't assume type-ness of SIGSTKSZ,
+# https://bugzilla.redhat.com/show_bug.cgi?id=1945595
+Patch30: qtwebengine-everywhere-src-5.15.5-SIGSTKSZ.patch
+# FTBFS TRUE/FALSE undeclared
+Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
+# Issue 1213452: Sandbox doesn't work with clone3
+# https://bugs.chromium.org/p/chromium/issues/detail?id=1213452
+Patch32: qtwebengine-everywhere-src-5.15.6-clone3.patch
 
 ## Upstream patches:
-# qtwebengine-chromium
 
+%if 0%{?fedora} || 0%{?epel} > 7
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
 ExclusiveArch: %{qt5_qtwebengine_arches}
+%endif
 
+BuildRequires: make
 BuildRequires: qt5-qtbase-devel
 BuildRequires: qt5-qtbase-private-devel
 # TODO: check of = is really needed or if >= would be good enough -- rex
@@ -104,6 +128,7 @@ BuildRequires: qt5-qtdeclarative-devel
 BuildRequires: qt5-qtxmlpatterns-devel
 BuildRequires: qt5-qtlocation-devel
 BuildRequires: qt5-qtsensors-devel
+BuildRequires: qt5-qtsvg-devel
 BuildRequires: qt5-qtwebchannel-devel
 BuildRequires: qt5-qttools-static
 # for examples?
@@ -118,9 +143,14 @@ BuildRequires: libstdc++-static
 BuildRequires: git-core
 BuildRequires: gperf
 BuildRequires: krb5-devel
-BuildRequires: libicu-devel
+%if 0%{?use_system_libicu}
+BuildRequires: libicu-devel >= 65
+%endif
 BuildRequires: libjpeg-devel
+BuildRequires: nodejs
+%if 0%{?use_system_re2}
 BuildRequires: re2-devel
+%endif
 BuildRequires: snappy-devel
 %ifarch %{ix86} x86_64
 BuildRequires: yasm
@@ -132,7 +162,9 @@ BuildRequires: pkgconfig(fontconfig)
 BuildRequires: pkgconfig(freetype2)
 BuildRequires: pkgconfig(gl)
 BuildRequires: pkgconfig(egl)
+%if 0%{?use_system_jsoncpp}
 BuildRequires: pkgconfig(jsoncpp)
+%endif
 BuildRequires: pkgconfig(libpng)
 BuildRequires: pkgconfig(libudev)
 %if 0%{?use_system_libwebp}
@@ -143,10 +175,12 @@ BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
 BuildRequires: pkgconfig(protobuf)
 BuildRequires: pkgconfig(libevent)
+BuildRequires: pkgconfig(poppler-cpp)
 BuildRequires: pkgconfig(zlib)
 %if 0%{?fedora} && 0%{?fedora} < 30
 BuildRequires: pkgconfig(minizip)
 %else
+BuildConflicts: minizip-devel
 Provides: bundled(minizip) = 1.2
 %endif
 BuildRequires: pkgconfig(x11)
@@ -167,7 +201,10 @@ BuildRequires: pkgconfig(libpci)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(nss)
 BuildRequires: pkgconfig(lcms2)
+BuildRequires: pkgconfig(xkbcommon)
+BuildRequires: pkgconfig(xkbfile)
 ## https://bugreports.qt.io/browse/QTBUG-59094
+## requires libxml2 built with icu support
 #BuildRequires: pkgconfig(libxslt) pkgconfig(libxml-2.0)
 BuildRequires: perl-interpreter
 # fesco exception to allow python2 use: https://pagure.io/fesco/issue/2208
@@ -180,7 +217,7 @@ BuildRequires: python2
 BuildRequires: python2-rpm-macros
 %endif
 %if 0%{?use_system_libvpx}
-BuildRequires: pkgconfig(vpx) >= 1.7.0
+BuildRequires: pkgconfig(vpx) >= 1.8.0
 %endif
 
 # extra (non-upstream) functions needed, see
@@ -200,12 +237,7 @@ BuildRequires: pkgconfig(vpx) >= 1.7.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
-# Some security fixes (up to version 64.0.3282.140) are backported, see:
-# http://code.qt.io/cgit/qt/qtwebengine-chromium.git/log/?h=61-based
-# see dist/changes-5.10.1 for the version numbers (base, security fixes) and for
-# a list of CVEs fixed by the added security backports
-# See Patch101 for additional fixes applied (up to version 65.0.3325.146)
-Provides: bundled(chromium) = 61.0.3163.140
+Provides: bundled(chromium) = 90.0.44.30.228
 
 # Bundled in src/3rdparty/chromium/third_party:
 # Check src/3rdparty/chromium/third_party/*/README.chromium for version numbers,
@@ -307,6 +339,14 @@ Provides: bundled(fdlibm) = 5.3
 
 %{?_qt5_version:Requires: qt5-qtbase%{?_isa} = %{_qt5_version}}
 
+%if 0%{?use_system_icu}
+# Those versions were built with bundled ICU and want the data file.
+Conflicts: qt5-qtwebengine-freeworld < 5.15.2-2
+%endif
+
+%if 0%{?rhel} == 7
+BuildRequires: devtoolset-7-toolchain	
+%endif
 
 %description
 %{summary}.
@@ -359,46 +399,38 @@ mv pulse src/3rdparty/chromium/
 pushd src/3rdparty/chromium
 popd
 
-%patch0 -p1 -b .linux-pri
+#patch0 -p1 -b .linux-pri
+%if 0%{?use_system_libicu}
 %patch1 -p1 -b .no-icudtl-dat
+%endif
 %patch2 -p1 -b .fix-extractcflag
 %if !0%{?arm_neon}
 %patch3 -p1 -b .no-neon
 %endif
 %patch4 -p1 -b .SIOCGSTAMP
+%patch5 -p1 -b .QT_DEPRECATED_VERSION
 
 ## upstream patches
 
-%patch10 -p1 -b .openmax-dl-neon
-## NEEDSWORK
-#patch21 -p1 -b .gn-bootstrap-verbose
+#patch10 -p1 -b .openmax-dl-neon
 %patch24 -p1 -b .aarch64-new-stat
+%patch26 -p1 -b .use-python2
+%patch28 -p1 -b .rh#1904652
+%patch29 -p1 -b .sandbox-time64-syscalls
+%patch30 -p1 -b .SIGSTKSZ
+%patch31 -p1 -b .TRUE
+%patch32 -p1 -b .clone3
 
-# the xkbcommon config/feature was renamed in 5.12, so need to adjust QT_CONFIG references
-# when building on older Qt releases
-%if "%{_qt5_version}" < "5.12.0"
-sed -i -e 's|QT_CONFIG(xkbcommon)|QT_CONFIG(xkbcommon_evdev)|g' src/core/web_event_factory.cpp
-%endif
-
-# fix // in #include in content/renderer/gpu to avoid debugedit failure
-#sed -i -e 's!gpu//!gpu/!g' \
-#  src/3rdparty/chromium/content/renderer/gpu/compositor_forwarding_message_filter.cc
-# and another one in 2 files in WebRTC
-sed -i -e 's!audio_processing//!audio_processing/!g' \
-  src/3rdparty/chromium/third_party/webrtc/modules/audio_processing/utility/ooura_fft.cc \
-  src/3rdparty/chromium/third_party/webrtc/modules/audio_processing/utility/ooura_fft_sse2.cc
-# remove ./ from #line commands in ANGLE to avoid debugedit failure (?)
-sed -i -e 's!\./!!g' \
-  src/3rdparty/chromium/third_party/angle/src/compiler/preprocessor/Tokenizer.cpp \
-  src/3rdparty/chromium/third_party/angle/src/compiler/translator/glslang_lex.cpp
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
 sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
   src/3rdparty/chromium/build/toolchain/linux/BUILD.gn
 
+%if 0%{?use_system_re2}
 # http://bugzilla.redhat.com/1337585
 # can't just delete, but we'll overwrite with system headers to be on the safe side
 cp -bv /usr/include/re2/*.h src/3rdparty/chromium/third_party/re2/src/re2/
+%endif
 
 %if 0
 #ifarch x86_64
@@ -420,16 +452,30 @@ popd
 # copy the Chromium license so it is installed with the appropriate name
 cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
 
+# consider doing this as part of the tarball creation step instead?  rdieter
+# fix/workaround
+# fatal error: QtWebEngineCore/qtwebenginecoreglobal.h: No such file or directory
+if [ ! -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h" ]; then
+%_qt5_bindir/syncqt.pl -version %{version}
+fi
+
+# abort if this doesn't get created by syncqt.pl
+test -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h"
+
 
 %build
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
 export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
   %{?debug_config:CONFIG+="%{debug_config}}" \
-  CONFIG+="link_pulseaudio" \
-  QMAKE_EXTRA_ARGS+="-system-webengine-icu" \
+  CONFIG+="link_pulseaudio use_gold_linker" \
+  %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   .
 
@@ -456,14 +502,6 @@ sed -i \
   -e "s|@@VERSION@@|%{version}|g" \
   -e "s|@@EVR@@|%{?epoch:%{epoch:}}%{version}-%{release}|g" \
   %{buildroot}%{rpm_macros_dir}/macros.qt5-qtwebengine
-
-# hardlink files to {_bindir}
-mkdir -p %{buildroot}%{_bindir}
-pushd %{buildroot}%{_qt5_bindir}
-for i in * ; do
-  ln -v  ${i} %{buildroot}%{_bindir}/${i}
-done
-popd
 
 ## .prl/.la file love
 # nuke .prl reference(s) to %%buildroot, excessive (.la-like) libs
@@ -503,17 +541,15 @@ done
 %files
 %license LICENSE.* src/webengine/doc/src/qtwebengine-3rdparty.qdoc
 %{_qt5_libdir}/libQt5*.so.*
-%{_bindir}/qwebengine_convert_dict
 %{_qt5_bindir}/qwebengine_convert_dict
 %{_qt5_libdir}/qt5/qml/*
 %{_qt5_libdir}/qt5/libexec/QtWebEngineProcess
-#ifarch %{ix86}
-%if 0%{?sse2}
-# shared V8 library and its SSE2 version
-%{_qt5_libdir}/qtwebengine/
-%endif
 %{_qt5_plugindir}/designer/libqwebengineview.so
+%{_qt5_plugindir}/imageformats/libqpdf.so
 %dir %{_qt5_datadir}/resources/
+%if ! 0%{?use_system_libicu}
+%{_qt5_datadir}/resources/icudtl.dat
+%endif
 %{_qt5_datadir}/resources/qtwebengine_resources_100p.pak
 %{_qt5_datadir}/resources/qtwebengine_resources_200p.pak
 %{_qt5_datadir}/resources/qtwebengine_resources.pak
@@ -578,7 +614,6 @@ done
 %{_qt5_headerdir}/Qt*/
 %{_qt5_libdir}/libQt5*.so
 %{_qt5_libdir}/libQt5*.prl
-#{_qt5_libdir}/Qt5WebEngineCore.la
 %{_qt5_libdir}/cmake/Qt5*/
 %{_qt5_libdir}/pkgconfig/Qt5*.pc
 %{_qt5_archdatadir}/mkspecs/modules/*.pri
@@ -596,8 +631,100 @@ done
 
 
 %changelog
-* Thu Apr 30 2020 Troy Dawson <tdawson@redhat.com> - 5.12.8-1
-- 5.12.8
+* Fri Sep 03 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.6-1
+- 5.15.6
+
+* Thu Aug 12 2021 Troy Dawson <tdawson@redhat.com> - 5.15.5-3
+- Fix use-python2.patch
+
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.5-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Wed Jun 23 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.5-1
+- 5.15.5
+
+* Wed Jun 16 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.2-12
+- workaround SIGSTKSZ FTBFS (#19455950
+- workaround 'TRUE'/'FALSE' was not declared in this scope
+
+* Thu May 20 2021 Pete Walter <pwalter@fedoraproject.org> - 5.15.2-11
+- Rebuild for ICU 69
+
+* Mon May 10 2021 Jonathan Wakely <jwakely@redhat.com> - 5.15.2-10
+- Rebuilt for removed libstdc++ symbols (#1937698)
+
+* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 5.15.2-9
+- Rebuilt for removed libstdc++ symbol (#1937698)
+
+* Tue Jan 26 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-8
+- Add versioned Conflicts with -freeworld built against bundled ICU (#1920379)
+
+* Sat Jan 23 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-7
+- Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
+
+* Sat Jan 23 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-6
+- Reenable system ICU on F33+, ICU 67 supported since 5.15.1 according to Debian
+
+* Wed Jan 20 2021 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.2-5
+- Fix sandbox issue breaking text rendering with glibc 2.33 (#1904652)
+
+* Wed Dec 30 2020 Mattia Verga <mattia.verga@protonmail.com> - 5.15.2-4
+- Rebuild for gcc bugfix upgrade
+
+* Fri Dec 04 2020 Jeff Law <law@redhat.com> - 5.15.2-3
+- Fix another missing #include for gcc-11
+
+* Tue Nov 24 07:55:13 CET 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.2-2
+- Rebuild for qtbase with -no-reduce-relocations option
+
+* Fri Nov 20 09:12:35 CET 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.2-1
+- 5.15.2
+
+* Wed Nov 04 2020 Jeff Law <law@redhat.com> - 5.15.1-3
+- Fix missing #includes for gcc-11
+
+* Wed Sep 23 12:52:56 CEST 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.1-2
+- Rebuild (libevent)
+
+* Fri Sep 11 2020 Jan Grulich <jgrulich@redhat.com> - 5.15.1-1
+- 5.15.1
+
+* Fri Sep 04 2020 Than Ngo <than@redhat.com> - 5.15.0-4
+- Fix FTBFS
+
+* Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.0-3
+- Second attempt - Rebuilt for
+  https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Jun 10 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.15.0-1
+- 5.15.0
+- f33's icu-67.x currently not compatible, use bundled icu
+
+* Sat Apr 04 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.2-2
+- rebuild (qt5)
+
+* Wed Apr 01 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.2-1
+- 5.14.2
+
+* Wed Mar 25 2020 Rex Dieter <rdieter@fedoraproject.org> - 5.14.1-1
+- 5.14.1
+- use_system_icu on f32+
+- drop upstreamed patches
+
+* Wed Mar 25 2020 Ankur Sinha <ankursinha AT fedoraproject DOT org> - 5.13.2-4
+- Add patch to allow clock_nanosleep in Linux sandbox (Chromium)
+
+* Fri Feb 21 2020 Troy Dawson <tdawson@redhat.com> - 5.13.2-3
+- Patch 3rd party chromium, fix FTBFS (#1799084)
+
+* Wed Jan 08 2020 Than Ngo <than@redhat.com> - 5.13.2-2
+- merged Pull-Request, keep ppc files in ffmpeg
+
+* Mon Dec 09 2019 Jan Grulich <jgrulich@redhat.com> - 5.13.2-1
+- 5.13.2
 
 * Mon Dec 02 2019 Rex Dieter <rdieter@fedoraproject.org> - 5.12.6-1
 - 5.12.6
