@@ -52,8 +52,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.15.6
-Release: 1%{?dist}
+Version: 5.15.5
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -108,9 +108,6 @@ Patch29: qtwebengine-everywhere-src-5.15.5-sandbox-time64-syscalls.patch
 Patch30: qtwebengine-everywhere-src-5.15.5-SIGSTKSZ.patch
 # FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
-# Issue 1213452: Sandbox doesn't work with clone3
-# https://bugs.chromium.org/p/chromium/issues/detail?id=1213452
-Patch32: qtwebengine-everywhere-src-5.15.6-clone3.patch
 
 ## Upstream patches:
 
@@ -237,7 +234,12 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
-Provides: bundled(chromium) = 90.0.44.30.228
+# Some security fixes (up to version 64.0.3282.140) are backported, see:
+# http://code.qt.io/cgit/qt/qtwebengine-chromium.git/log/?h=61-based
+# see dist/changes-5.10.1 for the version numbers (base, security fixes) and for
+# a list of CVEs fixed by the added security backports
+# See Patch101 for additional fixes applied (up to version 65.0.3325.146)
+Provides: bundled(chromium) = 61.0.3163.140
 
 # Bundled in src/3rdparty/chromium/third_party:
 # Check src/3rdparty/chromium/third_party/*/README.chromium for version numbers,
@@ -419,7 +421,6 @@ popd
 %patch29 -p1 -b .sandbox-time64-syscalls
 %patch30 -p1 -b .SIGSTKSZ
 %patch31 -p1 -b .TRUE
-%patch32 -p1 -b .clone3
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
@@ -631,9 +632,6 @@ done
 
 
 %changelog
-* Fri Sep 03 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.6-1
-- 5.15.6
-
 * Thu Aug 12 2021 Troy Dawson <tdawson@redhat.com> - 5.15.5-3
 - Fix use-python2.patch
 
