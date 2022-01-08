@@ -53,7 +53,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.6
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -634,6 +634,9 @@ done
 
 
 %changelog
+* Sat Jan 08 2022 Miro Hrončok <mhroncok@redhat.com> - 5.15.6-3
+- Rebuilt for libre2.so.9
+
 * Mon Sep 20 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.6-2
 - patch use of deprecated harfbuzz apis
 
