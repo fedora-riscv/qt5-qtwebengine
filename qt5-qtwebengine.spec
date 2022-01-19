@@ -92,6 +92,8 @@ Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
 Patch4:  qtwebengine-SIOCGSTAMP.patch
 #  fix build when using qt < 5.14
 Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
+# gcc-12 FTBFS "use of deleted function"
+Patch6:  chromium-angle-nullptr.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
@@ -223,6 +225,11 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
+# rdieter: unsure, chrome/VERSION says:
+#MAJOR=87
+#MINOR=0
+#BUILD=4280
+#PATCH=144
 Provides: bundled(chromium) = 90.0.44.30.228
 
 # Bundled in src/3rdparty/chromium/third_party:
@@ -243,7 +250,7 @@ Provides: bundled(brotli)
 # out. See clean_qtwebengine.sh, clean_ffmpeg.sh, and
 # get_free_ffmpeg_source_files.py.
 # see src/3rdparty/chromium/third_party/ffmpeg/Changelog for the version number
-Provides: bundled(ffmpeg) = 3.3
+Provides: bundled(ffmpeg) = 4.3
 Provides: bundled(hunspell) = 1.6.0
 Provides: bundled(iccjpeg)
 # bundled as "khronos", headers only
@@ -255,20 +262,19 @@ Provides: bundled(libjingle)
 # see src/3rdparty/chromium/third_party/libsrtp/CHANGES for the version number
 Provides: bundled(libsrtp) = 2.1.0
 %if !0%{?use_system_libvpx}
-# claims "Version: 1.6.0", but according to the fine print, this is actually a
-# snapshot from master from after the 1.6.1 release
-Provides: bundled(libvpx) = 1.6.1
+Provides: bundled(libvpx) = 1.8.2
 %endif
 %if !0%{?use_system_libwebp}
-Provides: bundled(libwebp) = 0.6.0
+Provides: bundled(libwebp) = 1.1.0-28-g55a080e5
 %endif
 # bundled as "libxml"
 # see src/3rdparty/chromium/third_party/libxml/linux/include/libxml/xmlversion.h
-Provides: bundled(libxml2) = 2.9.4
+# post 2.9.9 snapshot?, 2.9.9-0b3c64d9f2f3e9ce1a98d8f19ee7a763c87e27d5
+Provides: bundled(libxml2) = 2.9.10
 # see src/3rdparty/chromium/third_party/libxslt/linux/config.h for version
-Provides: bundled(libxslt) = 1.1.29
+Provides: bundled(libxslt) = 1.1.34
 Provides: bundled(libXNVCtrl) = 302.17
-Provides: bundled(libyuv) = 1658
+Provides: bundled(libyuv) = 1768
 Provides: bundled(modp_b64)
 Provides: bundled(openmax_dl) = 1.0.2
 Provides: bundled(ots)
@@ -278,8 +284,8 @@ Provides: bundled(qcms) = 4
 Provides: bundled(sfntly)
 Provides: bundled(skia)
 # bundled as "smhasher"
-Provides: bundled(SMHasher) = 0-0.1.svn147
-Provides: bundled(sqlite) = 3.20
+Provides: bundled(SMHasher) = 0-147
+Provides: bundled(sqlite) = 3.35.5
 Provides: bundled(usrsctp)
 Provides: bundled(webrtc) = 90
 
@@ -395,9 +401,9 @@ popd
 %endif
 %patch4 -p1 -b .SIOCGSTAMP
 %patch5 -p1 -b .QT_DEPRECATED_VERSION
+%patch6 -p1 -b .nullptr
 
 ## upstream patches
-
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
 %patch31 -p1 -b .TRUE
