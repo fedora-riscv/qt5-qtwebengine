@@ -92,27 +92,11 @@ Patch3:  qtwebengine-opensource-src-5.9.0-no-neon.patch
 Patch4:  qtwebengine-SIOCGSTAMP.patch
 #  fix build when using qt < 5.14
 Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
-# remove Android dependencies from openmax_dl ARM NEON detection (detect.c)
-Patch10: qtwebengine-opensource-src-5.9.0-openmax-dl-neon.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
-# Fix sandbox issue breaking text rendering with glibc >= 2.33 (#1904652)
-# https://bugs.chromium.org/p/chromium/issues/detail?id=1164975
-Patch28: qtwebengine-everywhere-src-5.15.5-#1904652.patch
-# Fix sandbox issue on 32-bit architectures with glibc >= 2.31 (from Debian)
-Patch29: qtwebengine-everywhere-src-5.15.5-sandbox-time64-syscalls.patch
-# don't assume type-ness of SIGSTKSZ,
-# https://bugzilla.redhat.com/show_bug.cgi?id=1945595
-Patch30: qtwebengine-everywhere-src-5.15.5-SIGSTKSZ.patch
-# FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
-# Issue 1213452: Sandbox doesn't work with clone3
-# https://bugs.chromium.org/p/chromium/issues/detail?id=1213452
-Patch32: qtwebengine-everywhere-src-5.15.6-clone3.patch
-# Fix use of deprecated harfbuzz api's
-Patch33: qtwebengine-harfbuzz.patch
 
 ## Upstream patches:
 
@@ -414,16 +398,9 @@ popd
 
 ## upstream patches
 
-#patch10 -p1 -b .openmax-dl-neon
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
-#patch28 -p1 -b .rh#1904652
-#patch29 -p1 -b .sandbox-time64-syscalls
-#patch30 -p1 -b .SIGSTKSZ
 %patch31 -p1 -b .TRUE
-#patch32 -p1 -b .clone3
-## may need porting
-#patch33 -p1 -b .harfbuzz
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
