@@ -94,6 +94,7 @@ Patch4:  qtwebengine-SIOCGSTAMP.patch
 Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
 # gcc-12 FTBFS "use of deleted function"
 Patch6:  chromium-angle-nullptr.patch
+Patch7:  chromium-hunspell-nullptr.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
@@ -401,7 +402,8 @@ popd
 %endif
 %patch4 -p1 -b .SIOCGSTAMP
 %patch5 -p1 -b .QT_DEPRECATED_VERSION
-%patch6 -p1 -b .nullptr
+%patch6 -p1 -b .angle_nullptr
+%patch7 -p1 -b .hunspell_nullptr
 
 ## upstream patches
 %patch24 -p1 -b .aarch64-new-stat
