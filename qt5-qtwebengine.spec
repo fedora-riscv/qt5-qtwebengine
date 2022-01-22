@@ -2,6 +2,9 @@
 
 %global _hardened_build 1
 
+# This package uses the gold linker.
+%global _package_notes_linker gold
+
 # define to build docs, may need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
 %global docs 1
@@ -617,6 +620,7 @@ done
 %changelog
 * Tue Jan 11 2022 Rex Dieter <rdieter@fedoraproject.org> - 5.15.8-1
 - 5.15.8
+- Set "%%global _package_notes_linker gold" (#2043178)
 
 * Sat Jan 08 2022 Miro Hrončok <mhroncok@redhat.com> - 5.15.6-3
 - Rebuilt for libre2.so.9
@@ -637,7 +641,7 @@ done
 - 5.15.5
 
 * Wed Jun 16 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.2-12
-- workaround SIGSTKSZ FTBFS (#19455950
+- workaround SIGSTKSZ FTBFS (#1945595)
 - workaround 'TRUE'/'FALSE' was not declared in this scope
 
 * Thu May 20 2021 Pete Walter <pwalter@fedoraproject.org> - 5.15.2-11
