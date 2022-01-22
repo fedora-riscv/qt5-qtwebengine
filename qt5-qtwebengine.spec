@@ -458,7 +458,7 @@ export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
   %{?debug_config:CONFIG+="%{debug_config}}" \
-  CONFIG+="link_pulseaudio" \
+  CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   .
@@ -617,7 +617,6 @@ done
 %changelog
 * Tue Jan 11 2022 Rex Dieter <rdieter@fedoraproject.org> - 5.15.8-1
 - 5.15.8
-- drop "use_gold_linker" (see #2043178)
 
 * Sat Jan 08 2022 Miro Hrončok <mhroncok@redhat.com> - 5.15.6-3
 - Rebuilt for libre2.so.9
@@ -638,7 +637,7 @@ done
 - 5.15.5
 
 * Wed Jun 16 2021 Rex Dieter <rdieter@fedoraproject.org> - 5.15.2-12
-- workaround SIGSTKSZ FTBFS (#1945595)
+- workaround SIGSTKSZ FTBFS (#19455950
 - workaround 'TRUE'/'FALSE' was not declared in this scope
 
 * Thu May 20 2021 Pete Walter <pwalter@fedoraproject.org> - 5.15.2-11
