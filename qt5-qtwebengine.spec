@@ -2,8 +2,8 @@
 
 %global _hardened_build 1
 
-# This package uses the gold linker.
-%global _package_notes_linker gold
+# package-notes causes FTBFS (#2043178)
+%undefine _package_note_file
 
 # define to build docs, may need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
@@ -620,7 +620,7 @@ done
 %changelog
 * Tue Jan 11 2022 Rex Dieter <rdieter@fedoraproject.org> - 5.15.8-1
 - 5.15.8
-- Set "%%global _package_notes_linker gold" (#2043178)
+- %%undefine _package_note_file (#2043178)
 
 * Sat Jan 08 2022 Miro Hrončok <mhroncok@redhat.com> - 5.15.6-3
 - Rebuilt for libre2.so.9
