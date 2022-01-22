@@ -226,12 +226,7 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 
 # Of course, Chromium itself is bundled. It cannot be unbundled because it is
 # not a library, but forked (modified) application code.
-# rdieter: unsure, chrome/VERSION says:
-#MAJOR=87
-#MINOR=0
-#BUILD=4280
-#PATCH=144
-Provides: bundled(chromium) = 90.0.44.30.228
+Provides: bundled(chromium) = 87.0.4280.144
 
 # Bundled in src/3rdparty/chromium/third_party:
 # Check src/3rdparty/chromium/third_party/*/README.chromium for version numbers,
