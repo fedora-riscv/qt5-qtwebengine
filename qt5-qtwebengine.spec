@@ -79,9 +79,6 @@ Source10: macros.qt5-qtwebengine
 # pulseaudio headers
 Source20: pulseaudio-12.2-headers.tar.gz
 
-# some tweaks to linux.pri (system yasm, link libpci, run unbundling script)
-# FIXME/TODO: review, I *think* this is no longer needed -- rdieter
-Patch0:  qtwebengine-everywhere-src-5.10.0-linux-pri.patch
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
 # resulting warnings - not upstreamable as is because it removes the fallback
 # mechanism for the ICU data directory (which is not used in our builds because
@@ -104,6 +101,7 @@ Patch7:  chromium-hunspell-nullptr.patch
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
 Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
+# FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
 
 ## Upstream patches:
@@ -392,7 +390,6 @@ mv pulse src/3rdparty/chromium/
 pushd src/3rdparty/chromium
 popd
 
-#patch0 -p1 -b .linux-pri
 %if 0%{?use_system_libicu}
 %patch1 -p1 -b .no-icudtl-dat
 %endif
