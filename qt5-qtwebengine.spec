@@ -144,9 +144,6 @@ BuildRequires: nodejs
 BuildRequires: re2-devel
 %endif
 BuildRequires: snappy-devel
-%ifarch %{ix86} x86_64
-BuildRequires: yasm
-%endif
 BuildRequires: pkgconfig(expat)
 BuildRequires: pkgconfig(gobject-2.0)
 BuildRequires: pkgconfig(glib-2.0)
