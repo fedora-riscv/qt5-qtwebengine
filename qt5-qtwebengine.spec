@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -162,7 +162,6 @@ BuildRequires: pkgconfig(libwebp) >= 0.6.0
 BuildRequires: pkgconfig(harfbuzz)
 BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(opus)
-BuildRequires: pkgconfig(protobuf)
 BuildRequires: pkgconfig(libevent)
 BuildRequires: pkgconfig(poppler-cpp)
 BuildRequires: pkgconfig(zlib)
@@ -231,6 +230,13 @@ Provides: bundled(chromium) = 87.0.4280.144
 # Bundled in src/3rdparty/chromium/third_party:
 # Check src/3rdparty/chromium/third_party/*/README.chromium for version numbers,
 # except where specified otherwise.
+# Note that many of those libraries are git snapshots, so version numbers are
+# necessarily approximate.
+# Also note that the list is probably not complete anymore due to Chromium
+# adding more and more bundled stuff at every release, some of which (but not
+# all) is actually built in QtWebEngine.
+# src/3rdparty/chromium/third_party/angle/doc/ChoosingANGLEBranch.md points to
+# http://omahaproxy.appspot.com/deps.json?version=87.0.4280.144 chromium_branch
 Provides: bundled(angle) = 2422
 # Google's fork of OpenSSL
 # We cannot build against NSS instead because it no longer works with NSS 3.21:
@@ -252,11 +258,11 @@ Provides: bundled(iccjpeg)
 # bundled as "khronos", headers only
 Provides: bundled(khronos_headers)
 # bundled as "leveldatabase"
-Provides: bundled(leveldb) = 1.20
+Provides: bundled(leveldb) = 1.22
 # bundled as "libjingle_xmpp"
 Provides: bundled(libjingle)
 # see src/3rdparty/chromium/third_party/libsrtp/CHANGES for the version number
-Provides: bundled(libsrtp) = 2.1.0
+Provides: bundled(libsrtp) = 2.2.0
 %if !0%{?use_system_libvpx}
 Provides: bundled(libvpx) = 1.8.2
 %endif
@@ -272,12 +278,10 @@ Provides: bundled(libxslt) = 1.1.34
 Provides: bundled(libXNVCtrl) = 302.17
 Provides: bundled(libyuv) = 1768
 Provides: bundled(modp_b64)
-Provides: bundled(openmax_dl) = 1.0.2
 Provides: bundled(ots)
 # see src/3rdparty/chromium/third_party/protobuf/CHANGES.txt for the version
-#Provides: bundled(protobuf) = 3.0.0-0.1.beta3
+Provides: bundled(protobuf) = 3.9.0
 Provides: bundled(qcms) = 4
-Provides: bundled(sfntly)
 Provides: bundled(skia)
 # bundled as "smhasher"
 Provides: bundled(SMHasher) = 0-147
@@ -294,7 +298,6 @@ Provides: bundled(x86inc)
 # Bundled in src/3rdparty/chromium/base/third_party:
 # Check src/3rdparty/chromium/third_party/base/*/README.chromium for version
 # numbers, except where specified otherwise.
-Provides: bundled(dmg_fp)
 Provides: bundled(dynamic_annotations) = 4384
 Provides: bundled(superfasthash) = 0
 Provides: bundled(symbolize)
@@ -319,7 +322,7 @@ Provides: bundled(nsURLParsers)
 # Bundled outside of third_party, apparently not considered as such by Chromium:
 Provides: bundled(mojo)
 # see src/3rdparty/chromium/v8/include/v8_version.h for the version number
-Provides: bundled(v8) = 6.1.534.44
+Provides: bundled(v8) = 8.7.220.35
 # bundled by v8 (src/3rdparty/chromium/v8/src/base/ieee754.cc)
 # The version number is 5.3, the last version that upstream released, years ago:
 # http://www.netlib.org/fdlibm/readme
@@ -614,6 +617,11 @@ done
 
 
 %changelog
+* Sun Jan 23 2022 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.8-2
+- Update Provides: bundled(*) version numbers, remove ones dropped upstream
+- Restore Provides: bundled(protobuf), unbundling support dropped years ago
+- Remove no longer used BuildRequires: yasm and pkgconfig(protobuf)
+
 * Tue Jan 11 2022 Rex Dieter <rdieter@fedoraproject.org> - 5.15.8-1
 - 5.15.8
 - %%undefine _package_note_file (#2043178)
