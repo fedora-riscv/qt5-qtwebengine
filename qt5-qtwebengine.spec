@@ -63,14 +63,16 @@ Release: 1%{?dist}
 # The other licenses are from Chromium and the code it bundles
 License: (LGPLv2 with exceptions or GPLv3 with exceptions) and BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:     http://www.qt.io
-# leaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
-# wget http://download.qt.io/official_releases/qt/5.15/5.15.1/submodules/qtwebengine-everywhere-src-5.15.1.tar.xz
+# cleaned tarball with patent-encumbered codecs removed from the bundled FFmpeg
+# ./qtwebengine-release.sh
 # ./clean_qtwebengine.sh 5.15.1
 Source0: qtwebengine-everywhere-src-%{version}-clean.tar.xz
+# release script used above
+Source1: qtwebengine-release.sh
 # cleanup scripts used above
-Source1: clean_qtwebengine.sh
-Source2: clean_ffmpeg.sh
-Source3: get_free_ffmpeg_source_files.py
+Source2: clean_qtwebengine.sh
+Source3: clean_ffmpeg.sh
+Source4: get_free_ffmpeg_source_files.py
 # macros
 Source10: macros.qt5-qtwebengine
 
