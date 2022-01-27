@@ -56,7 +56,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -617,6 +617,9 @@ done
 
 
 %changelog
+* Thu Jan 27 2022 Tom Callaway <spot@fedoraproject.org> - 5.15.8-3
+- rebuild for libvpx
+
 * Sun Jan 23 2022 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.8-2
 - Update Provides: bundled(*) version numbers, remove ones dropped upstream
 - Restore Provides: bundled(protobuf), unbundling support dropped years ago
