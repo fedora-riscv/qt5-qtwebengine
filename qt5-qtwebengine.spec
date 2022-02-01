@@ -7,7 +7,7 @@
 
 # define to build docs, may need to undef this for bootstrapping
 # where qt5-qttools (qt5-doctools) builds are not yet available
-%global docs 1
+%global docs 0
 
 %if 0%{?fedora}
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
@@ -17,7 +17,11 @@
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
 %global use_system_jsoncpp 1
+%if 0%{?rhel} && 0%{?rhel} == 9
+%global use_system_re2 0
+%else
 %global use_system_re2 1
+%endif
 %endif
 
 %if 0%{?fedora} > 32
@@ -56,7 +60,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 3%{?dist}
+Release: 3%{?dist}.1
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -78,6 +82,13 @@ Source10: macros.qt5-qtwebengine
 
 # pulseaudio headers
 Source20: pulseaudio-12.2-headers.tar.gz
+
+## Python2 Sources
+## src.rpm is Fedora spec with tests and tkinter turned off
+## binary rpms have been built on epel9
+Source100: python2.7-2.7.18-19.el9.1.src.rpm
+Source101: python2.7-2.7.18-19.el9.1.aarch64.rpm
+Source102: python2.7-2.7.18-19.el9.1.x86_64.rpm
 
 # quick hack to avoid checking for the nonexistent icudtl.dat and silence the
 # resulting warnings - not upstreamable as is because it removes the fallback
@@ -199,7 +210,11 @@ BuildRequires: perl-interpreter
 # per https://fedoraproject.org/wiki/Changes/RetirePython2#FESCo_exceptions
 # Only the interpreter is needed
 %if 0%{?fedora} > 29 || 0%{?rhel} > 8
+%if 0%{?rhel} && 0%{?rhel} == 9
+BuildRequires: %{__python3}
+%else
 BuildRequires: %{__python2}
+%endif
 %else
 BuildRequires: python2
 BuildRequires: python2-rpm-macros
@@ -207,6 +222,10 @@ BuildRequires: python2-rpm-macros
 %if 0%{?use_system_libvpx}
 BuildRequires: pkgconfig(vpx) >= 1.8.0
 %endif
+# For python on EPEL9, These get pulled in via python2
+BuildRequires: libtirpc
+BuildRequires: libnsl2
+BuildRequires: python-rpm-macros
 
 # extra (non-upstream) functions needed, see
 # src/3rdparty/chromium/third_party/sqlite/README.chromium for details
@@ -279,6 +298,7 @@ Provides: bundled(libXNVCtrl) = 302.17
 Provides: bundled(libyuv) = 1768
 Provides: bundled(modp_b64)
 Provides: bundled(ots)
+Provides: bundled(re2)
 # see src/3rdparty/chromium/third_party/protobuf/CHANGES.txt for the version
 Provides: bundled(protobuf) = 3.9.0
 Provides: bundled(qcms) = 4
@@ -390,6 +410,17 @@ mv pulse src/3rdparty/chromium/
 pushd src/3rdparty/chromium
 popd
 
+# Install python2 from rpms
+mkdir python2
+pushd python2
+%ifarch aarch64
+rpm2cpio %{SOURCE101} | cpio -idm
+%endif
+%ifarch x86_64
+rpm2cpio %{SOURCE102} | cpio -idm
+%endif
+popd
+
 %if 0%{?use_system_libicu}
 %patch1 -p1 -b .no-icudtl-dat
 %endif
@@ -427,13 +458,15 @@ cp -bv /usr/include/re2/*.h src/3rdparty/chromium/third_party/re2/src/re2/
 sed -i -e 's/symbol_level=1/symbol_level=2/g' src/core/config/common.pri
 %endif
 
+%if 0%{?docs}
 # generate qtwebengine-3rdparty.qdoc, it is missing from the tarball
 pushd src/3rdparty
-%{__python2} chromium/tools/licenses.py \
+%{__python3} chromium/tools/licenses.py \
   --file-template ../../tools/about_credits.tmpl \
   --entry-template ../../tools/about_credits_entry.tmpl \
   credits >../webengine/doc/src/qtwebengine-3rdparty.qdoc
 popd
+%endif
 
 # copy the Chromium license so it is installed with the appropriate name
 cp -p src/3rdparty/chromium/LICENSE LICENSE.Chromium
@@ -453,6 +486,10 @@ test -f "./include/QtWebEngineCore/qtwebenginecoreglobal.h"
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
 %endif
+
+# python2 path
+export PATH=$(pwd)/python2/usr/bin:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/python2/usr/lib64
 
 export STRIP=strip
 export NINJAFLAGS="%{__ninja_common_opts}"
@@ -525,7 +562,10 @@ while read filename ; do
 done
 
 %files
-%license LICENSE.* src/webengine/doc/src/qtwebengine-3rdparty.qdoc
+%license LICENSE.*
+%if 0%{?docs}
+%license src/webengine/doc/src/qtwebengine-3rdparty.qdoc
+%endif
 %{_qt5_libdir}/libQt5*.so.*
 %{_qt5_bindir}/qwebengine_convert_dict
 %{_qt5_libdir}/qt5/qml/*
@@ -617,6 +657,12 @@ done
 
 
 %changelog
+* Tue Feb 01 2022 Troy Dawson <tdawson@redhat.com> - 5.15.8-3.1
+- Specifically for epel9 only, until things switch to python3
+- Bundle python2 for building only
+- Bundled re2
+- No docs
+
 * Thu Jan 27 2022 Tom Callaway <spot@fedoraproject.org> - 5.15.8-3
 - rebuild for libvpx
 
