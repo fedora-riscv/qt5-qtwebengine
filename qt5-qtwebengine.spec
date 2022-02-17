@@ -60,7 +60,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 3%{?dist}.1
+Release: 4%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -502,6 +502,7 @@ export NINJA_PATH=%{__ninja}
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
+  QMAKE_EXTRA_ARGS+="--webengine-webrtc-pipewire" \
   .
 
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
@@ -659,6 +660,9 @@ done
 
 
 %changelog
+* Thu Feb 17 2022 Rex Dieter <rdieter@fedoraproject.org> - 5.15.8-4
+- Screen sharing support under Wayland (#2054690)
+
 * Tue Feb 01 2022 Troy Dawson <tdawson@redhat.com> - 5.15.8-3.1
 - Specifically for epel9 only, until things switch to python3
 - Bundle python2 for building only
