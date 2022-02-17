@@ -410,6 +410,7 @@ mv pulse src/3rdparty/chromium/
 pushd src/3rdparty/chromium
 popd
 
+%if 0%{?epel:1}
 # Install python2 from rpms
 mkdir python2
 pushd python2
@@ -420,6 +421,7 @@ rpm2cpio %{SOURCE101} | cpio -idm
 rpm2cpio %{SOURCE102} | cpio -idm
 %endif
 popd
+%endif
 
 %if 0%{?use_system_libicu}
 %patch1 -p1 -b .no-icudtl-dat
