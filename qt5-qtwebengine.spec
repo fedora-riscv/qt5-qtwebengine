@@ -502,7 +502,7 @@ export NINJA_PATH=%{__ninja}
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
-  QMAKE_EXTRA_ARGS+="--webengine-webrtc-pipewire" \
+  QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire" \
   .
 
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja
