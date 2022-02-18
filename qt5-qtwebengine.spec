@@ -110,6 +110,7 @@ Patch5:  qtwebengine-5.15.0-QT_DEPRECATED_VERSION.patch
 # gcc-12 FTBFS "use of deleted function"
 Patch6:  chromium-angle-nullptr.patch
 Patch7:  chromium-hunspell-nullptr.patch
+Patch8:  qtwebengine-everywhere-5.15.8-libpipewire-0.3.patch
 # Fix/workaround FTBFS on aarch64 with newer glibc
 Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 # Use Python2
