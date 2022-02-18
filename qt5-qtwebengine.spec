@@ -12,6 +12,8 @@
 %if 0%{?fedora}
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
+# For screen sharing on Wayland, currently Fedora only thing - no epel
+%global pipewire 1
 %endif
 %if 0%{?fedora} > 30 || 0%{?epel} > 7
 # need libwebp >= 0.6.0
@@ -153,6 +155,9 @@ BuildRequires: libjpeg-devel
 BuildRequires: nodejs
 %if 0%{?use_system_re2}
 BuildRequires: re2-devel
+%endif
+%if 0%{?pipewire}
+BuildRequires:  pkgconfig(libpipewire-0.3)
 %endif
 BuildRequires: snappy-devel
 BuildRequires: pkgconfig(expat)
@@ -434,6 +439,9 @@ popd
 %patch5 -p1 -b .QT_DEPRECATED_VERSION
 %patch6 -p1 -b .angle_nullptr
 %patch7 -p1 -b .hunspell_nullptr
+#if 0%{?pipewire}
+%patch8 -p1 -b .libpipewire-0.3
+#endif
 
 ## upstream patches
 %patch24 -p1 -b .aarch64-new-stat
@@ -502,7 +510,7 @@ export NINJA_PATH=%{__ninja}
   CONFIG+="link_pulseaudio use_gold_linker" \
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
-  QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire" \
+  %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
   .
 
 # avoid %%make_build for now, the -O flag buffers output from intermediate build steps done via ninja

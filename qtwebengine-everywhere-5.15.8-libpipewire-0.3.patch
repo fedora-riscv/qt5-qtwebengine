@@ -1,0 +1,12 @@
+diff -up qtwebengine-everywhere-src-5.15.8/src/3rdparty/chromium/third_party/webrtc/modules/desktop_capture/BUILD.gn.libpipewire-0.3 qtwebengine-everywhere-src-5.15.8/src/3rdparty/chromium/third_party/webrtc/modules/desktop_capture/BUILD.gn
+--- qtwebengine-everywhere-src-5.15.8/src/3rdparty/chromium/third_party/webrtc/modules/desktop_capture/BUILD.gn.libpipewire-0.3	2021-12-15 10:09:27.000000000 -0600
++++ qtwebengine-everywhere-src-5.15.8/src/3rdparty/chromium/third_party/webrtc/modules/desktop_capture/BUILD.gn	2022-02-18 09:43:31.402923179 -0600
+@@ -202,7 +202,7 @@ if (is_linux || is_chromeos) {
+ 
+     if (rtc_link_pipewire) {
+       pkg_config("pipewire") {
+-        packages = [ "libpipewire-0.2" ]
++        packages = [ "libpipewire-0.3" ]
+       }
+     } else {
+       # When libpipewire is not directly linked, use stubs to allow for dlopening of
