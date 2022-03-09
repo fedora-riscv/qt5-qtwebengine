@@ -13,7 +13,7 @@
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
 # For screen sharing on Wayland, currently Fedora only thing - no epel
-%global pipewire 1
+#global pipewire 1
 %endif
 %if 0%{?fedora} > 30 || 0%{?epel} > 7
 # need libwebp >= 0.6.0
