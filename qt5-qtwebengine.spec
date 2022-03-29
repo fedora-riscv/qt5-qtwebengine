@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -563,7 +563,11 @@ sed -i -e "s|%{version} \${_Qt5WebEngine|%{lesser_version} \${_Qt5WebEngine|" \
 
 %ldconfig_scriptlets
 
+%if 0%{?fedora} > 35 || 0%{?epel} > 9
+%filetriggerin -- %{_datadir}/hunspell
+%else
 %filetriggerin -- %{_datadir}/myspell
+%endif
 while read filename ; do
   case "$filename" in
     *.dic)
@@ -669,6 +673,10 @@ done
 
 
 %changelog
+* Tue Mar 29 2022 Parag Nemade <pnemade AT redhat DOT com> - 5.15.8-6
+- Update hunspell dictionary path by adding conditional support
+  F36 Change https://fedoraproject.org/wiki/Changes/Hunspell_dictionary_dir_change
+
 * Wed Mar 09 2022 Jan Grulich <jgrulich@redhat.com> - 5.15.8-5
 - Rebuild (qt5)
 
