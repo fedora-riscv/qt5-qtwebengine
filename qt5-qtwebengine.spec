@@ -416,7 +416,7 @@ mv pulse src/3rdparty/chromium/
 pushd src/3rdparty/chromium
 popd
 
-%if 0%{?epel:1}
+%if 0%{?rhel} && 0%{?rhel} == 9
 # Install python2 from rpms
 mkdir python2
 pushd python2
