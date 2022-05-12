@@ -1,0 +1,48 @@
+From 14242d039503d5b79cb1867f06a5682cfde167f3 Mon Sep 17 00:00:00 2001
+From: Troy Dawson <tdawson@redhat.com>
+Date: Thu, 12 May 2022 13:17:26 -0700
+Subject: [PATCH] gcc-aarch64-hack.patch
+
+---
+ .../skia/third_party/skcms/src/Transform_inl.h | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/src/3rdparty/chromium/third_party/skia/third_party/skcms/src/Transform_inl.h b/src/3rdparty/chromium/third_party/skia/third_party/skcms/src/Transform_inl.h
+index 2dcf717..02514ef 100644
+--- a/src/3rdparty/chromium/third_party/skia/third_party/skcms/src/Transform_inl.h
++++ b/src/3rdparty/chromium/third_party/skia/third_party/skcms/src/Transform_inl.h
+@@ -117,6 +117,22 @@ SI D cast(const S& v) {
+ #endif
+ }
+ 
++// This is a hack to work around GCC PR95726
++template <typename D, typename S>
++SI D cast2(const S& v) {
++#if N == 1
++    return (D)v;
++#elif defined(__clang__)
++    return __builtin_convertvector(v, D);
++#else
++    D d;
++    for (int i = 0; i < N; i++) {
++        d[i] = v[i];
++    }
++    return d;
++#endif
++}
++
+ template <typename D, typename S>
+ SI D bit_pun(const S& v) {
+     static_assert(sizeof(D) == sizeof(v), "");
+@@ -618,7 +634,7 @@ SI F F_from_U16_BE(U16 v) {
+     // MSVC catches the "loss" of data here in the portable path, so we also make sure to mask.
+     U16 lo = (v >> 8),
+         hi = (v << 8) & 0xffff;
+-    return cast<F>(lo|hi) * (1/65535.0f);
++    return cast2<F>(lo|hi) * (1/65535.0f);
+ }
+ 
+ SI U16 U16_from_F(F v) {
+-- 
+2.36.1
+
