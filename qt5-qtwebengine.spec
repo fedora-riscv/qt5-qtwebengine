@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 5%{?dist}
+Release: 5%{?dist}.1
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -119,6 +119,9 @@ Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
 
 ## Upstream patches:
+
+## epel8 patches
+Patch101: qtwebengine-everywhere-5.15.8-gcc-aarch64-hack.patch.patch
 
 %if 0%{?fedora} || 0%{?epel} > 7
 # handled by qt5-srpm-macros, which defines %%qt5_qtwebengine_arches
@@ -449,6 +452,9 @@ popd
 %patch26 -p1 -b .use-python2
 %patch31 -p1 -b .TRUE
 
+## epel8 patches
+%patch101 -p1 -b .fix-aarch64
+
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
 sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
@@ -669,6 +675,9 @@ done
 
 
 %changelog
+* Thu May 12 2022 Troy Dawson <tdawson@redhat.com> - 5.15.8-5.1
+- Fix aarch64 build failures on epel8-next
+
 * Wed Mar 09 2022 Jan Grulich <jgrulich@redhat.com> - 5.15.8-5
 - Rebuild (qt5)
 
