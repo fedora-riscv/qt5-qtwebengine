@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.8
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -673,6 +673,9 @@ done
 
 
 %changelog
+* Tue May 17 2022 Jan Grulich <jgrulich@redhat.com> - 5.15.8-7
+- Rebuild (Qt 5.15.4)
+
 * Tue Mar 29 2022 Parag Nemade <pnemade AT redhat DOT com> - 5.15.8-6
 - Update hunspell dictionary path by adding conditional support
   F36 Change https://fedoraproject.org/wiki/Changes/Hunspell_dictionary_dir_change
