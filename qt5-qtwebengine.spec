@@ -117,7 +117,7 @@ Patch24: qtwebengine-everywhere-src-5.11.3-aarch64-new-stat.patch
 Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
 # FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
-
+Patch32: qtwebengine-skia-missing-includes.patch
 ## Upstream patches:
 
 %if 0%{?fedora} || 0%{?epel} > 7
@@ -448,6 +448,7 @@ popd
 %patch24 -p1 -b .aarch64-new-stat
 %patch26 -p1 -b .use-python2
 %patch31 -p1 -b .TRUE
+%patch32 -p1 -b .skia-missing-includes
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
