@@ -61,8 +61,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.15.8
-Release: 7%{?dist}
+Version: 5.15.9
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -118,6 +118,7 @@ Patch26: qtwebengine-everywhere-5.15.5-use-python2.patch
 # FTBFS TRUE/FALSE undeclared
 Patch31: qtwebengine-everywhere-src-5.15.5-TRUE.patch
 Patch32: qtwebengine-skia-missing-includes.patch
+
 ## Upstream patches:
 
 %if 0%{?fedora} || 0%{?epel} > 7
@@ -674,6 +675,9 @@ done
 
 
 %changelog
+* Wed Jun 01 2022 Rex Dieter <rdieter@fedoraproject.org> - 5.15.9-1
+- 5.15.9
+
 * Tue May 17 2022 Jan Grulich <jgrulich@redhat.com> - 5.15.8-7
 - Rebuild (Qt 5.15.4)
 
