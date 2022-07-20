@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.9
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -92,11 +92,6 @@ Source100: python2.7-2.7.18-19.el9.1.src.rpm
 Source101: python2.7-2.7.18-19.el9.1.aarch64.rpm
 Source102: python2.7-2.7.18-19.el9.1.x86_64.rpm
 
-# quick hack to avoid checking for the nonexistent icudtl.dat and silence the
-# resulting warnings - not upstreamable as is because it removes the fallback
-# mechanism for the ICU data directory (which is not used in our builds because
-# we use the system ICU, which embeds the data statically) completely
-Patch1:  qtwebengine-everywhere-src-5.15.0-no-icudtl-dat.patch
 # fix extractCFlag to also look in QMAKE_CFLAGS_RELEASE, needed to detect the
 # ARM flags with our %%qmake_qt5 macro, including for the next patch
 Patch2:  qtwebengine-opensource-src-5.12.4-fix-extractcflag.patch
@@ -430,9 +425,6 @@ rpm2cpio %{SOURCE102} | cpio -idm
 popd
 %endif
 
-%if 0%{?use_system_libicu}
-%patch1 -p1 -b .no-icudtl-dat
-%endif
 %patch2 -p1 -b .fix-extractcflag
 %if !0%{?arm_neon}
 %patch3 -p1 -b .no-neon
@@ -675,6 +667,9 @@ done
 
 
 %changelog
+* Wed Jul 20 2022 Kevin Kofler <Kevin@tigcc.ticalc.org> - 5.15.9-3
+- Drop obsolete no-icudtl-dat patch, code has been fixed upstream since 5.11.0
+
 * Thu Jul 14 2022 Jan Grulich <jgrulich@redhat.com> - 5.15.9-2
 - Rebuild (Qt 5.15.5)
 
