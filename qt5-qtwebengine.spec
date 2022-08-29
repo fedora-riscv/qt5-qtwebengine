@@ -61,8 +61,8 @@
 
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
-Version: 5.15.9
-Release: 5%{?dist}
+Version: 5.15.10
+Release: 1%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -667,6 +667,9 @@ done
 
 
 %changelog
+* Mon Aug 29 2022 Ankur Sinha <ankursinha AT fedoraproject DOT org> - 5.15.10-1
+- Update to 5.15.10
+
 * Tue Aug 02 2022 Frantisek Zatloukal <fzatlouk@redhat.com> - 5.15.9-5
 - Rebuilt for ICU 71.1
 
