@@ -1,8 +1,35 @@
-From 0908105c5a7fb5d3f0b644b37811f82934cccf60 Mon Sep 17 00:00:00 2001
-From: Yichao Yu <yyc1992@gmail.com>
-Date: Tue, 19 Jul 2022 23:58:46 -0400
-Subject: [PATCH] Backport of 16k page support on aarch64
+From 0e827b4f741e57538c24d90b63659dbdb0992cb0 Mon Sep 17 00:00:00 2001
+From: Jorrit Jongma <jorrit@jongma.org>
+Date: Tue, 12 Apr 2022 17:09:34 +0000
+Subject: [PATCH] [Backport] [PA] Support 16kb pagesize on Linux+ARM64
 
+This makes the system pagesize a run-time property.
+
+ARM64 supports 4kb, 16kb, and 64kb page sizes. Previously, only 4kb
+was supported by Chromium. This patch adds 16kb support, as is used
+for example by Asahi Linux on M1 Macs. The rare 64kb case is still
+not supported due to further changes needed to SlotSpanMetadata.
+
+The implementation follows the changes made to support run-time page
+size on macOS. On macOS, the required constants are conveniently
+injected before any code runs, while on Linux a function call is
+needed, complicating initialization.
+
+The new PageCharacteristics structure holds the page size and shift
+as std::atomic<int> which are initialized on first use.
+
+Bug: 1301788
+Change-Id: I8ceead40de53ba7a2ec248bd6ef46f2a521dd29c
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/3545665
+Reviewed-by: Benoit Lize <lizeb@chromium.org>
+Reviewed-by: Mark Mentovai <mark@chromium.org>
+Commit-Queue: Mark Mentovai <mark@chromium.org>
+Cr-Commit-Position: refs/heads/main@{#991588}
+
+(adapted from commit a704c3a94179e6f3abb28f090d096ced72657d7c)
+
+Bug-Fedora: 2144200
+Task-number: QTBUG-108674
 ---
  .../address_space_randomization.h             | 15 ++++++
  .../page_allocator_constants.h                | 51 +++++++++++++++++-
@@ -341,5 +368,5 @@ index 71d63ba4146..a6d83626741 100644
  #else
  PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE int
 -- 
-2.37.0
+2.38.1
 
