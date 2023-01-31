@@ -471,3 +471,15 @@ index fb06e73..f20c11e 100644
      <required_start_align align="8" />
      <field type="WINDOW" name="window" />
      <field type="PIXMAP" name="pixmap" />
+diff --git a/src/3rdparty/chromium/extensions/browser/api/audio/audio_device_id_calculator.h b/src/3rdparty/chromium/extensions/browser/api/audio/audio_device_id_calculator.h
+index 9d2858177..d263f6703 100644
+--- a/src/3rdparty/chromium/extensions/browser/api/audio/audio_device_id_calculator.h
++++ b/src/3rdparty/chromium/extensions/browser/api/audio/audio_device_id_calculator.h
+@@ -5,6 +5,7 @@
+ #ifndef EXTENSIONS_BROWSER_API_AUDIO_AUDIO_DEVICE_ID_CALCULATOR_H_
+ #define EXTENSIONS_BROWSER_API_AUDIO_AUDIO_DEVICE_ID_CALCULATOR_H_
+ 
++#include <cstdint>
+ #include <map>
+ #include <string>
+ 
