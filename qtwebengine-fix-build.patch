@@ -458,3 +458,16 @@ index a10409f39..b9f5e59d8 100644
  namespace QtWebEngineCore {
  
  class BrowsingDataRemoverDelegateQt : public content::BrowsingDataRemoverDelegate {
+diff --git a/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml b/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml
+index fb06e73..f20c11e 100644
+--- a/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml
++++ b/src/3rdparty/chromium/third_party/xcbproto/src/src/present.xml
+@@ -89,7 +89,7 @@ OF THIS SOFTWARE.
+     </reply>
+   </request>
+ 
+-  <request name="Pixmap" opcode="1">
++  <request name="PresentPixmap" opcode="1">
+     <required_start_align align="8" />
+     <field type="WINDOW" name="window" />
+     <field type="PIXMAP" name="pixmap" />
