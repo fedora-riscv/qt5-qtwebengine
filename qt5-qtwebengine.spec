@@ -9,7 +9,7 @@
 # where qt5-qttools (qt5-doctools) builds are not yet available
 %global docs 0
 
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?epel} >= 9
 # need libvpx >= 1.8.0 (need commit 297dfd869609d7c3c5cd5faa3ebc7b43a394434e)
 %global use_system_libvpx 1
 # For screen sharing on Wayland, currently Fedora only thing - no epel
@@ -19,14 +19,10 @@
 # need libwebp >= 0.6.0
 %global use_system_libwebp 1
 %global use_system_jsoncpp 1
-%if 0%{?rhel} && 0%{?rhel} == 9
-%global use_system_re2 0
-%else
 %global use_system_re2 1
 %endif
-%endif
 
-%if 0%{?fedora} > 32
+%if 0%{?fedora} > 32 || 0%{?epel} >= 9
 # need libicu >= 65, only currently available on f33+
 %global use_system_libicu 1
 %endif
