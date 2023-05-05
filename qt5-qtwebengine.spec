@@ -291,7 +291,7 @@ Provides: bundled(libsrtp) = 2.2.0
 Provides: bundled(libvpx) = 1.8.2
 %endif
 %if !0%{?use_system_libwebp}
-Provides: bundled(libwebp) = 1.1.0-28-g55a080e5
+Provides: bundled(libwebp) = 1.1.0-28.g55a080e5
 %endif
 # bundled as "libxml"
 # see src/3rdparty/chromium/third_party/libxml/linux/include/libxml/xmlversion.h
