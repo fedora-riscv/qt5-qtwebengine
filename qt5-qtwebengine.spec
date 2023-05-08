@@ -124,6 +124,9 @@ Patch35: qt5-qtwebengine-c99.patch
 ExclusiveArch: %{qt5_qtwebengine_arches}
 %endif
 
+# Build on CentOS Stream 9 pulls in old gcc-toolset-12-binutils-gold
+# Remove this when version 2.38-14 is no longer pulled in.
+BuildRequires: gcc-toolset-12-binutils-gold >= 2.38-16
 BuildRequires: make
 BuildRequires: qt5-qtbase-devel
 BuildRequires: qt5-qtbase-private-devel
