@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.12
-Release: 5%{?dist}
+Release: 5.rv64%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -120,6 +120,11 @@ Patch32: qtwebengine-skia-missing-includes.patch
 Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
 Patch34: qtwebengine-fix-build.patch
 Patch35: qt5-qtwebengine-c99.patch
+
+# riscv64 support patch from Arch Linux
+Patch100: v8.patch
+Patch101: riscv.patch
+Patch102: qtwebengine-ffmpeg5.patch
 
 ## Upstream patches:
 
@@ -235,6 +240,13 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 BuildRequires: libtirpc
 BuildRequires: libnsl2
 BuildRequires: python-rpm-macros
+
+# RISCV64 need patched version of ffmpeg
+%ifarch riscv64
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+%endif
 
 # extra (non-upstream) functions needed, see
 # src/3rdparty/chromium/third_party/sqlite/README.chromium for details
@@ -454,6 +466,12 @@ popd
 
 %patch35 -p1 -b .c99
 
+%ifarch riscv64
+%patch100 -p1 -b .riscv64-v8
+%patch101 -p1 -b .riscv64
+%patch102 -p1
+%endif
+
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
 sed -i -e '/toolprefix = /d' -e 's/\${toolprefix}//g' \
@@ -513,7 +531,12 @@ export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
   %{?debug_config:CONFIG+="%{debug_config}}" \
+%ifarch riscv64
+  CONFIG+="link_pulseaudio" \
+  QMAKE_EXTRA_ARGS+="-system-webengine-ffmpeg -system-webengine-webp -system-webengine-opus" \
+%else
   CONFIG+="link_pulseaudio use_gold_linker" \
+%endif
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
@@ -678,6 +701,9 @@ done
 
 
 %changelog
+* Sat May 13 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 5.15.12-5.rv64
+- Add riscv64 support patch from Arch Linux
+
 * Tue Apr 11 2023 Jan Grulich <jgrulich@redhat.com> - 5.15.12-5
 - Rebuild (qt5)
 
