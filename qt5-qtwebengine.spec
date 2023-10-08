@@ -121,6 +121,9 @@ Patch33: qtwebengine-5.15-Backport-of-16k-page-support-on-aarch64.patch
 Patch34: qtwebengine-fix-build.patch
 Patch35: qt5-qtwebengine-c99.patch
 
+# Fix assembly with binutils 2.41 https://fftrac-bg.ffmpeg.org/ticket/10405
+Patch50: 0001-avcodec-x86-mathops-clip-constants-used-with-shift-i.patch
+
 ## Upstream patches:
 
 %if 0%{?fedora} || 0%{?epel} > 7
@@ -453,6 +456,8 @@ popd
 %patch34 -p1 -b .fix-build
 
 %patch35 -p1 -b .c99
+
+%patch50 -p1 -b .0001-avcodec-x86-mathops-clip-constants-used-with-shift-i
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
