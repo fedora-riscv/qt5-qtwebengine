@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.12
-Release: 8%{?dist}
+Release: 9%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -678,6 +678,9 @@ done
 
 
 %changelog
+* Sun Oct 08 2023 Jan Grulich <jgrulich@redhat.com> - 5.15.12-9
+- Rebuild (qt5)
+
 * Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.12-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 
