@@ -62,7 +62,7 @@
 Summary: Qt5 - QtWebEngine components
 Name:    qt5-qtwebengine
 Version: 5.15.12
-Release: 9%{?dist}
+Release: 9.rv64%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://qt-project.org/doc/qt-5.0/qtdoc/licensing.html
@@ -123,6 +123,10 @@ Patch35: qt5-qtwebengine-c99.patch
 
 # Fix assembly with binutils 2.41 https://fftrac-bg.ffmpeg.org/ticket/10405
 Patch50: 0001-avcodec-x86-mathops-clip-constants-used-with-shift-i.patch
+# riscv64 support patch from Arch Linux
+Patch100: v8.patch
+Patch101: riscv.patch
+Patch102: qtwebengine-ffmpeg5.patch
 
 ## Upstream patches:
 
@@ -238,6 +242,13 @@ BuildRequires: pkgconfig(vpx) >= 1.8.0
 BuildRequires: libtirpc
 BuildRequires: libnsl2
 BuildRequires: python-rpm-macros
+
+# RISCV64 need patched version of ffmpeg
+%ifarch riscv64
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+%endif
 
 # extra (non-upstream) functions needed, see
 # src/3rdparty/chromium/third_party/sqlite/README.chromium for details
@@ -458,6 +469,11 @@ popd
 %patch35 -p1 -b .c99
 
 %patch50 -p1 -b .0001-avcodec-x86-mathops-clip-constants-used-with-shift-i
+%ifarch riscv64
+%patch100 -p1 -b .riscv64-v8
+%patch101 -p1 -b .riscv64
+%patch102 -p1
+%endif
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
 # never cross-compile in native Fedora RPMs, fixes ARM and aarch64 FTBFS
@@ -518,7 +534,12 @@ export NINJA_PATH=%{__ninja}
 
 %{qmake_qt5} \
   %{?debug_config:CONFIG+="%{debug_config}}" \
+%ifarch riscv64
+  CONFIG+="link_pulseaudio" \
+  QMAKE_EXTRA_ARGS+="-system-webengine-ffmpeg -system-webengine-webp -system-webengine-opus" \
+%else
   CONFIG+="link_pulseaudio use_gold_linker" \
+%endif
   %{?use_system_libicu:QMAKE_EXTRA_ARGS+="-system-webengine-icu"} \
   QMAKE_EXTRA_ARGS+="-webengine-kerberos" \
   %{?pipewire:QMAKE_EXTRA_ARGS+="-webengine-webrtc-pipewire"} \
@@ -685,6 +706,9 @@ done
 %changelog
 * Sun Oct 08 2023 Jan Grulich <jgrulich@redhat.com> - 5.15.12-9
 - Rebuild (qt5)
+
+* Sat May 13 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 5.15.12-5.rv64
+- Add riscv64 support patch from Arch Linux
 
 * Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.12-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
