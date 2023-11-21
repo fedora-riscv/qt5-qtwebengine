@@ -446,33 +446,33 @@ rpm2cpio %{SOURCE102} | cpio -idm
 popd
 %endif
 
-%patch2 -p1 -b .fix-extractcflag
+%patch -P 2 -p1 -b .fix-extractcflag
 %if !0%{?arm_neon}
-%patch3 -p1 -b .no-neon
+%patch -P 3 -p1 -b .no-neon
 %endif
-%patch4 -p1 -b .SIOCGSTAMP
-%patch5 -p1 -b .QT_DEPRECATED_VERSION
-%patch6 -p1 -b .angle_nullptr
-%patch7 -p1 -b .hunspell_nullptr
+%patch -P 4 -p1 -b .SIOCGSTAMP
+%patch -P 5 -p1 -b .QT_DEPRECATED_VERSION
+%patch -P 6 -p1 -b .angle_nullptr
+%patch -P 7 -p1 -b .hunspell_nullptr
 #if 0%{?pipewire}
-%patch8 -p1 -b .libpipewire-0.3
+%patch -P 8 -p1 -b .libpipewire-0.3
 #endif
 
 ## upstream patches
-%patch24 -p1 -b .aarch64-new-stat
-%patch26 -p1 -b .use-python2
-%patch31 -p1 -b .TRUE
-%patch32 -p1 -b .skia-missing-includes
-%patch33 -p1 -b .aarch64-16kb-support
-%patch34 -p1 -b .fix-build
+%patch -P 24 -p1 -b .aarch64-new-stat
+%patch -P 26 -p1 -b .use-python2
+%patch -P 31 -p1 -b .TRUE
+%patch -P 32 -p1 -b .skia-missing-includes
+%patch -P 33 -p1 -b .aarch64-16kb-support
+%patch -P 34 -p1 -b .fix-build
 
-%patch35 -p1 -b .c99
+%patch -P 35 -p1 -b .c99
 
-%patch50 -p1 -b .0001-avcodec-x86-mathops-clip-constants-used-with-shift-i
+%patch -P 50 -p1 -b .0001-avcodec-x86-mathops-clip-constants-used-with-shift-i
 %ifarch riscv64
-%patch100 -p1 -b .riscv64-v8
-%patch101 -p1 -b .riscv64
-%patch102 -p1
+%patch -P 100 -p1 -b .riscv64-v8
+%patch -P 101 -p1 -b .riscv64
+%patch -P 102 -p1
 %endif
 
 # delete all "toolprefix = " lines from build/toolchain/linux/BUILD.gn, as we
@@ -707,9 +707,6 @@ done
 * Sun Oct 08 2023 Jan Grulich <jgrulich@redhat.com> - 5.15.12-9
 - Rebuild (qt5)
 
-* Sat May 13 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 5.15.12-5.rv64
-- Add riscv64 support patch from Arch Linux
-
 * Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 5.15.12-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 
@@ -718,6 +715,9 @@ done
 
 * Tue Jun 13 2023 Jan Grulich <jgrulich@redhat.com> - 5.15.12-6
 - Rebuild (qt5)
+
+* Sat May 13 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 5.15.12-5.rv64
+- Add riscv64 support patch from Arch Linux
 
 * Tue Apr 11 2023 Jan Grulich <jgrulich@redhat.com> - 5.15.12-5
 - Rebuild (qt5)
